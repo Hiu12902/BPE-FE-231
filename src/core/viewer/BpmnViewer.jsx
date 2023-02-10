@@ -6,14 +6,12 @@ import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js
 import { baseXml } from '../../assets/baseXml';
 import './BpmnViewer.css';
 
-// import MagicPropertiesProviderModule from './provider/magic';
-// import magicModdleDescriptor from './descriptors/magic';
-
 import 'bpmn-js-properties-panel/dist/assets/element-templates.css';
 import 'bpmn-js-properties-panel/dist/assets/properties-panel.css';
 
 import { AppShell, Box, Aside } from '@mantine/core';
 import { PaletteNavbar } from '../palette/PaletteNavbar';
+import BpeToolbar from '../toolbar/Toolbar';
 
 const BpeBpmnModeler = () => {
   const [modeler, setModeler] = useState();
@@ -24,14 +22,8 @@ const BpeBpmnModeler = () => {
       propertiesPanel: {
         parent: '#properties',
       },
-      additionalModules: [
-        BpmnPropertiesPanelModule,
-        BpmnPropertiesProviderModule,
-        // MagicPropertiesProviderModule,
-      ],
-      moddleExtensions: {
-        // magic: magicModdleDescriptor
-      },
+      additionalModules: [BpmnPropertiesPanelModule, BpmnPropertiesProviderModule],
+      moddleExtensions: {},
       keyboard: {
         bindTo: document,
       },
@@ -57,6 +49,8 @@ const BpeBpmnModeler = () => {
           <Box id="properties" />
         </Aside>
       }
+      header={<BpeToolbar />}
+      styles={{ main: { padding: 0 } }}
     >
       <Box id="canvas" style={{ height: '100%' }} />
     </AppShell>
