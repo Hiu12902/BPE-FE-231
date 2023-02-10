@@ -10,8 +10,6 @@ import {
   ScrollArea,
   Button,
 } from '@mantine/core';
-import { IconFileImport, IconFileExport, IconCalculator } from '@tabler/icons';
-import { useRef } from 'react';
 import { assign } from 'min-dash';
 //@ts-ignore
 import { getDi } from 'bpmn-js/lib/util/ModelUtil';
@@ -26,6 +24,7 @@ import {
   subProcessSymbols,
   taskSymbols,
 } from './utils/symbols';
+import { PALETTE_WIDTH } from '../../constants/theme/themeConstants';
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -47,25 +46,6 @@ const useStyles = createStyles((theme) => ({
     },
   },
 }));
-
-function NavbarActions({
-  icon: Icon,
-  label,
-  onClick,
-}: {
-  icon: any;
-  label: string;
-  onClick: () => void;
-}) {
-  const { classes } = useStyles();
-  return (
-    <Tooltip label={label} position="right" transitionDuration={0}>
-      <Button onClick={onClick} className={classes.link}>
-        <Icon stroke={1.5} size={30} />
-      </Button>
-    </Tooltip>
-  );
-}
 
 export function PaletteNavbar({ modeler }: { modeler: any }) {
   const { classes } = usePaletteNavbarStyles();
@@ -101,11 +81,12 @@ export function PaletteNavbar({ modeler }: { modeler: any }) {
   return (
     <Navbar
       height="100vh"
-      width={{ base: 256 }}
+      width={{ base: PALETTE_WIDTH }}
       p="sm"
       sx={(theme) => ({
         backgroundColor: theme.fn.variant({ variant: 'filled', color: theme.primaryColor })
           .background,
+        top: 0,
       })}
     >
       <Navbar.Section grow component={ScrollArea} mx="-xs" px="xs">

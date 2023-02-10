@@ -22,7 +22,8 @@
     "bpmn-js-properties-panel": "^1.17.0",
     "min-dash": "^4.0.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "vite-plugin-svgr": "^2.4.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.0.1",

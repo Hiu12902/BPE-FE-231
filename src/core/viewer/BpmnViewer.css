@@ -6,7 +6,7 @@
 [class*=' bpmn-icon-'].custom-entry:before {
   display: inline !important;
   margin-right: 10px;
-  font-size: 20px;
+  font-size: 25px;
 }
 
 [class^='bpmn-icon-'].custom-entry,
@@ -19,6 +19,7 @@
   color: #fff;
   cursor: pointer;
   padding: 10px;
+  align-items: center;
 }
 
 [class^='bpmn-icon-'].custom-entry:hover,
