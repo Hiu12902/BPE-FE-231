@@ -1,0 +1,28 @@
+.djs-palette {
+  display: none;
+}
+
+[class^='bpmn-icon-'].custom-entry:before,
+[class*=' bpmn-icon-'].custom-entry:before {
+  display: inline !important;
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+[class^='bpmn-icon-'].custom-entry,
+[class*=' bpmn-icon-'].custom-entry {
+  display: flex;
+  width: 100%;
+  font-size: 15px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 10px;
+}
+
+[class^='bpmn-icon-'].custom-entry:hover,
+[class*=' bpmn-icon-'].custom-entry:hover {
+  background-color: #dddddd;
+  color: black;
+}
