@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Header, Group, Space, Stack, Text, Center, Divider } from '@mantine/core';
 import { PALETTE_WIDTH, TOOLBAR_HEIGHT } from '../../constants/theme/themeConstants';
 import {
@@ -33,10 +33,20 @@ import {
   IconBpeConnector,
 } from './utils/icons/Icons';
 import ToolbarIcon from './helper/ToolbarIcon/ToolbarIcon';
+import useGetModelerModules from '../hooks/useGetModelerModule';
+import { ModelerContext } from '../context/ModelerContext';
+import UtilsGroup from './helper/UtilsGroup/UtilsGroup';
 
 const DEFAULT_SPACING = 5;
 
 const ClipBoardGroup = () => {
+  const modeler = useContext(ModelerContext);
+  const [clipboard, copyPaste, elementRegistry] = useGetModelerModules(modeler, [
+    'clipboard',
+    'copyPaste',
+    'elementRegistry',
+  ]);
+
   return (
     <Stack spacing={DEFAULT_SPACING}>
       <Group spacing={DEFAULT_SPACING}>
@@ -46,6 +56,7 @@ const ClipBoardGroup = () => {
           title="Paste Element/Text"
           orientation="vertical"
           size="large"
+          disabled={!modeler}
         />
         <Stack spacing={0}>
           <ToolbarIcon
@@ -54,6 +65,7 @@ const ClipBoardGroup = () => {
             orientation="horizontal"
             size="small"
             label="Copy"
+            disabled={!modeler}
           />
           <Divider my="xs" />
           <ToolbarIcon
@@ -62,6 +74,7 @@ const ClipBoardGroup = () => {
             orientation="horizontal"
             size="small"
             label="Cut"
+            disabled={!modeler}
           />
         </Stack>
       </Group>
@@ -237,46 +250,6 @@ const EditingGroup = () => {
       </Group>
       <Text size="xs" align="center">
         Edit
-      </Text>
-    </Stack>
-  );
-};
-
-const UtilsGroup = () => {
-  return (
-    <Stack spacing={DEFAULT_SPACING - 2}>
-      <Group>
-        <ToolbarIcon
-          icon={IconBpeHand}
-          label="Hand Tool"
-          title="Activate Hand Tool"
-          orientation="vertical"
-          size="large"
-        />
-        <ToolbarIcon
-          icon={IconBpeLasso}
-          label="Lasso Tool"
-          title="Activate Lasso Tool"
-          orientation="vertical"
-          size="large"
-        />
-        <ToolbarIcon
-          icon={IconBpeSpace}
-          label="Space Tool"
-          title="Activate Space Tool"
-          orientation="vertical"
-          size="large"
-        />
-        <ToolbarIcon
-          icon={IconBpeConnector}
-          label="Global Connector"
-          title="Activate Global Connector"
-          orientation="vertical"
-          size="large"
-        />
-      </Group>
-      <Text size="xs" align="center">
-        Utilities
       </Text>
     </Stack>
   );
