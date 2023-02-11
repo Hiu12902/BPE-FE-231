@@ -12,6 +12,7 @@ import 'bpmn-js-properties-panel/dist/assets/properties-panel.css';
 import { AppShell, Box, Aside } from '@mantine/core';
 import { PaletteNavbar } from '../palette/PaletteNavbar';
 import BpeToolbar from '../toolbar/Toolbar';
+import { ModelerContext } from '../context/ModelerContext';
 
 const BpeBpmnModeler = () => {
   const [modeler, setModeler] = useState();
@@ -42,18 +43,20 @@ const BpeBpmnModeler = () => {
   }, []);
 
   return (
-    <AppShell
-      navbar={<PaletteNavbar modeler={modeler} />}
-      aside={
-        <Aside height="100vh" width={{ base: 250 }}>
-          <Box id="properties" />
-        </Aside>
-      }
-      header={<BpeToolbar />}
-      styles={{ main: { padding: 0 } }}
-    >
-      <Box id="canvas" style={{ height: '100%' }} />
-    </AppShell>
+    <ModelerContext.Provider value={modeler}>
+      <AppShell
+        navbar={<PaletteNavbar />}
+        aside={
+          <Aside height="100vh" width={{ base: 250 }}>
+            <Box id="properties" />
+          </Aside>
+        }
+        header={<BpeToolbar />}
+        styles={{ main: { padding: 0 } }}
+      >
+        <Box id="canvas" style={{ height: '100%' }} />
+      </AppShell>
+    </ModelerContext.Provider>
   );
 };
 

@@ -25,6 +25,8 @@ import {
   taskSymbols,
 } from './utils/symbols';
 import { PALETTE_WIDTH } from '../../constants/theme/themeConstants';
+import { useContext } from 'react';
+import { ModelerContext } from '../context/ModelerContext';
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -47,8 +49,9 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function PaletteNavbar({ modeler }: { modeler: any }) {
+export function PaletteNavbar() {
   const { classes } = usePaletteNavbarStyles();
+  const modeler = useContext(ModelerContext);
 
   const handleGateway = (
     event: React.DragEvent<HTMLButtonElement> | React.MouseEvent<HTMLButtonElement>,
