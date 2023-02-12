@@ -10,8 +10,6 @@ import {
   IconBpeSimulate,
   IconBpeEvaluate,
   IconBpeCompare,
-  IconBpeImport,
-  IconBpeExport,
   IconBpeBold,
   IconBpeItalic,
   IconBpeUnderline,
@@ -26,6 +24,7 @@ import ToolbarIcon from './helper/ToolbarIcon/ToolbarIcon';
 import UtilsGroup from './helper/UtilsGroup/UtilsGroup';
 import ClipBoardGroup from './helper/ClipBoardGroup/ClipBoardGroup';
 import EditingGroup from './helper/EditGroup/EditGroup';
+import ImportExportGroup from './helper/ImportExportGroup/ImportExportGroup';
 
 const DEFAULT_SPACING = 5;
 
@@ -88,31 +87,6 @@ const DiagramGroup = () => {
       </Group>
       <Text size="xs" align="center">
         Diagram
-      </Text>
-    </Stack>
-  );
-};
-
-const ImportExportGroup = () => {
-  return (
-    <Stack spacing={DEFAULT_SPACING - 2}>
-      <ToolbarIcon
-        icon={IconBpeImport}
-        label="Import"
-        title="Import File"
-        orientation="horizontal"
-        size="small"
-      />
-      <ToolbarIcon
-        icon={IconBpeExport}
-        label="Export"
-        title="Export File"
-        orientation="horizontal"
-        size="small"
-      />
-      <Space h={20} />
-      <Text size="xs" align="center">
-        I/O
       </Text>
     </Stack>
   );
