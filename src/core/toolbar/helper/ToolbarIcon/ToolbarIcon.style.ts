@@ -11,4 +11,13 @@ export const useToolbarIconStyle = createStyles((theme, _params, getRef) => ({
     [`&:active .${getRef('label')}`]: { transform: 'translateY(2px)' },
     [`&:active .${getRef('icon')}`]: { transform: 'translateY(2px)' },
   },
+  buttonDisabled: {
+    pointerEvents: 'none',
+    [`.${getRef('label')}`]: {
+      opacity: 0.4,
+    },
+    [`.${getRef('icon')}`]: {
+      opacity: 0.4,
+    },
+  },
 }));

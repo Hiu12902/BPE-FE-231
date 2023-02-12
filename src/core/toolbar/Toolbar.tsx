@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Header, Group, Space, Stack, Text, Center, Divider } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
+
 import { PALETTE_WIDTH, TOOLBAR_HEIGHT } from '../../constants/theme/themeConstants';
 import {
   IconBpePaste,
@@ -27,63 +29,12 @@ import {
   IconBpeZoomOut,
   IconBpeComment,
   IconBpeResult,
-  IconBpeHand,
-  IconBpeLasso,
-  IconBpeSpace,
-  IconBpeConnector,
 } from './utils/icons/Icons';
 import ToolbarIcon from './helper/ToolbarIcon/ToolbarIcon';
-import useGetModelerModules from '../hooks/useGetModelerModule';
-import { ModelerContext } from '../context/ModelerContext';
 import UtilsGroup from './helper/UtilsGroup/UtilsGroup';
+import ClipBoardGroup from './helper/ClipBoardGroup/ClipBoardGroup';
 
 const DEFAULT_SPACING = 5;
-
-const ClipBoardGroup = () => {
-  const modeler = useContext(ModelerContext);
-  const [clipboard, copyPaste, elementRegistry] = useGetModelerModules(modeler, [
-    'clipboard',
-    'copyPaste',
-    'elementRegistry',
-  ]);
-
-  return (
-    <Stack spacing={DEFAULT_SPACING}>
-      <Group spacing={DEFAULT_SPACING}>
-        <ToolbarIcon
-          icon={IconBpePaste}
-          label="Paste"
-          title="Paste Element/Text"
-          orientation="vertical"
-          size="large"
-          disabled={!modeler}
-        />
-        <Stack spacing={0}>
-          <ToolbarIcon
-            icon={IconBpeCopy}
-            title="Copy Element/Text"
-            orientation="horizontal"
-            size="small"
-            label="Copy"
-            disabled={!modeler}
-          />
-          <Divider my="xs" />
-          <ToolbarIcon
-            icon={IconBpeCut}
-            title="Cut Element/Text"
-            orientation="horizontal"
-            size="small"
-            label="Cut"
-            disabled={!modeler}
-          />
-        </Stack>
-      </Group>
-      <Text size="xs" align="center">
-        Clip board
-      </Text>
-    </Stack>
-  );
-};
 
 const ModelGroup = () => {
   return (

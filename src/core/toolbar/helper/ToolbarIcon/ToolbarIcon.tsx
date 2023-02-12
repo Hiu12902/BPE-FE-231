@@ -20,11 +20,14 @@ const ToolbarIcon = ({
   disabled,
   onClick,
 }: IToolbarIcon) => {
-  const { classes } = useToolbarIconStyle();
+  const { classes, cx } = useToolbarIconStyle();
   const GroupComponent = orientation === 'horizontal' ? Group : Stack;
   return (
     <Tooltip label={title} zIndex={101} position="bottom">
-      <UnstyledButton className={classes.button} disabled={disabled} onClick={onClick}>
+      <UnstyledButton
+        className={cx(classes.button, { [classes.buttonDisabled]: disabled })}
+        onClick={onClick}
+      >
         <GroupComponent spacing={orientation === 'horizontal' ? 5 : 0}>
           <Center>
             <Icon
