@@ -27,6 +27,7 @@ import { ReactComponent as IconBpeHand } from './hand.svg';
 import { ReactComponent as IconBpeLasso } from './lasso.svg';
 import { ReactComponent as IconBpeSpace } from './space.svg';
 import { ReactComponent as IconBpeConnector } from './connector.svg';
+import { ReactComponent as IconBpeZoomReset } from './zoomreset.svg';
 
 export {
   IconBpePaste,
@@ -58,4 +59,5 @@ export {
   IconBpeLasso,
   IconBpeSpace,
   IconBpeConnector,
+  IconBpeZoomReset,
 };

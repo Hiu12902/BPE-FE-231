@@ -4,9 +4,6 @@ import { showNotification } from '@mantine/notifications';
 
 import { PALETTE_WIDTH, TOOLBAR_HEIGHT } from '../../constants/theme/themeConstants';
 import {
-  IconBpePaste,
-  IconBpeCopy,
-  IconBpeCut,
   IconBpeSave,
   IconBpeValidate,
   IconBpeHistory,
@@ -22,17 +19,13 @@ import {
   IconBpeTextColor,
   IconBpeElementColor,
   IconBpeClearStyle,
-  IconBpeDelete,
-  IconBpeRedo,
-  IconBpeUndo,
-  IconBpeZoomIn,
-  IconBpeZoomOut,
   IconBpeComment,
   IconBpeResult,
 } from './utils/icons/Icons';
 import ToolbarIcon from './helper/ToolbarIcon/ToolbarIcon';
 import UtilsGroup from './helper/UtilsGroup/UtilsGroup';
 import ClipBoardGroup from './helper/ClipBoardGroup/ClipBoardGroup';
+import EditingGroup from './helper/EditGroup/EditGroup';
 
 const DEFAULT_SPACING = 5;
 
@@ -164,43 +157,6 @@ const FormattingGroup = () => {
       </Group>
       <Text size="xs" align="center">
         Formatting
-      </Text>
-    </Stack>
-  );
-};
-
-const EditingGroup = () => {
-  return (
-    <Stack spacing={DEFAULT_SPACING - 2}>
-      <Group spacing={DEFAULT_SPACING}>
-        <ToolbarIcon
-          icon={IconBpeDelete}
-          label="Delete"
-          title="Delete Element"
-          orientation="vertical"
-          size="large"
-        />
-        <Stack spacing={0}>
-          <Group spacing={DEFAULT_SPACING}>
-            <ToolbarIcon icon={IconBpeRedo} title="Redo" orientation="vertical" size="small" />
-            <Divider size="xs" orientation="vertical" />
-            <ToolbarIcon icon={IconBpeUndo} title="Undo" orientation="vertical" size="small" />
-          </Group>
-          <Divider my="xs" />
-          <Group spacing={DEFAULT_SPACING}>
-            <ToolbarIcon
-              icon={IconBpeZoomOut}
-              title="Zoom Out"
-              orientation="vertical"
-              size="small"
-            />
-            <Divider size="xs" orientation="vertical" />
-            <ToolbarIcon icon={IconBpeZoomIn} title="Zoom In" orientation="vertical" size="small" />
-          </Group>
-        </Stack>
-      </Group>
-      <Text size="xs" align="center">
-        Edit
       </Text>
     </Stack>
   );
