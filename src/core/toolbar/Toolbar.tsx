@@ -17,14 +17,13 @@ import {
   IconBpeTextColor,
   IconBpeElementColor,
   IconBpeClearStyle,
-  IconBpeComment,
-  IconBpeResult,
 } from './utils/icons/Icons';
 import ToolbarIcon from './helper/ToolbarIcon/ToolbarIcon';
 import UtilsGroup from './helper/UtilsGroup/UtilsGroup';
 import ClipBoardGroup from './helper/ClipBoardGroup/ClipBoardGroup';
 import EditingGroup from './helper/EditGroup/EditGroup';
 import ImportExportGroup from './helper/ImportExportGroup/ImportExportGroup';
+import MiscGroup from './helper/MiscGroup/MiscGroup';
 
 const DEFAULT_SPACING = 5;
 
@@ -136,31 +135,6 @@ const FormattingGroup = () => {
   );
 };
 
-const MiscGroup = () => {
-  return (
-    <Stack spacing={DEFAULT_SPACING - 2}>
-      <Group>
-        <ToolbarIcon
-          icon={IconBpeComment}
-          label="Comment"
-          title="Open Comment Section"
-          orientation="vertical"
-          size="large"
-        />
-        <ToolbarIcon
-          icon={IconBpeResult}
-          label="Evaluated Results"
-          title="Open Evaluated Results"
-          orientation="vertical"
-          size="large"
-        />
-      </Group>
-      <Text size="xs" align="center">
-        Misc
-      </Text>
-    </Stack>
-  );
-};
 const BpeToolbar = () => {
   return (
     <Header height={TOOLBAR_HEIGHT} p={0} fixed={false}>
