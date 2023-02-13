@@ -13,6 +13,7 @@ import { AppShell, Box, Aside } from '@mantine/core';
 import { PaletteNavbar } from '../palette/PaletteNavbar';
 import BpeToolbar from '../toolbar/Toolbar';
 import { ModelerContext } from '../context/ModelerContext';
+import { PROPERTIES_PANEL_WIDTH } from '../../constants/theme/themeConstants';
 
 const BpeBpmnModeler = () => {
   const [modeler, setModeler] = useState();
@@ -47,7 +48,7 @@ const BpeBpmnModeler = () => {
       <AppShell
         navbar={<PaletteNavbar />}
         aside={
-          <Aside height="100vh" width={{ base: 250 }}>
+          <Aside height="100vh" width={{ base: PROPERTIES_PANEL_WIDTH }}>
             <Box id="properties" />
           </Aside>
         }
