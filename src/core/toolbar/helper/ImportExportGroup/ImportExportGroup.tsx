@@ -5,11 +5,15 @@ import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import { IconBpeImport, IconBpeExport } from '../../utils/icons/Icons';
 import { ChangeEvent, createRef, useContext } from 'react';
 import { ModelerContext } from '../../../context/ModelerContext';
+import useGetModelerModules from '../../../hooks/useGetModelerModule';
+import { getElementForGraph } from './helper/getElementJson';
 
 const ImportExportGroup = () => {
   const modeler = useContext(ModelerContext);
+  const [elementRegistry] = useGetModelerModules(modeler, ['elementRegistry']);
   const uploadLinkRef = createRef<HTMLInputElement>();
   const downloadLinkRef = createRef<HTMLAnchorElement>();
+  const jsonDownloadLinkRef = createRef<HTMLAnchorElement>();
   const handleImportDiagram = (event: ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader();
     const input = event.target;
@@ -45,8 +49,15 @@ const ImportExportGroup = () => {
     });
   };
 
+  const saveAsJson = () => {
+    const jsonObj = getElementForGraph(elementRegistry);
+    let dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(jsonObj));
+    jsonDownloadLinkRef.current?.setAttribute('href', dataStr);
+    jsonDownloadLinkRef.current?.setAttribute('download', 'diagram.json');
+  };
+
   return (
-    <Stack spacing={DEFAULT_SPACING - 3.5}>
+    <Stack spacing={0}>
       <input
         type="file"
         onChange={handleImportDiagram}
@@ -71,7 +82,15 @@ const ImportExportGroup = () => {
           size="small"
         />
       </Anchor>
-      <Space h={20} />
+      <Anchor onClick={saveAsJson} href="#" ref={jsonDownloadLinkRef} download>
+        <ToolbarIcon
+          icon={IconBpeExport}
+          label="JSON"
+          title="Export JSON"
+          orientation="horizontal"
+          size="small"
+        />
+      </Anchor>
       <Text size="xs" align="center" weight="bold">
         I/O
       </Text>
