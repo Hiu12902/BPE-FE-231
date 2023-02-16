@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import 'bpmn-js/dist/assets/diagram-js.css';
 import 'bpmn-font/dist/css/bpmn-embedded.css';
+import 'diagram-js-minimap/assets/diagram-js-minimap.css';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
+import minimapModule from 'diagram-js-minimap';
 import { baseXml } from '../../assets/baseXml';
 import './BpmnViewer.css';
 
@@ -24,7 +26,7 @@ const BpeBpmnModeler = () => {
       propertiesPanel: {
         parent: '#properties',
       },
-      additionalModules: [BpmnPropertiesPanelModule, BpmnPropertiesProviderModule],
+      additionalModules: [BpmnPropertiesPanelModule, BpmnPropertiesProviderModule, minimapModule],
       moddleExtensions: {},
       keyboard: {
         bindTo: document,

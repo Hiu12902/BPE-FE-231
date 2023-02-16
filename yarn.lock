@@ -1286,6 +1286,17 @@ diagram-js-direct-editing@^2.0.0:
     min-dash "^4.0.0"
     min-dom "^4.0.2"
 
+diagram-js-minimap@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/diagram-js-minimap/-/diagram-js-minimap-4.0.1.tgz#37d45a030f9f722a6ab30a49fdd97f9618d89462"
+  integrity sha512-CPq9DModYVZfZd/34YD386y/nO2G5PNGexTnvSXNtprqXm/WYWkMsJZwuOrNNmSm2OWH5YH2ju1LbQmkqUDbZQ==
+  dependencies:
+    css.escape "^1.5.1"
+    hammerjs "^2.0.8"
+    min-dash "^4.0.0"
+    min-dom "^4.0.2"
+    tiny-svg "^3.0.0"
+
 diagram-js@^11.4.3:
   version "11.6.0"
   resolved "https://registry.yarnpkg.com/diagram-js/-/diagram-js-11.6.0.tgz#9ac1b6ddab17d28fd5b8f73c4d619e1fbf39c15c"
@@ -1460,7 +1471,7 @@ globals@^11.1.0:
   resolved "https://registry.yarnpkg.com/globals/-/globals-11.12.0.tgz#ab8795338868a0babd8525758018c2a7eb95c42e"
   integrity sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==
 
-hammerjs@^2.0.1:
+hammerjs@^2.0.1, hammerjs@^2.0.8:
   version "2.0.8"
   resolved "https://registry.yarnpkg.com/hammerjs/-/hammerjs-2.0.8.tgz#04ef77862cff2bb79d30f7692095930222bf60f1"
   integrity sha512-tSQXBXS/MWQOn/RKckawJ61vvsDpCom87JgxiYdGwHdOa0ht0vzUWDlfioofFCRU0L+6NGDt6XzbgoJvZkMeRQ==
