@@ -1,39 +1,46 @@
+import { TASK_TYPE, EVENT_TYPE } from "../../../constants/bpmnElement";
+
 export const getElementForGraph = (elementRegistry) => {
   const elements = elementRegistry.getAll();
   const obj = {};
   elements.map((element) => {
-    const businessObject = element.businessObject;
-    const incoming = businessObject.incoming ? businessObject.incoming.map((obj) => obj.sourceRef.id) : [];
-    const outgoing = businessObject.outgoing ? businessObject.outgoing.map((obj) => obj.targetRef.id) : [];
     let type;
     let name;
+    let taskType = null;
+    let eventType = null;
     let cycletime;
     let branchingProbabilities = [];
-    if (businessObject.$type.includes("Task")) {
+    if (element.type.includes("Task")) {
       type = "task";
-      cycletime = parseInt(businessObject.cycleTime);
-    } else if (businessObject.$type.includes("Event")) {
+      cycletime = parseInt(element.cycleTime);
+      taskType = TASK_TYPE[element.type]
+    } else if (element.type.includes("Event")) {
       type = "event";
-      name = businessObject.$type.split(":")[1];
-    } else if (businessObject.$type.includes("Gateway")) {
+      name = element.type.split(":")[1];
+      eventType = EVENT_TYPE[element.type];
+    } else if (element.type.includes("Gateway")) {
       type = "gateway"
-      name = businessObject.$type.split(":")[1];
-      businessObject.outgoing.map((flow) => branchingProbabilities.push(parseFloat(flow.branchingProbability)))
+      name = element.type.split(":")[1];
+      element.outgoing.map((flow) => branchingProbabilities.push(parseFloat(flow.branchingProbability)))
     }
     if (type) {
-      const id = businessObject.id.toString();
+      const id = element.id.toString();
       obj[id] = {
-        id: businessObject.id,
-        name: businessObject.name || name,
-        incoming: incoming,
-        outgoing: outgoing,
+        id: element.id,
+        name: element.name || name,
+        incoming: element?.incoming,
+        outgoing: element?.outgoing,
         type: type,
         cycleTime: cycletime || 0,
-        branchingProbabilities: branchingProbabilities || []
+        branchingProbabilities: branchingProbabilities || [],
+        taskType: taskType,
+        eventType: eventType,
+        parentId: element?.parent?.id
       };
     }
 
     return false;
   });
+  console.log(obj);
   return obj;
 };
