@@ -4,6 +4,8 @@ export const getElementForGraph = (elementRegistry) => {
   const elements = elementRegistry.getAll();
   const obj = {};
   elements.map((element) => {
+    let type = '';
+    let name = '';
     let type;
     let name;
     let taskType = null;
@@ -38,6 +40,19 @@ export const getElementForGraph = (elementRegistry) => {
         parentId: element?.parent?.id
       };
     }
+    const id = element.id.toString();
+    obj[id] = {
+      id: element.id,
+      name: element.name || name,
+      incoming: element?.incoming?.map((v) => v?.id?.toString()),
+      outgoing: element?.outgoing?.map((v) => v?.id?.toString()),
+      type: type || element.type?.split(":")[1],
+      cycleTime: cycletime || 0,
+      branchingProbabilities: branchingProbabilities || [],
+      taskType: taskType,
+      eventType: eventType,
+      parentID: element?.parent?.id || null
+    };
 
     return false;
   });

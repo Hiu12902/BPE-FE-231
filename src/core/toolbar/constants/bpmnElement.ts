@@ -1,5 +1,6 @@
 export const TASK_TYPE = {
   'bpmn:NoneTask': 0,
+  'bpmn:Task': 0,
   'bpmn:ServiceTask': 1,
   'bpmn:ManualTask': 2,
   'bpmn:ScriptTask': 3,
