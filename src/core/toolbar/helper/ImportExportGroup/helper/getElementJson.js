@@ -6,8 +6,6 @@ export const getElementForGraph = (elementRegistry) => {
   elements.map((element) => {
     let type = '';
     let name = '';
-    let type;
-    let name;
     let taskType = null;
     let eventType = null;
     let cycletime;
@@ -25,28 +23,14 @@ export const getElementForGraph = (elementRegistry) => {
       name = element.type.split(":")[1];
       element.outgoing.map((flow) => branchingProbabilities.push(parseFloat(flow.branchingProbability)))
     }
-    if (type) {
-      const id = element.id.toString();
-      obj[id] = {
-        id: element.id,
-        name: element.name || name,
-        incoming: element?.incoming,
-        outgoing: element?.outgoing,
-        type: type,
-        cycleTime: cycletime || 0,
-        branchingProbabilities: branchingProbabilities || [],
-        taskType: taskType,
-        eventType: eventType,
-        parentId: element?.parent?.id
-      };
-    }
+
     const id = element.id.toString();
     obj[id] = {
       id: element.id,
       name: element.name || name,
       incoming: element?.incoming?.map((v) => v?.id?.toString()),
       outgoing: element?.outgoing?.map((v) => v?.id?.toString()),
-      type: type || element.type?.split(":")[1],
+      type: type || element.type?.split(":")[1].toLowerCase(),
       cycleTime: cycletime || 0,
       branchingProbabilities: branchingProbabilities || [],
       taskType: taskType,
@@ -56,6 +40,5 @@ export const getElementForGraph = (elementRegistry) => {
 
     return false;
   });
-  console.log(obj);
   return obj;
 };
