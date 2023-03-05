@@ -4,7 +4,7 @@ import 'bpmn-font/dist/css/bpmn-embedded.css';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import { baseXml } from '../../assets/baseXml';
-import './BpmnViewer.css';
+import './BpmnModeler.css';
 
 import 'bpmn-js-properties-panel/dist/assets/element-templates.css';
 import 'bpmn-js-properties-panel/dist/assets/properties-panel.css';
@@ -15,6 +15,9 @@ import BpeToolbar from '../toolbar/Toolbar';
 import { ModelerContext } from '../context/ModelerContext';
 import { PROPERTIES_PANEL_WIDTH } from '../../constants/theme/themeConstants';
 
+import PropertiesProviderModule from '../properties-panel';
+import PropertiesModdleDescripter from '../properties-panel/descriptors/bpeDescriptor';
+
 const BpeBpmnModeler = () => {
   const [modeler, setModeler] = useState();
 
@@ -24,8 +27,14 @@ const BpeBpmnModeler = () => {
       propertiesPanel: {
         parent: '#properties',
       },
-      additionalModules: [BpmnPropertiesPanelModule, BpmnPropertiesProviderModule],
-      moddleExtensions: {},
+      additionalModules: [
+        BpmnPropertiesPanelModule,
+        BpmnPropertiesProviderModule,
+        PropertiesProviderModule,
+      ],
+      moddleExtensions: {
+        bpe: PropertiesModdleDescripter,
+      },
       keyboard: {
         bindTo: document,
       },

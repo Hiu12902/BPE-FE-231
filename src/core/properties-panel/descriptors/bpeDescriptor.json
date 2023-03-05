@@ -1,0 +1,33 @@
+{
+  "name": "BPE",
+  "prefix": "data",
+  "uri": "http://bpe",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "associations": [],
+  "types": [
+    {
+      "name": "BpeTask",
+      "extends": ["bpmn:Task"],
+      "properties": [
+        {
+          "name": "cycleTime",
+          "isAttr": true,
+          "type": "Float"
+        }
+      ]
+    },
+    {
+      "name": "BpeSequenceFlow",
+      "extends": ["bpmn:SequenceFlow"],
+      "properties": [
+        {
+          "name": "branchingProbability",
+          "isAttr": true,
+          "type": "Float"
+        }
+      ]
+    }
+  ]
+}
