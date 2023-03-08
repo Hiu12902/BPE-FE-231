@@ -28,7 +28,7 @@ export const getElementForGraph = (elementRegistry) => {
       cycletime = parseInt(businessObject.cycleTime);
       taskType = TASK_TYPE[element.type]
       className = TASK_CLASS_NAME[element.type];
-      boundary = element?.attachers?.filter(attacher => attacher.type.includes("Event"));
+      boundary = element?.attachers?.filter(attacher => attacher.type.includes("Event")).map(attacher => attacher.id);
     } else if (element.type.includes("Event")) {
       type = "event";
       eventType = EVENT_TYPE[element.type];
