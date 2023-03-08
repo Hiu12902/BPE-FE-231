@@ -28,6 +28,17 @@
           "type": "Float"
         }
       ]
+    },
+    {
+      "name": "BpeLinkEvent",
+      "extends": ["bpmn:IntermediateCatchEvent", "bpmn:IntermediateThrowEvent"],
+      "properties": [
+        {
+          "name": "linkCode",
+          "isAttr": true,
+          "type": "string"
+        }
+      ]
     }
   ]
 }

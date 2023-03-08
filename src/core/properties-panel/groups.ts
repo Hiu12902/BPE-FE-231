@@ -27,6 +27,14 @@ class PropertiesGroups {
       entries: PropertiesParts.createPropertyBranchingProbability(element),
     };
   };
+
+  createLinkEventGroup = (element: any, translate: any) => {
+    return {
+      id: 'linkCode',
+      label: translate('Link Code'),
+      entries: PropertiesParts.createPropertyLinkCode(element),
+    };
+  };
 }
 
 export default PropertiesGroups.instance;

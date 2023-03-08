@@ -40,6 +40,20 @@ class PropertiesParts {
 
     return entries;
   };
+
+  public createPropertyLinkCode = (element: any) => {
+    const property = 'linkCode';
+    return [
+      {
+        id: PROPERTY_TYPES.LINK_CODE,
+        label: 'Link Code',
+        element,
+        property,
+        component: TextField,
+        isEdited: isTextFieldEntryEdited,
+      },
+    ];
+  };
 }
 
 export default PropertiesParts.instance;
