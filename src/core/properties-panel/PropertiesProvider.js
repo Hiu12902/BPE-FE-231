@@ -42,6 +42,10 @@ export default function PropertiesProvider(propertiesPanel, translate) {
       if (is(element, 'bpmn:ExclusiveGateway')) {
         groups.push(PropertiesGroups.createExclusiveGatewayGroup(element, translate));
       }
+
+      if (is(element, 'bpmn:LinkEvent')) {
+        groups.push(PropertiesGroups.createLinkEventGroup(element, translate));
+      }
       return groups;
     }
   };

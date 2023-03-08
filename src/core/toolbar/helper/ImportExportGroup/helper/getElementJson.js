@@ -2,6 +2,7 @@ import { TASK_TYPE, EVENT_TYPE, TASK_CLASS_NAME, NON_EVENT, EVENT_CLASS_NAMES } 
 
 export const getElementForGraph = (elementRegistry) => {
   const elements = elementRegistry.getAll();
+  console.log(elements);
   const obj = {};
   elements.map((element) => {
     const businessObject = element.businessObject;

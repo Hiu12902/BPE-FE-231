@@ -20,6 +20,7 @@ const TextField = (props: ITextfield) => {
   const getValue = () => {
     switch (id) {
       case PROPERTY_TYPES.CYCLE_TIME:
+      case PROPERTY_TYPES.LINK_CODE:
         return element.businessObject[property] || '';
       case PROPERTY_TYPES.BRANCHING_PROBABILITY: {
         const flow = element.outgoing?.find((flow: any) => flow.id === label);
@@ -31,6 +32,7 @@ const TextField = (props: ITextfield) => {
   const setValue = (value: number) => {
     switch (id) {
       case PROPERTY_TYPES.CYCLE_TIME:
+      case PROPERTY_TYPES.LINK_CODE:
         modeling.updateProperties(element, {
           [property]: value,
         });
