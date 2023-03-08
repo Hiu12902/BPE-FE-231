@@ -7,10 +7,13 @@ import { ChangeEvent, createRef, useContext } from 'react';
 import { ModelerContext } from '../../../context/ModelerContext';
 import useGetModelerModules from '../../../hooks/useGetModelerModule';
 import { getElementForGraph } from './helper/getElementJson';
+import { useClipboard } from '@mantine/hooks';
+import { showNotification } from '@mantine/notifications';
 
 const ImportExportGroup = () => {
   const modeler = useContext(ModelerContext);
   const [elementRegistry] = useGetModelerModules(modeler, ['elementRegistry']);
+  const clipboard = useClipboard();
   const uploadLinkRef = createRef<HTMLInputElement>();
   const downloadLinkRef = createRef<HTMLAnchorElement>();
   const jsonDownloadLinkRef = createRef<HTMLAnchorElement>();
@@ -51,9 +54,14 @@ const ImportExportGroup = () => {
 
   const saveAsJson = () => {
     const jsonObj = getElementForGraph(elementRegistry);
-    let dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(jsonObj));
-    jsonDownloadLinkRef.current?.setAttribute('href', dataStr);
-    jsonDownloadLinkRef.current?.setAttribute('download', 'diagram.json');
+    clipboard.copy(JSON.stringify(jsonObj));
+    showNotification({
+      title: 'Copied!',
+      message: 'JSON format of model is copied!',
+    });
+    // let dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(jsonObj));
+    // jsonDownloadLinkRef.current?.setAttribute('href', dataStr);
+    // jsonDownloadLinkRef.current?.setAttribute('download', 'diagram.json');
   };
 
   return (
