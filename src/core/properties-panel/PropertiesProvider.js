@@ -1,7 +1,7 @@
 // Import your custom property entries.
 // The entry is a text input field with logic attached to create,
 // update and delete the "spell" property.
-import { is } from 'bpmn-js/lib/util/ModelUtil';
+import { is, getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
 import PropertiesGroups from './groups';
 const LOW_PRIORITY = 500;
 
@@ -33,7 +33,7 @@ export default function PropertiesProvider(propertiesPanel, translate) {
      * @return {Object[]} modified groups
      */
     return function (groups) {
-
+      const bo = getBusinessObject(element);
       // Add the "magic" group
       if (is(element, 'bpmn:Task')) {
         groups.push(PropertiesGroups.createTaskGroup(element, translate));
@@ -43,8 +43,16 @@ export default function PropertiesProvider(propertiesPanel, translate) {
         groups.push(PropertiesGroups.createExclusiveGatewayGroup(element, translate));
       }
 
-      if (is(element, 'bpmn:LinkEvent')) {
+      if (bo.eventDefinitions?.[0]?.$type === 'bpmn:LinkEventDefinition') {
         groups.push(PropertiesGroups.createLinkEventGroup(element, translate));
+      }
+
+      if (bo.eventDefinitions?.[0]?.$type === 'bpmn:ConditionalEventDefinition') {
+        groups.push(PropertiesGroups.createConditionalEventGroup(element, translate));
+      }
+
+      if (bo.eventDefinitions?.[0]?.$type === 'bpmn:TimerEventDefinition') {
+        groups.push(PropertiesGroups.createTimerEventGroup(element, translate));
       }
       return groups;
     }

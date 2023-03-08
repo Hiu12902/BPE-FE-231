@@ -1,16 +1,16 @@
 //@ts-ignore
-import { TextFieldEntry } from '@bpmn-io/properties-panel';
+import { TextAreaEntry } from '@bpmn-io/properties-panel';
 //@ts-ignore
 import { useService } from 'bpmn-js-properties-panel';
 import { PROPERTY_TYPES } from '../constants/types';
 
-interface ITextfield {
+interface ITextArea {
   element: any;
   id: string;
   label: string;
   property: string;
 }
-const TextField = (props: ITextfield) => {
+const TextArea = (props: ITextArea) => {
   const { element, id, label, property } = props;
 
   const translate = useService('translate');
@@ -22,8 +22,6 @@ const TextField = (props: ITextfield) => {
       case PROPERTY_TYPES.CYCLE_TIME:
       case PROPERTY_TYPES.LINK_CODE:
       case PROPERTY_TYPES.CONDITION:
-      case PROPERTY_TYPES.PERCENTAGE:
-      case PROPERTY_TYPES.DURATION:
         return element.businessObject[property] || '';
       case PROPERTY_TYPES.BRANCHING_PROBABILITY: {
         const flow = element.outgoing?.find((flow: any) => flow.id === label);
@@ -37,8 +35,6 @@ const TextField = (props: ITextfield) => {
       case PROPERTY_TYPES.CYCLE_TIME:
       case PROPERTY_TYPES.LINK_CODE:
       case PROPERTY_TYPES.CONDITION:
-      case PROPERTY_TYPES.PERCENTAGE:
-      case PROPERTY_TYPES.DURATION:
         modeling.updateProperties(element, {
           [property]: value,
         });
@@ -57,15 +53,16 @@ const TextField = (props: ITextfield) => {
   };
 
   return (
-    <TextFieldEntry
+    <TextAreaEntry
       id={id}
       element={element}
       label={translate(label)}
       getValue={getValue}
       setValue={setValue}
       debounce={debounce}
+      rows={3}
     />
   );
 };
 
-export default TextField;
+export default TextArea;

@@ -1,5 +1,6 @@
 //@ts-ignore
 import { isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
+import TextArea from './components/TextArea';
 import TextField from './components/TextField';
 import { PROPERTY_TYPES } from './constants/types';
 
@@ -13,7 +14,7 @@ class PropertiesParts {
     return this.classInstance;
   }
 
-  public createPropertyCycleTime = (element: any) => {
+  public taskEntries = (element: any) => {
     const property = 'cycleTime';
     return [
       {
@@ -27,7 +28,7 @@ class PropertiesParts {
     ];
   };
 
-  public createPropertyBranchingProbability = (element: any) => {
+  public exclusiveGatewayEntries = (element: any) => {
     const property = 'branchingProbability';
     const entries = element.outgoing.map((flow: any) => ({
       id: PROPERTY_TYPES.BRANCHING_PROBABILITY,
@@ -41,7 +42,7 @@ class PropertiesParts {
     return entries;
   };
 
-  public createPropertyLinkCode = (element: any) => {
+  public linkEventEntries = (element: any) => {
     const property = 'linkCode';
     return [
       {
@@ -49,6 +50,40 @@ class PropertiesParts {
         label: 'Link Code',
         element,
         property,
+        component: TextField,
+        isEdited: isTextFieldEntryEdited,
+      },
+    ];
+  };
+
+  public conditionalEventEntries = (element: any) => {
+    return [
+      {
+        id: PROPERTY_TYPES.CONDITION,
+        label: 'Condition',
+        element,
+        property: PROPERTY_TYPES.CONDITION,
+        component: TextArea,
+        isEdited: isTextFieldEntryEdited,
+      },
+      {
+        id: PROPERTY_TYPES.PERCENTAGE,
+        label: 'Percentage',
+        element,
+        property: PROPERTY_TYPES.PERCENTAGE,
+        component: TextField,
+        isEdited: isTextFieldEntryEdited,
+      },
+    ];
+  };
+
+  public timerEventEntries = (element: any) => {
+    return [
+      {
+        id: PROPERTY_TYPES.DURATION,
+        label: 'Duration',
+        element,
+        property: PROPERTY_TYPES.DURATION,
         component: TextField,
         isEdited: isTextFieldEntryEdited,
       },
