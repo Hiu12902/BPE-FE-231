@@ -19,6 +19,14 @@ export const EVENT_TYPE = {
 
 const NORMAL_TASK = 'NormalTask';
 
+const TRANSACTION_SUB_PROCESS = 'TransactionSubProcess';
+
+const SUB_PROCESS = 'SubProcess';
+
+const CALL_ACTIVITY = 'CallActivity';
+
+export const EVENT_SUB_PROCESS = 'EventSubProcess';
+
 export const TASK_CLASS_NAME = {
   'bpmn:NoneTask': NORMAL_TASK,
   'bpmn:Task': NORMAL_TASK,
@@ -27,6 +35,9 @@ export const TASK_CLASS_NAME = {
   'bpmn:ScriptTask': NORMAL_TASK,
   'bpmn:BusinessRuleTask': NORMAL_TASK,
   'bpmn:UserTask': NORMAL_TASK,
+  'bpmn:Transaction': TRANSACTION_SUB_PROCESS,
+  'bpmn:CallActivity': CALL_ACTIVITY,
+  'bpmn:SubProcess': SUB_PROCESS,
 };
 
 const ESCALATION_EVENT = 'EscalationEvent';
