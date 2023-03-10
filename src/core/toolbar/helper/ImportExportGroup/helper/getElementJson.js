@@ -8,7 +8,7 @@ export const getElementForGraph = (elementRegistry) => {
 
   const obj = {};
   elements.map((element) => {
-    if (element?.parent === undefined) {
+    if (element?.parent === undefined && !is(element, 'bpmn:Collaboration')) {
       return;
     }
 
