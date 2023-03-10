@@ -21,7 +21,7 @@ const NORMAL_TASK = 'NormalTask';
 
 const TRANSACTION_SUB_PROCESS = 'TransactionSubProcess';
 
-const SUB_PROCESS = 'BpeSubProcess';
+const SUB_PROCESS = 'BPESubProcess';
 
 const CALL_ACTIVITY = 'CallActivity';
 
