@@ -45,7 +45,7 @@ export const getElementForGraph = (elementRegistry) => {
       condition = businessObject[PROPERTY_TYPES.CONDITION];
       percentage = parseFloat(businessObject[PROPERTY_TYPES.PERCENTAGE]);
       timeDuration = parseInt(businessObject[PROPERTY_TYPES.DURATION]);
-      isInterrupting = is(element, 'bpmn:BoundaryEvent') && !(businessObject.cancelActivity && businessObject.cancelActivity === false);
+      isInterrupting = is(element, 'bpmn:BoundaryEvent') && businessObject?.cancelActivity;
     } else if (is(element, "bpmn:Gateway")) {
       type = "gateway"
       element.outgoing.map((flow) => branchingProbabilities.push(parseFloat(flow.businessObject.branchingProbability)))
