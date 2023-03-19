@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import 'bpmn-js/dist/assets/diagram-js.css';
 import 'bpmn-font/dist/css/bpmn-embedded.css';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
+import lintModule from 'bpmn-js-bpmnlint';
+import { Linter } from 'bpmnlint';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import TokenSimulationModule from 'bpmn-js-token-simulation';
 import SimulationSupportModule from 'bpmn-js-token-simulation/lib/simulation-support';
@@ -12,14 +14,16 @@ import './BpmnModeler.css';
 import 'bpmn-js-properties-panel/dist/assets/element-templates.css';
 import 'bpmn-js-properties-panel/dist/assets/properties-panel.css';
 import 'bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css';
+import 'bpmn-js-bpmnlint/dist/assets/css/bpmn-js-bpmnlint.css';
 
-import { AppShell, Box, Aside, createStyles } from '@mantine/core';
+import { AppShell, Box, Aside, createStyles, Footer } from '@mantine/core';
 import { PaletteNavbar } from '@/core/palette/PaletteNavbar';
 import BpeToolbar from '@/core/toolbar/Toolbar';
 import { ModelerContext } from '@/core/context/ModelerContext';
 import { PRIMARY_COLOR, PROPERTIES_PANEL_WIDTH } from '@/constants/theme/themeConstants';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
 import { ToolbarModeContext } from '@/core/context/ToolbarModeContext';
+import linterConfig from '../../../packed-config';
 
 const useStyles = createStyles((theme) => ({
   main: {
@@ -53,9 +57,6 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-import PropertiesProviderModule from '../properties-panel';
-import PropertiesModdleDescripter from '../properties-panel/descriptors/bpeDescriptor';
-
 const BpeBpmnModeler = () => {
   const [modeler, setModeler] = useState();
   const [toolbarMode, setToolbarMode] = useState(TOOLBAR_MODE.DEFAULT);
@@ -67,6 +68,7 @@ const BpeBpmnModeler = () => {
       propertiesPanel: {
         parent: '#properties',
       },
+      linting: {},
       additionalModules: [
         BpmnPropertiesPanelModule,
         BpmnPropertiesProviderModule,
@@ -74,6 +76,7 @@ const BpeBpmnModeler = () => {
         TokenSimulationModule,
         SimulationSupportModule,
         SimulationBehaviorModule,
+        lintModule,
       ],
       moddleExtensions: {
         bpe: PropertiesModdleDescripter,
@@ -82,6 +85,10 @@ const BpeBpmnModeler = () => {
         bindTo: document,
       },
     });
+
+    const linting = modeler.get('linting');
+    linting.setLinterConfig(linterConfig);
+
     setModeler(modeler);
 
     (async () => {
@@ -114,6 +121,8 @@ const BpeBpmnModeler = () => {
             [classes.mainSimulation]: toolbarMode === TOOLBAR_MODE.SIMULATING,
           }),
         }}
+        footer={<Footer height={120} fixed={false} style={{ bottom: 0, zIndex: 0 }} />}
+        styles={{ main: { padding: 0 } }}
       >
         <Box id="canvas" style={{ height: '100%' }} />
       </AppShell>
