@@ -1,12 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Header, Group, Space, Stack, Text, Center, Divider } from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
+import { useContext } from 'react';
+import { Header, Group, Stack, Text, Divider } from '@mantine/core';
 
 import { PALETTE_WIDTH, TOOLBAR_HEIGHT } from '../../constants/theme/themeConstants';
 import {
-  IconBpeSave,
-  IconBpeValidate,
-  IconBpeHistory,
   IconBpeBold,
   IconBpeItalic,
   IconBpeUnderline,
@@ -29,39 +25,9 @@ import SimulationModesGroup from './helper/SimulationModesGroup/SimulationModesG
 import SimulationPlayerGroup from './helper/SimulationPlayerGroup/SimulationPlayerGroup';
 import SimulationSpeedGroup from './helper/SimulationSpeedGroup/SimulationSpeedGroup';
 import SimulationMiscGroup from './helper/SimulationMiscGroup/SimulationMiscGroup';
+import ModelGroup from './helper/ModelGroup/ModelGroup';
 
 const DEFAULT_SPACING = 5;
-
-const ModelGroup = () => {
-  return (
-    <Stack spacing={DEFAULT_SPACING - 2}>
-      <ToolbarIcon
-        icon={IconBpeSave}
-        label="Save"
-        title="Save Model"
-        orientation="horizontal"
-        size="small"
-      />
-      <ToolbarIcon
-        icon={IconBpeValidate}
-        label="Validate"
-        title="Validate Model"
-        orientation="horizontal"
-        size="small"
-      />
-      <ToolbarIcon
-        icon={IconBpeHistory}
-        label="History"
-        title="Open Model's Edit History"
-        orientation="horizontal"
-        size="small"
-      />
-      <Text size="xs" align="center">
-        Model
-      </Text>
-    </Stack>
-  );
-};
 
 const FormattingGroup = () => {
   return (
