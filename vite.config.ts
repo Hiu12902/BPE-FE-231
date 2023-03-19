@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react-swc';
 import preact from '@preact/preset-vite';
 import resolve from '@rollup/plugin-node-resolve';
 import svgr from 'vite-plugin-svgr';
+import * as path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -20,5 +21,8 @@ export default defineConfig({
         '.ts': 'tsx',
       },
     },
+  },
+  resolve: {
+    alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
   },
 });

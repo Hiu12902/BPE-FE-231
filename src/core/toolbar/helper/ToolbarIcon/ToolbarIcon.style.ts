@@ -20,4 +20,7 @@ export const useToolbarIconStyle = createStyles((theme, _params, getRef) => ({
       opacity: 0.4,
     },
   },
+  buttonActive: {
+    backgroundColor: theme.fn.variant({ variant: 'light', color: theme.primaryColor }).background,
+  },
 }));

@@ -1,0 +1,472 @@
+diff --git a/node_modules/bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css b/node_modules/bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css
+index 215782f..ecde641 100644
+--- a/node_modules/bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css
++++ b/node_modules/bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css
+@@ -258,7 +258,6 @@
+   display: none;
+ }
+ 
+-.bjs-container.simulation .djs-outline,
+ .bjs-container.simulation .djs-bendpoint,
+ .bjs-container.simulation .djs-segment-dragger,
+ .bjs-container.simulation .djs-resizer {
+diff --git a/node_modules/bpmn-js-token-simulation/lib/features/context-pads/ContextPads.js b/node_modules/bpmn-js-token-simulation/lib/features/context-pads/ContextPads.js
+index 14303ba..deceb10 100644
+--- a/node_modules/bpmn-js-token-simulation/lib/features/context-pads/ContextPads.js
++++ b/node_modules/bpmn-js-token-simulation/lib/features/context-pads/ContextPads.js
+@@ -28,9 +28,9 @@ const OFFSET_LEFT = -15;
+ 
+ 
+ export default function ContextPads(
+-    eventBus, elementRegistry,
+-    overlays, injector,
+-    canvas, scopeFilter) {
++  eventBus, elementRegistry,
++  overlays, injector,
++  canvas, scopeFilter) {
+ 
+   this._elementRegistry = elementRegistry;
+   this._overlays = overlays;
+@@ -115,7 +115,7 @@ export default function ContextPads(
+  * @param {String} type
+  * @param {Object} handlerCls
+  */
+-ContextPads.prototype.registerHandler = function(type, handlerCls) {
++ContextPads.prototype.registerHandler = function (type, handlerCls) {
+   const handler = this._injector.instantiate(handlerCls);
+ 
+   handler.hash = String(this._handlerIdx++);
+@@ -123,7 +123,7 @@ ContextPads.prototype.registerHandler = function(type, handlerCls) {
+   this._handlers.push({ handler, type });
+ };
+ 
+-ContextPads.prototype.getHandlers = function(element) {
++ContextPads.prototype.getHandlers = function (element) {
+ 
+   return (
+     this._handlers.filter(
+@@ -134,7 +134,7 @@ ContextPads.prototype.getHandlers = function(element) {
+   );
+ };
+ 
+-ContextPads.prototype.openContextPads = function(parent) {
++ContextPads.prototype.openContextPads = function (parent) {
+ 
+   if (!parent) {
+     parent = this._canvas.getRootElement();
+@@ -147,11 +147,11 @@ ContextPads.prototype.openContextPads = function(parent) {
+   });
+ };
+ 
+-ContextPads.prototype._getOverlays = function(hash) {
++ContextPads.prototype._getOverlays = function (hash) {
+   return this._overlayCache.get(hash) || [];
+ };
+ 
+-ContextPads.prototype._addOverlay = function(element, options) {
++ContextPads.prototype._addOverlay = function (element, options) {
+ 
+   const {
+     handlerHash
+@@ -183,7 +183,7 @@ ContextPads.prototype._addOverlay = function(element, options) {
+   overlayCache.get(handlerHash).push(overlay);
+ };
+ 
+-ContextPads.prototype._removeOverlay = function(overlay) {
++ContextPads.prototype._removeOverlay = function (overlay) {
+ 
+   const {
+     id,
+@@ -203,13 +203,13 @@ ContextPads.prototype._removeOverlay = function(overlay) {
+   }
+ };
+ 
+-ContextPads.prototype.updateElementContextPads = function(element) {
++ContextPads.prototype.updateElementContextPads = function (element) {
+   for (const handler of this.getHandlers(element)) {
+     this._updateElementContextPads(element, handler);
+   }
+ };
+ 
+-ContextPads.prototype._updateElementContextPads = function(element, handler) {
++ContextPads.prototype._updateElementContextPads = function (element, handler) {
+ 
+   const contextPads = (handler.createContextPads(element) || []).filter(p => p);
+ 
+@@ -291,7 +291,7 @@ ContextPads.prototype._updateElementContextPads = function(element, handler) {
+   }
+ };
+ 
+-ContextPads.prototype.closeContextPads = function() {
++ContextPads.prototype.closeContextPads = function () {
+   for (const overlays of this._overlayCache.values()) {
+ 
+     for (const overlay of overlays) {
+@@ -302,7 +302,7 @@ ContextPads.prototype.closeContextPads = function() {
+   this._overlayCache.clear();
+ };
+ 
+-ContextPads.prototype._closeOverlay = function(overlay) {
++ContextPads.prototype._closeOverlay = function (overlay) {
+   this._overlays.remove(overlay.id);
+ };
+ 
+diff --git a/node_modules/bpmn-js-token-simulation/lib/features/context-pads/handler/TriggerHandler.js b/node_modules/bpmn-js-token-simulation/lib/features/context-pads/handler/TriggerHandler.js
+index 2ddbf40..042942c 100644
+--- a/node_modules/bpmn-js-token-simulation/lib/features/context-pads/handler/TriggerHandler.js
++++ b/node_modules/bpmn-js-token-simulation/lib/features/context-pads/handler/TriggerHandler.js
+@@ -11,13 +11,13 @@ TriggerHandler.$inject = [
+   'simulator'
+ ];
+ 
+-TriggerHandler.prototype.createContextPads = function(element) {
++TriggerHandler.prototype.createContextPads = function (element) {
+   return [
+     this.createTriggerContextPad(element)
+   ];
+ };
+ 
+-TriggerHandler.prototype.createTriggerContextPad = function(element) {
++TriggerHandler.prototype.createTriggerContextPad = function (element) {
+ 
+   const contexts = () => {
+     return this._findSubscriptions({
+@@ -32,7 +32,6 @@ TriggerHandler.prototype.createTriggerContextPad = function(element) {
+   `;
+ 
+   const action = (subscriptions) => {
+-
+     const {
+       event,
+       scope
+@@ -52,6 +51,6 @@ TriggerHandler.prototype.createTriggerContextPad = function(element) {
+   };
+ };
+ 
+-TriggerHandler.prototype._findSubscriptions = function(options) {
++TriggerHandler.prototype._findSubscriptions = function (options) {
+   return this._simulator.findSubscriptions(options);
+ };
+\ No newline at end of file
+diff --git a/node_modules/bpmn-js-token-simulation/lib/simulator/Simulator.js b/node_modules/bpmn-js-token-simulation/lib/simulator/Simulator.js
+index 78caea7..f39dbbb 100644
+--- a/node_modules/bpmn-js-token-simulation/lib/simulator/Simulator.js
++++ b/node_modules/bpmn-js-token-simulation/lib/simulator/Simulator.js
+@@ -26,7 +26,7 @@ import {
+ 
+ export default function Simulator(injector, eventBus, elementRegistry) {
+ 
+-  const ids = injector.get('scopeIds', false) || new Ids([ 32, 36 ]);
++  const ids = injector.get('scopeIds', false) || new Ids([32, 36]);
+ 
+   // element configuration
+   const configuration = {};
+@@ -42,7 +42,7 @@ export default function Simulator(injector, eventBus, elementRegistry) {
+   const scopes = new Set();
+   const subscriptions = new Set();
+ 
+-  on('tick', function() {
++  on('tick', function () {
+     for (const element of changedElements) {
+       emit('elementChanged', {
+         element
+@@ -55,7 +55,7 @@ export default function Simulator(injector, eventBus, elementRegistry) {
+   function queue(scope, task) {
+ 
+     // add this task
+-    jobs.push([ task, scope ]);
++    jobs.push([task, scope]);
+ 
+     if (jobs.length !== 1) {
+       return;
+@@ -65,7 +65,7 @@ export default function Simulator(injector, eventBus, elementRegistry) {
+ 
+     while ((next = jobs[0])) {
+ 
+-      const [ task, scope ] = next;
++      const [task, scope] = next;
+ 
+       if (!scope.destroyed) {
+         task();
+@@ -96,7 +96,7 @@ export default function Simulator(injector, eventBus, elementRegistry) {
+       initiator
+     });
+ 
+-    queue(scope, function() {
++    queue(scope, function () {
+ 
+       if (!scope.running) {
+         scope.start();
+@@ -134,7 +134,7 @@ export default function Simulator(injector, eventBus, elementRegistry) {
+       initiator
+     });
+ 
+-    queue(scope, function() {
++    queue(scope, function () {
+ 
+       if (!scope.running) {
+         scope.start();
+@@ -162,7 +162,7 @@ export default function Simulator(injector, eventBus, elementRegistry) {
+       initiator = scope
+     } = context;
+ 
+-    queue(scope, function() {
++    queue(scope, function () {
+ 
+       trace('exit', context);
+ 
+@@ -182,6 +182,7 @@ export default function Simulator(injector, eventBus, elementRegistry) {
+   }
+ 
+   function trigger(context) {
++    console.log("🚀 ~ file: Simulator.js:186 ~ trigger ~ context:", context)
+     const {
+       event: _event,
+       initiator,
+@@ -232,7 +233,7 @@ export default function Simulator(injector, eventBus, elementRegistry) {
+       }
+     });
+ 
+-    return [ interrupt.triggerFn(initiator) ].flat().filter(s => s);
++    return [interrupt.triggerFn(initiator)].flat().filter(s => s);
+   }
+ 
+   function subscribe(scope, event, triggerFn) {
+@@ -395,15 +396,15 @@ export default function Simulator(injector, eventBus, elementRegistry) {
+           ref = element.parent.parent;
+         } else
+ 
+-        // boundary event compensates activity it is attached to
+-        if (isBoundaryEvent(element)) {
+-          ref = element.host;
+-        }
++          // boundary event compensates activity it is attached to
++          if (isBoundaryEvent(element)) {
++            ref = element.host;
++          }
+ 
+-        // parent is cancel scope
+-        else {
+-          ref = element.parent;
+-        }
++          // parent is cancel scope
++          else {
++            ref = element.parent;
++          }
+       }
+ 
+       return {
+@@ -463,7 +464,7 @@ export default function Simulator(injector, eventBus, elementRegistry) {
+       scope
+     } = filter;
+ 
+-    const elements = filter.elements || (element && [ element ]);
++    const elements = filter.elements || (element && [element]);
+     const event = _event && getEvent(_event);
+ 
+     return (
+@@ -629,7 +630,7 @@ export default function Simulator(injector, eventBus, elementRegistry) {
+ 
+     elementRegistry.forEach(element => {
+ 
+-      if (!isAny(element, [ 'bpmn:Process', 'bpmn:Participant' ])) {
++      if (!isAny(element, ['bpmn:Process', 'bpmn:Participant'])) {
+         return;
+       }
+ 
+@@ -806,9 +807,11 @@ export default function Simulator(injector, eventBus, elementRegistry) {
+   this.off = off;
+ 
+   // extension
+-  this.registerBehavior = function(element, behavior) {
++  this.registerBehavior = function (element, behavior) {
+     behaviors[element] = behavior;
+   };
++
++  this.getEvent = getEvent;
+ }
+ 
+ Simulator.$inject = [
+@@ -822,15 +825,15 @@ Simulator.$inject = [
+ 
+ function NoopBehavior() {
+ 
+-  this.signal = function(context) {
++  this.signal = function (context) {
+     console.log('ignored #exit', context.element);
+   };
+ 
+-  this.exit = function(context) {
++  this.exit = function (context) {
+     console.log('ignored #exit', context.element);
+   };
+ 
+-  this.enter = function(context) {
++  this.enter = function (context) {
+     console.log('ignored #enter', context.element);
+   };
+ 
+diff --git a/node_modules/bpmn-js-token-simulation/lib/simulator/behaviors/ExclusiveGatewayBehavior.js b/node_modules/bpmn-js-token-simulation/lib/simulator/behaviors/ExclusiveGatewayBehavior.js
+index 2b8cb36..e92a5f5 100644
+--- a/node_modules/bpmn-js-token-simulation/lib/simulator/behaviors/ExclusiveGatewayBehavior.js
++++ b/node_modules/bpmn-js-token-simulation/lib/simulator/behaviors/ExclusiveGatewayBehavior.js
+@@ -9,11 +9,21 @@ export default function ExclusiveGatewayBehavior(simulator) {
+   simulator.registerBehavior('bpmn:ExclusiveGateway', this);
+ }
+ 
+-ExclusiveGatewayBehavior.prototype.enter = function(context) {
++ExclusiveGatewayBehavior.prototype.enter = function (context) {
++  const {
++    element
++  } = context;
++
++  const continueEvent = this.waitAtElement(element);
++
++  if (continueEvent) {
++    return this.signalOnEvent(context, continueEvent);
++  }
++
+   this._simulator.exit(context);
+ };
+ 
+-ExclusiveGatewayBehavior.prototype.exit = function(context) {
++ExclusiveGatewayBehavior.prototype.exit = function (context) {
+ 
+   const {
+     element,
+@@ -48,4 +58,45 @@ ExclusiveGatewayBehavior.prototype.exit = function(context) {
+   });
+ };
+ 
+-ExclusiveGatewayBehavior.$inject = [ 'simulator' ];
+\ No newline at end of file
++ExclusiveGatewayBehavior.prototype.signalOnEvent = function (context, event) {
++
++  const {
++    scope,
++    element
++  } = context;
++
++  const subscription = this._simulator.subscribe(scope, event, initiator => {
++
++    subscription.remove();
++
++    return this._simulator.signal({
++      scope,
++      element,
++      initiator
++    });
++  });
++};
++
++/**
++ * Returns an event to subscribe to if wait on element is configured.
++ *
++ * @param {Element} element
++ *
++ * @return {Object|null} event
++ */
++ExclusiveGatewayBehavior.prototype.waitAtElement = function (element) {
++  const wait = this._simulator.getConfig(element).wait;
++
++  return wait && {
++    element,
++    type: 'continue',
++    interrupting: false,
++    boundary: false
++  };
++};
++
++ExclusiveGatewayBehavior.prototype.signal = function (context) {
++  this._simulator.exit(context);
++};
++
++ExclusiveGatewayBehavior.$inject = ['simulator'];
+\ No newline at end of file
+diff --git a/node_modules/bpmn-js-token-simulation/lib/simulator/behaviors/ParallelGatewayBehavior.js b/node_modules/bpmn-js-token-simulation/lib/simulator/behaviors/ParallelGatewayBehavior.js
+index 5dd9961..3e0d060 100644
+--- a/node_modules/bpmn-js-token-simulation/lib/simulator/behaviors/ParallelGatewayBehavior.js
++++ b/node_modules/bpmn-js-token-simulation/lib/simulator/behaviors/ParallelGatewayBehavior.js
+@@ -4,8 +4,8 @@ import {
+ 
+ 
+ export default function ParallelGatewayBehavior(
+-    simulator,
+-    activityBehavior) {
++  simulator,
++  activityBehavior) {
+ 
+   this._simulator = simulator;
+   this._activityBehavior = activityBehavior;
+@@ -13,7 +13,7 @@ export default function ParallelGatewayBehavior(
+   simulator.registerBehavior('bpmn:ParallelGateway', this);
+ }
+ 
+-ParallelGatewayBehavior.prototype.enter = function(context) {
++ParallelGatewayBehavior.prototype.enter = function (context) {
+ 
+   const {
+     scope,
+@@ -42,14 +42,61 @@ ParallelGatewayBehavior.prototype.enter = function(context) {
+       }
+     }
+ 
++    const continueEvent = this.waitAtElement(element);
++
++    if (continueEvent) {
++      return this.signalOnEvent(context, continueEvent);
++    }
++
+     this._simulator.exit(context);
+   }
+ };
+ 
+-ParallelGatewayBehavior.prototype.exit = function(context) {
++ParallelGatewayBehavior.prototype.exit = function (context) {
+   this._activityBehavior.exit(context);
+ };
+ 
++ParallelGatewayBehavior.prototype.signalOnEvent = function (context, event) {
++
++  const {
++    scope,
++    element
++  } = context;
++
++  const subscription = this._simulator.subscribe(scope, event, initiator => {
++
++    subscription.remove();
++
++    return this._simulator.signal({
++      scope,
++      element,
++      initiator
++    });
++  });
++};
++
++/**
++ * Returns an event to subscribe to if wait on element is configured.
++ *
++ * @param {Element} element
++ *
++ * @return {Object|null} event
++ */
++ParallelGatewayBehavior.prototype.waitAtElement = function (element) {
++  const wait = this._simulator.getConfig(element).wait;
++
++  return wait && {
++    element,
++    type: 'continue',
++    interrupting: false,
++    boundary: false
++  };
++};
++
++ParallelGatewayBehavior.prototype.signal = function (context) {
++  this._simulator.exit(context);
++};
++
+ ParallelGatewayBehavior.$inject = [
+   'simulator',
+   'activityBehavior'
