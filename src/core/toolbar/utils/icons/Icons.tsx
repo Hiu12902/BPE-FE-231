@@ -28,6 +28,25 @@ import { ReactComponent as IconBpeLasso } from './lasso.svg';
 import { ReactComponent as IconBpeSpace } from './space.svg';
 import { ReactComponent as IconBpeConnector } from './connector.svg';
 import { ReactComponent as IconBpeZoomReset } from './zoomreset.svg';
+import { ReactComponent as IconBpeCancel } from './cancel.svg';
+import { ReactComponent as IconBpeRecord } from './record.svg';
+import { ReactComponent as IconBpeRecordStop } from './recordstop.svg';
+import { ReactComponent as IconBpePlay } from './play.svg';
+import { ReactComponent as IconBpePlayWhite } from './play-white.svg';
+import { ReactComponent as IconBpePause } from './pause.svg';
+import { ReactComponent as IconBpeStop } from './stop.svg';
+import { ReactComponent as IconBpeRestart } from './restart.svg';
+import { ReactComponent as IconBpeRepeat } from './repeat.svg';
+import { ReactComponent as IconBpeSpeedFast } from './speedfast.svg';
+import { ReactComponent as IconBpeSpeedNormal } from './speednormal.svg';
+import { ReactComponent as IconBpeSpeedSlow } from './speedslow.svg';
+import { ReactComponent as IconBpeOneCase } from './onecase.svg';
+import { ReactComponent as IconBpeMultipleCase } from './multiplecase.svg';
+import { ReactComponent as IconBpeStepByStep } from './stepbystep.svg';
+import { ReactComponent as IconBpeSimulationLog } from './simulationlog.svg';
+import { ReactComponent as IconBpeStartPoints } from './startpoints.svg';
+import { ReactComponent as IconBpeBranching } from './branching.svg';
+import { ReactComponent as IconBpeBranchingWhite } from './branching-white.svg';
 
 export {
   IconBpePaste,
@@ -60,4 +79,23 @@ export {
   IconBpeSpace,
   IconBpeConnector,
   IconBpeZoomReset,
+  IconBpeCancel,
+  IconBpeMultipleCase,
+  IconBpeOneCase,
+  IconBpePause,
+  IconBpePlay,
+  IconBpeRecord,
+  IconBpeRecordStop,
+  IconBpeRepeat,
+  IconBpeRestart,
+  IconBpeSimulationLog,
+  IconBpeSpeedFast,
+  IconBpeSpeedNormal,
+  IconBpeSpeedSlow,
+  IconBpeStepByStep,
+  IconBpeStop,
+  IconBpeStartPoints,
+  IconBpeBranching,
+  IconBpeBranchingWhite,
+  IconBpePlayWhite,
 };
