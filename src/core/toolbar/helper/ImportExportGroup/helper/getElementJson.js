@@ -13,8 +13,34 @@ export const getElementForGraph = (elementRegistry) => {
     }
 
     const businessObject = element.businessObject;
-    const incoming = businessObject.incoming ? businessObject.incoming.map((obj) => obj.sourceRef.id) : [];
-    const outgoing = businessObject.outgoing ? businessObject.outgoing.map((obj) => obj.targetRef.id) : [];
+    const incoming = element.incoming ? element.incoming.flatMap((obj) => {
+      if (is(obj, 'bpmn:SequenceFlow')) {
+        return obj.source.id
+      } else {
+        return [];
+      }
+    }) : [];
+    const outgoing = element.outgoing ? element.outgoing.flatMap((obj) => {
+      if (is(obj, 'bpmn:SequenceFlow')) {
+        return obj.target.id
+      } else {
+        return [];
+      }
+    }) : [];
+    const incoming_messageflow = element.incoming ? element.incoming.flatMap((obj) => {
+      if (is(obj, 'bpmn:MessageFlow')) {
+        return obj.source.id
+      } else {
+        return [];
+      }
+    }) : [];
+    const outgoing_messageflow = element.outgoing ? element.outgoing.flatMap((obj) => {
+      if (is(obj, 'bpmn:MessageFlow')) {
+        return obj.target.id
+      } else {
+        return [];
+      }
+    }) : [];;
     let type = '';
     let name = businessObject?.name;
     let taskType;
@@ -60,6 +86,8 @@ export const getElementForGraph = (elementRegistry) => {
       name: name || element.type?.split(":")[1].toLowerCase(),
       incoming: incoming,
       outgoing: outgoing,
+      incoming_messageflow: incoming_messageflow,
+      outgoing_messageflow: outgoing_messageflow,
       type: type || element.type?.split(":")[1].toLowerCase(),
       cycleTime: cycletime,
       className: className || element.type?.split(":")[1],
