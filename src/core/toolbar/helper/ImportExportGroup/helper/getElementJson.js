@@ -1,4 +1,4 @@
-import { is } from 'bpmn-js/lib/util/ModelUtil';
+import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import { isEventSubProcess } from 'bpmn-js/lib/util/DiUtil';
 import { PROPERTY_TYPES } from "../../../../properties-panel/constants/types";
 import { TASK_TYPE, EVENT_TYPE, TASK_CLASS_NAME, NON_EVENT, EVENT_CLASS_NAMES, EVENT_SUB_PROCESS } from "../../../constants/bpmnElement";
@@ -8,7 +8,7 @@ export const getElementForGraph = (elementRegistry) => {
 
   const obj = {};
   elements.map((element) => {
-    if (element?.parent === undefined && !is(element, 'bpmn:Collaboration')) {
+    if (element?.parent === undefined && !is(element, 'bpmn:Collaboration') || isAny(element, ['bpmn:SequenceFlow', 'bpmn:MessageFlow', 'bpmn:Label'])) {
       return;
     }
 
@@ -77,9 +77,6 @@ export const getElementForGraph = (elementRegistry) => {
       element.outgoing.map((flow) => branchingProbabilities.push(parseFloat(flow.businessObject.branchingProbability)))
     }
 
-    if (element.type.includes("SequenceFlow") || element.type.includes("label")) {
-      return;
-    }
     const id = element.id.toString();
     obj[id] = {
       id: element.id,
