@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Stack, Text } from '@mantine/core';
 
 import { ModelerContext } from '../../../context/ModelerContext';
@@ -10,13 +10,7 @@ import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 const ModelGroup = () => {
   const modeler = useContext(ModelerContext);
   const [linting, eventBus] = useGetModelerModules(modeler, ['linting', 'eventBus']);
-
-  useEffect(() => {
-    //@ts-ignore
-    eventBus?.on('linting.completed', (issues) => {
-      console.log(issues);
-    });
-  }, [eventBus]);
+  const [lintingActive, setLintingActive] = useState(false);
 
   return (
     <Stack spacing={DEFAULT_SPACING - 2}>
@@ -33,8 +27,12 @@ const ModelGroup = () => {
         title="Validate Model"
         orientation="horizontal"
         size="small"
-        //@ts-ignore
-        onClick={() => linting?.toggle()}
+        onClick={() => {
+          //@ts-ignore
+          linting?.toggle();
+          setLintingActive((o) => !o);
+        }}
+        active={lintingActive}
       />
       <ToolbarIcon
         icon={IconBpeHistory}

@@ -23,7 +23,10 @@ import { ModelerContext } from '@/core/context/ModelerContext';
 import { PRIMARY_COLOR, PROPERTIES_PANEL_WIDTH } from '@/constants/theme/themeConstants';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
 import { ToolbarModeContext } from '@/core/context/ToolbarModeContext';
+import PropertiesProviderModule from '@/core/properties-panel';
+import PropertiesModdleDescripter from '@/core/properties-panel/descriptors/bpeDescriptor';
 import linterConfig from '../../../packed-config';
+import ValidationTerminal from '@/core/validation-terminal';
 
 const useStyles = createStyles((theme) => ({
   main: {
@@ -60,6 +63,8 @@ const useStyles = createStyles((theme) => ({
 const BpeBpmnModeler = () => {
   const [modeler, setModeler] = useState();
   const [toolbarMode, setToolbarMode] = useState(TOOLBAR_MODE.DEFAULT);
+  const [lintingActive, setLintingActive] = useState(false);
+  const [lintingIssues, setLintingIssues] = useState(false);
   const { classes, cx } = useStyles();
 
   useEffect(() => {
@@ -102,6 +107,21 @@ const BpeBpmnModeler = () => {
     })();
   }, []);
 
+  useEffect(() => {
+    if (modeler) {
+      const eventBus = modeler.get('eventBus');
+      eventBus?.on('linting.toggle', ({ active }) => {
+        setLintingActive(() => active);
+      });
+
+      //@ts-ignore
+      eventBus?.on('linting.completed', ({ issues }) => {
+        console.log(issues);
+        setLintingIssues(() => Object.values(issues).flat());
+      });
+    }
+  }, [modeler]);
+
   return (
     <ModelerContext.Provider value={modeler}>
       <AppShell
@@ -121,7 +141,13 @@ const BpeBpmnModeler = () => {
             [classes.mainSimulation]: toolbarMode === TOOLBAR_MODE.SIMULATING,
           }),
         }}
-        footer={<Footer height={120} fixed={false} style={{ bottom: 0, zIndex: 0 }} />}
+        footer={
+          lintingActive ? (
+            <Footer height={140} fixed={false} style={{ bottom: 0, zIndex: 0 }}>
+              <ValidationTerminal issues={lintingIssues} />
+            </Footer>
+          ) : null
+        }
         styles={{ main: { padding: 0 } }}
       >
         <Box id="canvas" style={{ height: '100%' }} />
