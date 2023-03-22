@@ -26,6 +26,10 @@
   display: none !important;
 }
 
+.bjsl-button {
+  display: none !important;
+}
+
 [class^='bpmn-icon-'].custom-entry:before,
 [class*=' bpmn-icon-'].custom-entry:before {
   display: inline !important;
