@@ -1641,7 +1641,7 @@ const rules = {
   "conditional-flows": "error",
   "end-event-required": "error",
   "event-sub-process-typed-start-event": "error",
-  "fake-join": "warn",
+  "fake-join": "error",
   "label-required": "warn",
   "no-bpmndi": "error",
   "no-complex-gateway": "error",
