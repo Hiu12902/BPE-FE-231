@@ -5,4 +5,5 @@ export const PROPERTY_TYPES = {
   CONDITION: 'condition',
   PERCENTAGE: 'percentage',
   DURATION: 'duration',
+  IS_START: 'isStart',
 };

@@ -1,5 +1,6 @@
 //@ts-ignore
 import { isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
+import Checkbox from './components/Checkbox';
 import TextArea from './components/TextArea';
 import TextField from './components/TextField';
 import { PROPERTY_TYPES } from './constants/types';
@@ -85,6 +86,19 @@ class PropertiesParts {
         element,
         property: PROPERTY_TYPES.DURATION,
         component: TextField,
+        isEdited: isTextFieldEntryEdited,
+      },
+    ];
+  };
+
+  public messageEventEntries = (element: any) => {
+    return [
+      {
+        id: PROPERTY_TYPES.IS_START,
+        label: 'Is Start',
+        element,
+        property: PROPERTY_TYPES.IS_START,
+        component: Checkbox,
         isEdited: isTextFieldEntryEdited,
       },
     ];

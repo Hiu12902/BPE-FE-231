@@ -54,6 +54,10 @@ export default function PropertiesProvider(propertiesPanel, translate) {
       if (bo.eventDefinitions?.[0]?.$type === 'bpmn:TimerEventDefinition') {
         groups.push(PropertiesGroups.createTimerEventGroup(element, translate));
       }
+
+      if (bo.eventDefinitions?.[0]?.$type === 'bpmn:MessageEventDefinition') {
+        groups.push(PropertiesGroups.createMessageEventGroup(element, translate));
+      }
       return groups;
     }
   };
