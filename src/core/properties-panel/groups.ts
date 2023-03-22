@@ -51,6 +51,14 @@ class PropertiesGroups {
       entries: PropertiesParts.timerEventEntries(element),
     };
   };
+
+  createMessageEventGroup = (element: any, translate: any) => {
+    return {
+      id: 'messageEvent',
+      label: translate('Message Information'),
+      entries: PropertiesParts.messageEventEntries(element),
+    };
+  };
 }
 
 export default PropertiesGroups.instance;

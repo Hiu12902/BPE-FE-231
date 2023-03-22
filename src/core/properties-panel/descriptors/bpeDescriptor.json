@@ -71,6 +71,23 @@
           "type": "number"
         }
       ]
+    },
+    {
+      "name": "BpeMessageEvent",
+      "extends": [
+        "bpmn:IntermediateCatchEvent",
+        "bpmn:IntermediateThrowEvent",
+        "bpmn:BoundaryEvent",
+        "bpmn:StartEvent",
+        "bpmn:EndEvent"
+      ],
+      "properties": [
+        {
+          "name": "isStart",
+          "isAttr": true,
+          "type": "boolean"
+        }
+      ]
     }
   ]
 }
