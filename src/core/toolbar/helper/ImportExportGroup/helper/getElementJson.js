@@ -8,7 +8,7 @@ export const getElementForGraph = (elementRegistry) => {
 
   const obj = {};
   elements.map((element) => {
-    if (element?.parent === undefined && !is(element, 'bpmn:Collaboration') || isAny(element, ['bpmn:SequenceFlow', 'bpmn:MessageFlow', 'bpmn:Label'])) {
+    if (element?.parent === undefined && !is(element, 'bpmn:Collaboration') || isAny(element, ['bpmn:SequenceFlow', 'bpmn:MessageFlow']) || element?.type === 'label') {
       return;
     }
 
