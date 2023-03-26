@@ -13,7 +13,9 @@ interface ToolProps {
 
 const toolSlice = createSlice({
   name: 'tool',
-  initialState: {} as ToolProps,
+  initialState: {
+    simulationMode: SIMULATION_CASE_MODE.ONE_CASE,
+  } as ToolProps,
   reducers: {
     setToolbarMode: (state, action: PayloadAction<TOOLBAR_MODE>) => {
       state.toolbarMode = action.payload;
