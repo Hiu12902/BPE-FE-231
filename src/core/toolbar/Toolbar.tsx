@@ -26,6 +26,7 @@ import SimulationPlayerGroup from './helper/SimulationPlayerGroup/SimulationPlay
 import SimulationSpeedGroup from './helper/SimulationSpeedGroup/SimulationSpeedGroup';
 import SimulationMiscGroup from './helper/SimulationMiscGroup/SimulationMiscGroup';
 import ModelGroup from './helper/ModelGroup/ModelGroup';
+import SimulationActionGroup from './helper/SimulationActionGroup/SimulationActionGroup';
 
 const DEFAULT_SPACING = 5;
 
@@ -107,6 +108,8 @@ const SimulationToolbar = () => {
       <SimulationSpeedGroup />
       <Divider size="xs" orientation="vertical" />
       <SimulationMiscGroup />
+      <Divider size="xs" orientation="vertical" />
+      <SimulationActionGroup />
     </>
   );
 };
