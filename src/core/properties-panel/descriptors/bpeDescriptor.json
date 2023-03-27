@@ -88,6 +88,17 @@
           "type": "boolean"
         }
       ]
+    },
+    {
+      "name": "BpeCodePropertyEvent",
+      "extends": ["bpmn:BoundaryEvent", "bpmn:StartEvent", "bpmn:EndEvent"],
+      "properties": [
+        {
+          "name": "code",
+          "isAttr": true,
+          "type": "string"
+        }
+      ]
     }
   ]
 }

@@ -103,6 +103,19 @@ class PropertiesParts {
       },
     ];
   };
+
+  public codePropertyEntries = (element: any) => {
+    return [
+      {
+        id: PROPERTY_TYPES.CODE,
+        label: 'Code',
+        element,
+        property: PROPERTY_TYPES.CODE,
+        component: TextField,
+        isEdited: isTextFieldEntryEdited,
+      },
+    ];
+  };
 }
 
 export default PropertiesParts.instance;

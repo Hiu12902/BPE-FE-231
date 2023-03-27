@@ -24,6 +24,7 @@ const TextField = (props: ITextfield) => {
       case PROPERTY_TYPES.CONDITION:
       case PROPERTY_TYPES.PERCENTAGE:
       case PROPERTY_TYPES.DURATION:
+      default:
         return element.businessObject[property] || '';
       case PROPERTY_TYPES.BRANCHING_PROBABILITY: {
         const flow = element.outgoing?.find((flow: any) => flow.id === label);
@@ -39,6 +40,7 @@ const TextField = (props: ITextfield) => {
       case PROPERTY_TYPES.CONDITION:
       case PROPERTY_TYPES.PERCENTAGE:
       case PROPERTY_TYPES.DURATION:
+      default:
         modeling.updateProperties(element, {
           [property]: value,
         });

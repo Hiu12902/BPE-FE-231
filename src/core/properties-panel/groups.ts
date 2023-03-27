@@ -59,6 +59,14 @@ class PropertiesGroups {
       entries: PropertiesParts.messageEventEntries(element),
     };
   };
+
+  createCodePropertyGroup = (element: any, translate: any) => {
+    return {
+      id: 'codeProperty',
+      label: translate('Code Information'),
+      entries: PropertiesParts.codePropertyEntries(element),
+    };
+  };
 }
 
 export default PropertiesGroups.instance;
