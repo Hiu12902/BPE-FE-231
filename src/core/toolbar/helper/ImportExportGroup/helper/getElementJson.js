@@ -55,6 +55,7 @@ export const getElementForGraph = (elementRegistry) => {
     let boundary;
     let isInterrupting;
     let isStart;
+    let code;
     if (is(element, "bpmn:Activity")) {
       type = "task";
       cycletime = parseInt(businessObject.cycleTime);
@@ -74,6 +75,7 @@ export const getElementForGraph = (elementRegistry) => {
       timeDuration = parseInt(businessObject[PROPERTY_TYPES.DURATION]);
       isInterrupting = is(element, 'bpmn:IntermediateCatchEvent') || is(element, 'bpmn:IntermediateThrowEvent') || (is(element, 'bpmn:BoundaryEvent') && businessObject?.cancelActivity);
       isStart = businessObject[PROPERTY_TYPES.IS_START];
+      code = businessObject[PROPERTY_TYPES.CODE];
     } else if (is(element, "bpmn:Gateway")) {
       type = "gateway"
       element.outgoing.map((flow) => branchingProbabilities.push(parseFloat(flow.businessObject.branchingProbability)))
@@ -101,6 +103,7 @@ export const getElementForGraph = (elementRegistry) => {
       boundary: boundary,
       isInterrupting: isInterrupting,
       isStart: isStart,
+      code: code,
     };
   });
   return obj;

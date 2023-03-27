@@ -6,4 +6,5 @@ export const PROPERTY_TYPES = {
   PERCENTAGE: 'percentage',
   DURATION: 'duration',
   IS_START: 'isStart',
+  CODE: 'code',
 };
