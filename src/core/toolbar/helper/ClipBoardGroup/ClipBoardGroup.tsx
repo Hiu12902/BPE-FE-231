@@ -34,15 +34,22 @@ const ClipBoardGroup = () => {
   //@ts-ignore
   const getSelectedElements = () => modeler && modeler.get('selection').get();
 
-  eventBus &&
+  const onSelectElement = (context: any) => {
+    if (context.newSelection.length > 0) {
+      setAccessState({ copy: true });
+    } else {
+      setAccessState({ copy: false });
+    }
+  };
+
+  useEffect(() => {
     //@ts-ignore
-    eventBus.on('selection.changed', (context) => {
-      if (context.newSelection.length > 0) {
-        setAccessState({ copy: true });
-      } else {
-        setAccessState({ copy: false });
-      }
-    });
+    eventBus?.on('selection.changed', onSelectElement);
+    return () => {
+      //@ts-ignore
+      eventBus?.off('selection.changed', onSelectElement);
+    };
+  }, [eventBus]);
 
   const handleCopy = () => {
     const selectedElements = getSelectedElements();

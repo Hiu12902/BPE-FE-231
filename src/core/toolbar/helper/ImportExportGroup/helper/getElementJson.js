@@ -1,7 +1,7 @@
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import { isEventSubProcess } from 'bpmn-js/lib/util/DiUtil';
 import { PROPERTY_TYPES } from "../../../../properties-panel/constants/types";
-import { TASK_TYPE, EVENT_TYPE, TASK_CLASS_NAME, NON_EVENT, EVENT_CLASS_NAMES, EVENT_SUB_PROCESS } from "../../../constants/bpmnElement";
+import { TASK_TYPE, EVENT_TYPE, TASK_CLASS_NAME, NON_EVENT, EVENT_CLASS_NAMES, EVENT_SUB_PROCESS } from "@/core/toolbar/constants/bpmnElement";
 
 export const getElementForGraph = (elementRegistry) => {
   const elements = elementRegistry.getAll();
