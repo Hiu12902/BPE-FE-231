@@ -1,6 +1,6 @@
 //@ts-ignore
 import { useService } from 'bpmn-js-properties-panel';
-import PropertiesParts from './parts';
+import PropertiesParts from './entries';
 
 class PropertiesGroups {
   private static classInstance?: PropertiesGroups;
@@ -16,7 +16,7 @@ class PropertiesGroups {
     return {
       id: 'task',
       label: translate('Cycle Time'),
-      entries: PropertiesParts.createPropertyCycleTime(element),
+      entries: PropertiesParts.taskEntries(element),
     };
   };
 
@@ -24,7 +24,47 @@ class PropertiesGroups {
     return {
       id: 'exclusiveGateway',
       label: translate('Branching Probabilities'),
-      entries: PropertiesParts.createPropertyBranchingProbability(element),
+      entries: PropertiesParts.exclusiveGatewayEntries(element),
+    };
+  };
+
+  createLinkEventGroup = (element: any, translate: any) => {
+    return {
+      id: 'linkEvent',
+      label: translate('Link Code'),
+      entries: PropertiesParts.linkEventEntries(element),
+    };
+  };
+
+  createConditionalEventGroup = (element: any, translate: any) => {
+    return {
+      id: 'conditionalEvent',
+      label: translate('Condition Information'),
+      entries: PropertiesParts.conditionalEventEntries(element),
+    };
+  };
+
+  createTimerEventGroup = (element: any, translate: any) => {
+    return {
+      id: 'timerEvent',
+      label: translate('Duration'),
+      entries: PropertiesParts.timerEventEntries(element),
+    };
+  };
+
+  createMessageEventGroup = (element: any, translate: any) => {
+    return {
+      id: 'messageEvent',
+      label: translate('Message Information'),
+      entries: PropertiesParts.messageEventEntries(element),
+    };
+  };
+
+  createCodePropertyGroup = (element: any, translate: any) => {
+    return {
+      id: 'codeProperty',
+      label: translate('Code Information'),
+      entries: PropertiesParts.codePropertyEntries(element),
     };
   };
 }
