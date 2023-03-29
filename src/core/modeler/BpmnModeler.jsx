@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import 'bpmn-js/dist/assets/diagram-js.css';
 import 'bpmn-font/dist/css/bpmn-embedded.css';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
@@ -16,7 +17,7 @@ import 'bpmn-js-properties-panel/dist/assets/properties-panel.css';
 import 'bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css';
 import 'bpmn-js-bpmnlint/dist/assets/css/bpmn-js-bpmnlint.css';
 
-import { AppShell, Box, Aside, createStyles, Footer } from '@mantine/core';
+import { AppShell, Box, Aside, createStyles, Footer, Tabs } from '@mantine/core';
 import { PaletteNavbar } from '@/core/palette/PaletteNavbar';
 import BpeToolbar from '@/core/toolbar/Toolbar';
 import { ModelerContext } from '@/core/context/ModelerContext';
@@ -27,6 +28,9 @@ import PropertiesProviderModule from '@/core/properties-panel';
 import PropertiesModdleDescripter from '@/core/properties-panel/descriptors/bpeDescriptor';
 import linterConfig from '../../../packed-config';
 import ValidationTerminal from '@/core/validation-terminal';
+import * as tabsSelector from '@/redux/selectors';
+import { useAppDispatch } from '@/redux/store';
+import { tabsSliceActions } from '@/redux/slices';
 
 const useStyles = createStyles((theme) => ({
   main: {
@@ -34,6 +38,10 @@ const useStyles = createStyles((theme) => ({
     paddingBottom: 'var(--mantine-footer-height, 0px) !important',
     paddingLeft: 'var(--mantine-navbar-width, 0px) !important',
     paddingRight: 'var(--mantine-aside-width, 0px) !important',
+
+    '.bjs-drilldown': {
+      display: 'none',
+    },
   },
 
   mainSimulation: {
@@ -61,10 +69,14 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const BpeBpmnModeler = () => {
+  const dispatch = useAppDispatch();
   const [modeler, setModeler] = useState();
+  const [canvas, setCanvas] = useState();
   const [toolbarMode, setToolbarMode] = useState(TOOLBAR_MODE.DEFAULT);
   const [lintingActive, setLintingActive] = useState(false);
   const [lintingIssues, setLintingIssues] = useState(false);
+  const tabs = useSelector(tabsSelector.getTabs);
+  const activeTab = useSelector(tabsSelector.getActiveTab);
   const { classes, cx } = useStyles();
 
   useEffect(() => {
@@ -93,7 +105,7 @@ const BpeBpmnModeler = () => {
 
     const linting = modeler.get('linting');
     linting.setLinterConfig(linterConfig);
-
+    setCanvas(modeler.get('canvas'));
     setModeler(modeler);
 
     (async () => {
@@ -121,6 +133,10 @@ const BpeBpmnModeler = () => {
       });
     }
   }, [modeler]);
+
+  useEffect(() => {
+    canvas?.setRootElement(canvas?.findRoot(activeTab));
+  }, [activeTab]);
 
   return (
     <ModelerContext.Provider value={modeler}>
@@ -150,6 +166,19 @@ const BpeBpmnModeler = () => {
         }
         styles={{ main: { padding: 0 } }}
       >
+        {tabs.length > 1 ? (
+          <Tabs
+            value={activeTab}
+            onTabChange={(tab) => dispatch(tabsSliceActions.setActiveTab(tab))}
+            variant="outline"
+          >
+            <Tabs.List>
+              {tabs.map((tab) => (
+                <Tabs.Tab value={tab}>{tab}</Tabs.Tab>
+              ))}
+            </Tabs.List>
+          </Tabs>
+        ) : null}
         <Box id="canvas" style={{ height: '100%' }} />
       </AppShell>
     </ModelerContext.Provider>
