@@ -1,11 +1,11 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Group, Menu, Stack, Text } from '@mantine/core';
 //@ts-ignore
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
-import { ModelerContext } from '../../../context/ModelerContext';
-import useGetModelerModules from '../../../hooks/useGetModelerModule';
-import { DEFAULT_SPACING } from '../../constants/size';
+import { ModelerContext } from '@/core/context/ModelerContext';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
+import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import {
   IconBpePause,
   IconBpePlay,
@@ -13,7 +13,7 @@ import {
   IconBpeRestart,
   IconBpeStartPoints,
   IconBpeStop,
-} from '../../utils/icons/Icons';
+} from '@/core/toolbar/utils/icons/Icons';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const SimulationPlayerGroup = () => {
@@ -150,18 +150,19 @@ const SimulationPlayerGroup = () => {
           <Menu.Target>
             <ToolbarIcon
               icon={IconBpeStartPoints}
-              label="Entries"
+              label="Start"
               title="Select Simulation Entry Point"
               orientation="vertical"
               size="large"
               onClick={() => setOpenPlayMenu(() => true)}
               ref={buttonRef}
+              disabled={isPlaying}
             />
           </Menu.Target>
 
           <Menu.Dropdown>
             <Text m={10} color="dimmed" size="sm">
-              Select a Start Event to start Simulation
+              Select an entry point to start Simulation
             </Text>{' '}
             {renderMenuOptions()}
           </Menu.Dropdown>
