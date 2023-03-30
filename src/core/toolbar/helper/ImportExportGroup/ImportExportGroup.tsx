@@ -1,18 +1,25 @@
 import { Anchor, Stack, Text } from '@mantine/core';
-import { useClipboard, useHotkeys } from '@mantine/hooks';
 
-import { ModelerContext } from '@/core/context/ModelerContext';
-import useGetModelerModules from '@/core/hooks/useGetModelerModule';
-import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
-import ToolbarIcon from '@/core/toolbar/helper/ToolbarIcon/ToolbarIcon';
-import { IconBpeExport, IconBpeImport } from '@/core/toolbar/utils/icons/Icons';
+import * as selectors from '@/redux/selectors';
+import { tabsSliceActions } from '@/redux/slices';
+import { useAppDispatch } from '@/redux/store';
+import { useClipboard, useHotkeys } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
-import { ChangeEvent, createRef, useContext } from 'react';
+import { ChangeEvent, createRef } from 'react';
+import { useSelector } from 'react-redux';
+import useGetModelerModules from '../../../hooks/useGetModelerModule';
+import { TOOLBAR_HOTKEYS } from '../../constants/hotkeys';
+import { IconBpeExport, IconBpeImport } from '../../utils/icons/Icons';
 import { getElementForGraph } from '../DiagramGroup/helper/getElementJson';
+import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const ImportExportGroup = () => {
-  const modeler = useContext(ModelerContext);
-  const [elementRegistry] = useGetModelerModules(modeler, ['elementRegistry']);
+  const dispatch = useAppDispatch();
+  const modeler = useSelector(selectors.getCurrentModeler)?.modeler;
+
+  const activeTab = useSelector(selectors.getActiveTab);
+  const currentModeler = useSelector(selectors.getCurrentModeler);
+  const [elementRegistry] = useGetModelerModules(['elementRegistry']);
   const clipboard = useClipboard();
   const uploadLinkRef = createRef<HTMLInputElement>();
   const downloadLinkRef = createRef<HTMLAnchorElement>();
@@ -31,6 +38,10 @@ const ImportExportGroup = () => {
         //@ts-ignore
         const canvas = modeler.get('canvas');
         canvas.zoom('fit-viewport', 'auto');
+        dispatch(
+          //@ts-ignore
+          tabsSliceActions.updateActiveTab({ ...activeTab, value: canvas?.getRootElement()?.id })
+        );
       } catch (err) {
         console.log(err);
       }

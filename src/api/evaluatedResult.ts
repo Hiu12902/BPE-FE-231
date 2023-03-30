@@ -13,7 +13,11 @@ class EvaluatedResultApi {
   }
 
   public evaluate(evalutePayload: string): Promise<EvaluationResult[]> {
-    return Client.post(`/evaluate/`, evalutePayload);
+    return Client.post(`/evaluate`, evalutePayload);
+  }
+
+  public compare(comparePayload: string): Promise<any> {
+    return Client.post(`/evaluate/compare`, comparePayload);
   }
 }
 

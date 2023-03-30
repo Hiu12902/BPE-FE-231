@@ -1,53 +1,116 @@
 import { Affix, Button, Group, Stack, Text, Transition } from '@mantine/core';
-import { useContext, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { batch, useSelector } from 'react-redux';
 //@ts-ignore
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
 import evaluatedResultApi from '@/api/evaluatedResult';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
-import { ModelerContext } from '@/core/context/ModelerContext';
-import { ToolbarModeContext } from '@/core/context/ToolbarModeContext';
 import useGetModelerModules from '@/core/hooks/useGetModelerModule';
-import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
 import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import { IconBpeCompare, IconBpeEvaluate, IconBpeSimulate } from '@/core/toolbar/utils/icons/Icons';
-import * as tabsSelector from '@/redux/selectors';
-import * as toolSelectors from '@/redux/selectors';
-import { evaluatedResultActions, tabsSliceActions, toolSliceActions } from '@/redux/slices';
+import * as selectors from '@/redux/selectors';
+import {
+  evaluatedResultActions,
+  lintingActions,
+  tabsSliceActions,
+  toolSliceActions,
+} from '@/redux/slices';
 import { TabVariant } from '@/redux/slices/tabs';
 import { useAppDispatch } from '@/redux/store';
-import { useClipboard, useHotkeys } from '@mantine/hooks';
+import { randomId, useClipboard, useHotkeys } from '@mantine/hooks';
+import { notifications } from '@mantine/notifications';
+import { filter, flatten, values } from 'lodash';
+import { TOOLBAR_HOTKEYS } from '../../constants/hotkeys';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import { getElementForGraph } from './helper/getElementJson';
 
 const planeSuffix = '_plane';
 
+const mockPayload = {
+  target: {
+    cycleTime: 5,
+    cost: 3,
+  },
+  worst: {
+    cycleTime: 20,
+    cost: 10,
+  },
+  as_is: {
+    name: 'Process 1',
+    cycleTime: 6.25,
+    cost: 3.125,
+    transparency: [
+      {
+        view: 'Process 1',
+        numberOfExplicitTask: 2,
+        transparency: 0.4,
+      },
+    ],
+    flexibility: 0.5,
+    exceptionHandling: 0.3,
+    quality: 0.8,
+  },
+  to_be: {
+    name: 'Process 2',
+    cycleTime: 6,
+    cost: 3,
+    transparency: [
+      {
+        view: 'Process 1',
+        numberOfExplicitTask: 2,
+        transparency: 0.6,
+      },
+    ],
+    flexibility: 0.9,
+    exceptionHandling: 0.5,
+    quality: 0.6,
+  },
+};
+
 const DiagramGroup = () => {
   const dispatch = useAppDispatch();
-  const currentElement = useSelector(toolSelectors.selectElementSelected);
+  const currentElement = useSelector(selectors.selectElementSelected);
+  const tabs = useSelector(selectors.getTabs);
   const clipboard = useClipboard();
-  const tabs = useSelector(tabsSelector.getTabs);
-  const modeler = useContext(ModelerContext);
-  const [, setToolbarMode] = useContext(ToolbarModeContext);
+  const modeler = useSelector(selectors.getCurrentModeler)?.modeler;
+  const modelers = useSelector(selectors.getModelers);
   const [showAffix, setShowAffix] = useState(false);
-  const [toggleMode, canvas, eventBus, elementRegistry] = useGetModelerModules(modeler, [
+  const [toggleMode, canvas, eventBus, elementRegistry, linting] = useGetModelerModules([
     'toggleMode',
     'canvas',
     'eventBus',
     'elementRegistry',
+    'linting',
   ]);
 
-  const getJsonFromModel = () => {
+  const getJsonFromModel = (modeler: any) => {
+    const elementRegistry = modeler.get('elementRegistry');
     const jsonObj = getElementForGraph(elementRegistry);
     clipboard.copy(JSON.stringify(jsonObj));
     return JSON.stringify(jsonObj);
   };
 
-  const handleSwitchToSimulation = () => {
+  const lint = async () => {
+    //@ts-ignore
+    const lintRes = await linting?.lint();
+    const issues = flatten(values(lintRes));
+    return filter(issues, (issue) => issue.category === 'error');
+  };
+
+  const handleSwitchToSimulation = async () => {
+    const errors = await lint();
+    if (errors.length > 0) {
+      notifications.show({
+        title: 'Oops',
+        message: 'Your model has some errors, please resolve them and try again!',
+        color: 'red',
+      });
+      return;
+    }
+    dispatch(toolSliceActions.setToolbarMode(TOOLBAR_MODE.SIMULATING));
     //@ts-ignore
     toggleMode.toggleMode(true);
-    setToolbarMode(() => TOOLBAR_MODE.SIMULATING);
   };
 
   const onSelectElement = (context: any) => {
@@ -66,49 +129,102 @@ const DiagramGroup = () => {
   };
 
   const onOpenNewTab = () => {
-    //@ts-ignore
-    const parentRoot = canvas?.findRoot(currentElement.id);
-    dispatch(
-      tabsSliceActions.setTabs([
-        {
-          label: parentRoot.id as string,
-          value: parentRoot.id as string,
-          variant: TabVariant.SUB_PROCESS,
-        },
-        {
-          label: currentElement.id,
-          value: currentElement.id + planeSuffix,
-          variant: TabVariant.SUB_PROCESS,
-        },
-      ])
-    );
-    dispatch(tabsSliceActions.setActiveTab(currentElement.id + planeSuffix));
+    const newId = randomId();
+    batch(() => {
+      dispatch(
+        tabsSliceActions.setTabs([
+          {
+            label: currentElement.id,
+            value: currentElement.id + planeSuffix,
+            variant: TabVariant.SUB_PROCESS,
+            toolMode: TOOLBAR_MODE.DEFAULT,
+            id: newId,
+          },
+        ])
+      );
+      dispatch(lintingActions.setIsLintingActive(false));
+    });
   };
 
   const onEvaluateModel = async () => {
+    const errors = await lint();
+    if (errors.length > 0) {
+      notifications.show({
+        title: 'Oops',
+        message: 'Your model has some errors, please try validating it!',
+        color: 'red',
+      });
+      return;
+    }
+
     try {
-      const result = await evaluatedResultApi.evaluate(getJsonFromModel());
+      const result = await evaluatedResultApi.evaluate(getJsonFromModel(modeler));
       if (result) {
-        dispatch(evaluatedResultActions.setEvaluatedResult(result));
-        dispatch(
-          tabsSliceActions.setTabs([
-            {
-              label: 'abc',
-              //@ts-ignore
-              value: canvas?.getRootElement()?.id || '',
-              variant: TabVariant.MODEL,
-            },
-            {
-              label: 'Evaluated Result',
-              value: 'evaluateResult',
-              variant: TabVariant.RESULT,
-            },
-          ])
-        );
-        dispatch(tabsSliceActions.setActiveTab('evaluateResult'));
+        const newId = randomId();
+        batch(() => {
+          dispatch(evaluatedResultActions.setEvaluatedResult({ result: result, id: newId }));
+          dispatch(
+            tabsSliceActions.setTabs([
+              {
+                label: 'Evaluated Result',
+                value: 'evaluateResult',
+                variant: TabVariant.RESULT,
+                toolMode: TOOLBAR_MODE.EVALUATING,
+                id: newId,
+              },
+            ])
+          );
+          dispatch(toolSliceActions.setToolbarMode(TOOLBAR_MODE.EVALUATING));
+        });
       }
     } catch (error) {
+      notifications.show({
+        title: 'Oops',
+        message:
+          'An error has occurred while evaluating your model, please check your model and try again.',
+        color: 'red',
+      });
       console.error(error);
+    }
+  };
+
+  const buildComparePayload = (payload: any[]) => {
+    const obj: any = {};
+
+    obj['target'] = {
+      cycleTime: 5,
+      cost: 3,
+    };
+    obj['worst'] = {
+      cycleTime: 20,
+      cost: 10,
+    };
+    obj['as_is'] = payload[0];
+    obj['to_be'] = payload[1];
+
+    return obj;
+  };
+
+  const batchEvaluate = async () => {
+    try {
+      // const results = await Promise.all(
+      //   modelers.map(async (modeler) => {
+      //     return await evaluatedResultApi.evaluate(getJsonFromModel(modeler.modeler));
+      //   })
+      // );
+      // const flattenResult = flatten(results);
+      // const payload = flattenResult.map((result) => ({
+      //   cycleTime: result.totalCycleTime,
+      //   cost: result.totalCost,
+      //   transparency: result.transparency,
+      //   flexibility: result.flexibility,
+      //   exceptionHandling: result.exceptionHandling,
+      //   quality: result.quality,
+      // }));
+      const res = await evaluatedResultApi.compare(JSON.stringify(mockPayload));
+      console.log(res);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -147,7 +263,6 @@ const DiagramGroup = () => {
             orientation="vertical"
             size="large"
             onClick={onEvaluateModel}
-            hotkey={TOOLBAR_HOTKEYS.EVALUATE}
           />
           <ToolbarIcon
             icon={IconBpeCompare}
@@ -155,7 +270,8 @@ const DiagramGroup = () => {
             title="Compare Model's Versions"
             orientation="vertical"
             size="large"
-            hotkey={TOOLBAR_HOTKEYS.COMPARE}
+            // disabled={modelers.length < 2}
+            onClick={batchEvaluate}
           />
         </Group>
         <Text size="xs" align="center">

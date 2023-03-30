@@ -1,23 +1,22 @@
-import { useContext, useEffect, useState } from 'react';
-import { Stack, Text } from '@mantine/core';
-import { useHotkeys } from '@mantine/hooks';
-
-import { ModelerContext } from '@/core/context/ModelerContext';
 import useGetModelerModules from '@/core/hooks/useGetModelerModule';
 import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import { IconBpeHistory, IconBpeSave, IconBpeValidate } from '@/core/toolbar/utils/icons/Icons';
-import ToolbarIcon from '@/core/toolbar/helper/ToolbarIcon/ToolbarIcon';
-import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
+import * as selectors from '@/redux/selectors';
+import { Stack, Text } from '@mantine/core';
+import { useHotkeys } from '@mantine/hooks';
+import { useSelector } from 'react-redux';
+import { TOOLBAR_HOTKEYS } from '../../constants/hotkeys';
+import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const ModelGroup = () => {
-  const modeler = useContext(ModelerContext);
-  const [linting] = useGetModelerModules(modeler, ['linting']);
-  const [lintingActive, setLintingActive] = useState(false);
+  const modeler = useSelector(selectors.getCurrentModeler)?.modeler;
+
+  const [linting] = useGetModelerModules(['linting']);
+  const lintingActive = useSelector(selectors.getLintingState);
 
   const handleLinting = () => {
     //@ts-ignore
     linting?.toggle();
-    setLintingActive((o) => !o);
   };
 
   useHotkeys([
@@ -42,7 +41,10 @@ const ModelGroup = () => {
         title="Validate Model"
         orientation="horizontal"
         size="small"
-        onClick={handleLinting}
+        onClick={() =>
+          //@ts-ignore
+          linting?.toggle()
+        }
         active={lintingActive}
         hotkey={TOOLBAR_HOTKEYS.VALIDATE}
       />

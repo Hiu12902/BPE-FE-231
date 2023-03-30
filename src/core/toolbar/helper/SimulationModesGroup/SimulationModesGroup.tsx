@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from 'react';
 import { Stack, Text } from '@mantine/core';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 //@ts-ignore
 import { is } from 'bpmn-js/lib/util/ModelUtil';
@@ -8,27 +8,25 @@ import PauseHandler from 'bpmn-js-token-simulation/lib/features/context-pads/han
 //@ts-ignore
 import TriggerHandler from 'bpmn-js-token-simulation/lib/features/context-pads/handler/TriggerHandler';
 
-import { DEFAULT_SPACING } from '../../constants/size';
-import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import {
   IconBpeMultipleCase,
   IconBpeOneCase,
   IconBpeStepByStep,
 } from '@/core/toolbar/utils/icons/Icons';
-import { ModelerContext } from '../../../context/ModelerContext';
+import * as selectors from '@/redux/selectors';
+import { toolSliceActions } from '@/redux/slices';
+import { useAppDispatch } from '@/redux/store';
 import useGetModelerModules from '../../../hooks/useGetModelerModule';
 import { SIMULATION_CASE_MODE } from '../../constants/simulation';
-import { useAppDispatch } from '@/redux/store';
-import { toolSliceActions } from '@/redux/slices';
-import * as toolSelectors from '@/redux/selectors';
+import { DEFAULT_SPACING } from '../../constants/size';
+import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const SimulationModesGroup = () => {
-  const modeler = useContext(ModelerContext);
+  const modeler = useSelector(selectors.getCurrentModeler)?.modeler;
   const dispatch = useAppDispatch();
-  const stepperMode = useSelector(toolSelectors.selectSimulationMode);
+  const stepperMode = useSelector(selectors.selectSimulationMode);
   const [elements, setElements] = useState([]);
   const [elementRegistry, eventBus, simulator, contextPads, resetSimulation] = useGetModelerModules(
-    modeler,
     ['elementRegistry', 'eventBus', 'simulator', 'contextPads', 'resetSimulation']
   );
 

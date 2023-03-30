@@ -1,6 +1,7 @@
-import { Group, Stack, Text } from '@mantine/core';
-import React, { useContext, useEffect, useState } from 'react';
-import { ModelerContext } from '../../../context/ModelerContext';
+import { getCurrentModeler } from '@/redux/selectors';
+import { Stack, Text } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import useGetModelerModules from '../../../hooks/useGetModelerModule';
 import { DEFAULT_SPACING } from '../../constants/size';
 import { IconBpeSpeedFast, IconBpeSpeedNormal, IconBpeSpeedSlow } from '../../utils/icons/Icons';
@@ -13,9 +14,9 @@ enum AnimationSpeed {
 }
 
 const SimulationSpeedGroup = () => {
-  const modeler = useContext(ModelerContext);
+  const modeler = useSelector(getCurrentModeler)?.modeler;
   const [speed, setSpeed] = useState(1.0);
-  const [animation] = useGetModelerModules(modeler, ['animation']);
+  const [animation] = useGetModelerModules(['animation']);
 
   useEffect(() => {
     //@ts-ignore
