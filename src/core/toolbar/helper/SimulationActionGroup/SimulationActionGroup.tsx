@@ -1,33 +1,34 @@
-import { useContext, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { Group, Stack, Text } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 //@ts-ignore
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
-import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
+import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import {
   IconBpeBranching,
   IconBpePausepointActive,
   IconBpePausepointInactive,
   IconBpePlayWhite,
 } from '@/core/toolbar/utils/icons/Icons';
-import * as toolSelectors from '@/redux/selectors';
-import useGetModelerModules from '@/core/hooks/useGetModelerModule';
-import { ModelerContext } from '@/core/context/ModelerContext';
-import { useAppDispatch } from '@/redux/store';
+import * as selectors from '@/redux/selectors';
 import { toolSliceActions } from '@/redux/slices';
-import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
+import { useAppDispatch } from '@/redux/store';
+import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const SimulationActionGroup = () => {
   const dispatch = useAppDispatch();
-  const modeler = useContext(ModelerContext);
-  const [simulator, exclusiveGatewaySettings, simulationSupport, eventBus] = useGetModelerModules(
-    modeler,
-    ['simulator', 'exclusiveGatewaySettings', 'simulationSupport', 'eventBus']
-  );
+  const modeler = useSelector(selectors.getCurrentModeler)?.modeler;
+  const [simulator, exclusiveGatewaySettings, simulationSupport, eventBus] = useGetModelerModules([
+    'simulator',
+    'exclusiveGatewaySettings',
+    'simulationSupport',
+    'eventBus',
+  ]);
 
-  const currentElement = useSelector(toolSelectors.selectElementSelected);
-  const currentScope = useSelector(toolSelectors.selectCurrentScope);
+  const currentElement = useSelector(selectors.selectElementSelected);
+  const currentScope = useSelector(selectors.selectCurrentScope);
 
   const [isAtCurrentElement, setIsAtCurrentElement] = useState(false);
   const [currentElementTraversed, setCurrentElementTraversed] = useState<any>();
@@ -84,7 +85,6 @@ const SimulationActionGroup = () => {
     {
       icon: IconBpeBranching,
       onClick: () => {
-        console.log(currentElement);
         //@ts-ignore
         currentElement && exclusiveGatewaySettings?.setSequenceFlow(currentElement);
       },
@@ -138,9 +138,6 @@ const SimulationActionGroup = () => {
   }, [eventBus]);
 
   useEffect(() => {
-    //@ts-ignore
-    currentElement && console.log(simulator?.getConfig(currentElement));
-
     setIsAtCurrentElement(currentElementTraversed?.id === currentElement?.id);
     //@ts-ignore
     currentElement && setIsWait(simulator?.getConfig(currentElement)?.wait);

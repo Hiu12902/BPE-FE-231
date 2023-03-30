@@ -1,8 +1,8 @@
-import { UnstyledButton, Stack, Text, Group, Tooltip, Center, Title } from '@mantine/core';
-import React from 'react';
 import { HOTKEY_MAP, TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
-import { useToolbarIconStyle } from './ToolbarIcon.style';
+import { Center, Group, Stack, Text, Title, Tooltip, UnstyledButton } from '@mantine/core';
 import { useOs } from '@mantine/hooks';
+import React from 'react';
+import { useToolbarIconStyle } from './ToolbarIcon.style';
 
 interface IToolbarIcon {
   icon: React.FC<React.SVGProps<SVGSVGElement>>;
@@ -13,6 +13,7 @@ interface IToolbarIcon {
   disabled?: boolean;
   active?: boolean;
   hotkey?: TOOLBAR_HOTKEYS;
+  overflow?: boolean;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
@@ -27,6 +28,7 @@ const ToolbarIcon = React.forwardRef<HTMLButtonElement, IToolbarIcon>(
       disabled,
       active,
       hotkey,
+      overflow,
       onClick,
     }: IToolbarIcon,
     ref
@@ -64,7 +66,14 @@ const ToolbarIcon = React.forwardRef<HTMLButtonElement, IToolbarIcon>(
                 className={classes.icon}
               />
             </Center>
-            <Text size="xs" align="center" className={classes.label}>
+            <Text
+              size="xs"
+              align="center"
+              className={cx(classes.label, {
+                [classes.labelHorizon]: orientation === 'horizontal',
+                [classes.labelOverFlow]: overflow,
+              })}
+            >
               {label}
             </Text>
           </GroupComponent>

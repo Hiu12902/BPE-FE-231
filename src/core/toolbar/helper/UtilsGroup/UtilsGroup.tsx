@@ -1,17 +1,18 @@
-import { useContext, useEffect, useState } from 'react';
 import { Group, Stack, Text } from '@mantine/core';
+import { useEffect, useState } from 'react';
 
-import { ModelerContext } from '../../../context/ModelerContext';
-import useGetModelerModules from '../../../hooks/useGetModelerModule';
-import { DEFAULT_SPACING } from '../../constants/size';
-import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
-import { IconBpeConnector, IconBpeHand, IconBpeLasso, IconBpeSpace } from '../../utils/icons/Icons';
+import { getCurrentModeler } from '@/redux/selectors';
 import { useHotkeys } from '@mantine/hooks';
+import { useSelector } from 'react-redux';
+import useGetModelerModules from '../../../hooks/useGetModelerModule';
 import { TOOLBAR_HOTKEYS } from '../../constants/hotkeys';
+import { DEFAULT_SPACING } from '../../constants/size';
+import { IconBpeConnector, IconBpeHand, IconBpeLasso, IconBpeSpace } from '../../utils/icons/Icons';
+import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const UtilsGroup = () => {
-  const modeler = useContext(ModelerContext);
-  const [handTool, lassoTool, spaceTool, globalConnect, eventBus] = useGetModelerModules(modeler, [
+  const modeler = useSelector(getCurrentModeler)?.modeler;
+  const [handTool, lassoTool, spaceTool, globalConnect, eventBus] = useGetModelerModules([
     'handTool',
     'lassoTool',
     'spaceTool',
@@ -56,7 +57,7 @@ const UtilsGroup = () => {
   }, []);
 
   return (
-    <Stack spacing={DEFAULT_SPACING - 2}>
+    <Stack spacing={DEFAULT_SPACING + 7}>
       <Group>
         <ToolbarIcon
           icon={IconBpeHand}

@@ -1,13 +1,16 @@
+import { getCurrentModeler } from '@/redux/selectors';
+import { map } from 'lodash';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
-const useGetModelerModules = (modeler: any, modules: string[]) => {
-  const [modulesToGet, setModulesToGet] = useState([]);
+const useGetModelerModules = (modules: string[]) => {
+  const modeler = useSelector(getCurrentModeler)?.modeler;
+  const [modulesToGet, setModulesToGet] = useState<any[]>([]);
+
   useEffect(() => {
     if (modeler) {
-      modules.forEach((module) =>
-        //@ts-ignore
-        setModulesToGet((modulesToGet) => [...modulesToGet, modeler.get(module)])
-      );
+      const plugins = map(modules, (module) => modeler.get(module));
+      setModulesToGet(plugins);
     }
   }, [modeler]);
 

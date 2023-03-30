@@ -118,8 +118,6 @@ class PropertiesParts {
   };
 
   public lanePropertyEntries = (element: any) => {
-    console.log(element);
-
     return [
       {
         id: PROPERTY_TYPES.UNIT_COST,

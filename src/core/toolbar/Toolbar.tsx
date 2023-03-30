@@ -1,33 +1,33 @@
-import { useContext } from 'react';
-import { Header, Group, Stack, Text, Divider } from '@mantine/core';
+import { Divider, Group, Header, Stack, Text } from '@mantine/core';
 
+import * as selectors from '@/redux/selectors';
+import { useSelector } from 'react-redux';
 import { PALETTE_WIDTH, TOOLBAR_HEIGHT } from '../../constants/theme/themeConstants';
-import {
-  IconBpeBold,
-  IconBpeItalic,
-  IconBpeUnderline,
-  IconBpeTextSize,
-  IconBpeTextColor,
-  IconBpeElementColor,
-  IconBpeClearStyle,
-} from './utils/icons/Icons';
-import ToolbarIcon from './helper/ToolbarIcon/ToolbarIcon';
-import UtilsGroup from './helper/UtilsGroup/UtilsGroup';
+import { TOOLBAR_MODE } from '../../constants/toolbar';
 import ClipBoardGroup from './helper/ClipBoardGroup/ClipBoardGroup';
+import DiagramGroup from './helper/DiagramGroup/DiagramGroup';
 import EditingGroup from './helper/EditGroup/EditGroup';
+import EvaluationFunctionGroup from './helper/EvaluationFunctionGroup/EvaluationFunctionGroup';
 import ImportExportGroup from './helper/ImportExportGroup/ImportExportGroup';
 import MiscGroup from './helper/MiscGroup/MiscGroup';
-import DiagramGroup from './helper/DiagramGroup/DiagramGroup';
-import { ToolbarModeContext } from '../context/ToolbarModeContext';
-import { TOOLBAR_MODE } from '../../constants/toolbar';
+import ModelGroup from './helper/ModelGroup/ModelGroup';
+import SimulationActionGroup from './helper/SimulationActionGroup/SimulationActionGroup';
 import SimulationDiagramGroup from './helper/SimulationDiagramGroup/SimulationDiagramGroup';
+import SimulationMiscGroup from './helper/SimulationMiscGroup/SimulationMiscGroup';
 import SimulationModesGroup from './helper/SimulationModesGroup/SimulationModesGroup';
 import SimulationPlayerGroup from './helper/SimulationPlayerGroup/SimulationPlayerGroup';
 import SimulationSpeedGroup from './helper/SimulationSpeedGroup/SimulationSpeedGroup';
-import SimulationMiscGroup from './helper/SimulationMiscGroup/SimulationMiscGroup';
-import ModelGroup from './helper/ModelGroup/ModelGroup';
-import SimulationActionGroup from './helper/SimulationActionGroup/SimulationActionGroup';
-import EvaluationFunctionGroup from './helper/EvaluationFunctionGroup/EvaluationFunctionGroup';
+import ToolbarIcon from './helper/ToolbarIcon/ToolbarIcon';
+import UtilsGroup from './helper/UtilsGroup/UtilsGroup';
+import {
+  IconBpeBold,
+  IconBpeClearStyle,
+  IconBpeElementColor,
+  IconBpeItalic,
+  IconBpeTextColor,
+  IconBpeTextSize,
+  IconBpeUnderline,
+} from './utils/icons/Icons';
 
 const DEFAULT_SPACING = 5;
 
@@ -116,7 +116,7 @@ const SimulationToolbar = () => {
 };
 
 const BpeToolbar = () => {
-  const [toolbarMode, setToolbarMode] = useContext(ToolbarModeContext);
+  const toolbarMode = useSelector(selectors.selectToolbarMode);
 
   return (
     <Header height={TOOLBAR_HEIGHT} p={0} fixed={false}>

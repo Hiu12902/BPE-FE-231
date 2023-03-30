@@ -1,20 +1,23 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
 import { EvaluationResult } from '@/interfaces/evaluatedResult';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 interface EvaluationProps {
-  evaluatedResult: EvaluationResult[];
+  [id: string]: EvaluationResult[];
 }
 
 const evaluatedResultSlice = createSlice({
   name: 'evaluatedResult',
   initialState: {
-    evaluatedResult: [] as EvaluationResult[],
+    '': [] as EvaluationResult[],
   } as EvaluationProps,
 
   reducers: {
-    setEvaluatedResult: (state, action: PayloadAction<EvaluationResult[]>) => {
-      state.evaluatedResult = action.payload;
+    setEvaluatedResult: (
+      state,
+      action: PayloadAction<{ result: EvaluationResult[]; id: string }>
+    ) => {
+      state[action.payload.id] = action.payload.result;
     },
   },
 });

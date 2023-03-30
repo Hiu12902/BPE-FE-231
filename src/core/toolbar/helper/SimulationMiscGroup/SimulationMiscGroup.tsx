@@ -1,24 +1,27 @@
+import { getCurrentModeler } from '@/redux/selectors';
+import { toolSliceActions } from '@/redux/slices';
+import { useAppDispatch } from '@/redux/store';
 import { Group, Stack, Text } from '@mantine/core';
-import React, { useContext } from 'react';
+import { useSelector } from 'react-redux';
 import { TOOLBAR_MODE } from '../../../../constants/toolbar';
-import { ModelerContext } from '../../../context/ModelerContext';
-import { ToolbarModeContext } from '../../../context/ToolbarModeContext';
 import useGetModelerModules from '../../../hooks/useGetModelerModule';
 import { DEFAULT_SPACING } from '../../constants/size';
 import { IconBpeCancel, IconBpeSimulationLog } from '../../utils/icons/Icons';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const SimulationMiscGroup = () => {
-  const modeler = useContext(ModelerContext);
-  const [, setToolbarMode] = useContext(ToolbarModeContext);
-  const [toggleMode, canvas, log] = useGetModelerModules(modeler, ['toggleMode', 'canvas', 'log']);
+  const modeler = useSelector(getCurrentModeler)?.modeler;
+  const dispatch = useAppDispatch();
+  const [toggleMode, canvas, log] = useGetModelerModules(['toggleMode', 'canvas', 'log']);
 
   const handleSwitchToDefault = () => {
     //@ts-ignore
     toggleMode.toggleMode(false);
-    setToolbarMode(() => TOOLBAR_MODE.DEFAULT);
+
     //@ts-ignore
     canvas.zoom('fit-viewport', 'auto');
+
+    dispatch(toolSliceActions.setToolbarMode(TOOLBAR_MODE.DEFAULT));
   };
 
   return (

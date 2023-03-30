@@ -1,7 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
 import { SIMULATION_CASE_MODE } from '@/core/toolbar/constants/simulation';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 interface ToolProps {
   toolbarMode: TOOLBAR_MODE;
@@ -14,6 +14,7 @@ interface ToolProps {
 const toolSlice = createSlice({
   name: 'tool',
   initialState: {
+    toolbarMode: TOOLBAR_MODE.DEFAULT,
     simulationMode: SIMULATION_CASE_MODE.ONE_CASE,
   } as ToolProps,
   reducers: {
