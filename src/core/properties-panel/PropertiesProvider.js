@@ -1,7 +1,8 @@
 // Import your custom property entries.
 // The entry is a text input field with logic attached to create,
 // update and delete the "spell" property.
-import { is, getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
+import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil';
+import { find } from 'lodash';
 import PropertiesGroups from './groups';
 const LOW_PRIORITY = 500;
 
@@ -62,6 +63,11 @@ export default function PropertiesProvider(propertiesPanel, translate) {
       if (is(element, 'bpmn:StartEvent') || is(element, 'bpmn:EndEvent') || is(element, 'bpmn:BoundaryEvent')) {
         groups.push(PropertiesGroups.createCodePropertyGroup(element, translate));
       }
+
+      if (is(element, 'bpmn:Lane') || is(element, 'bpmn:Participant') && !find(element.children, (element) => is(element, 'bpmn:Lane'))) {
+        groups.push(PropertiesGroups.createLaneGroup(element, translate));
+      }
+
       return groups;
     }
   };

@@ -27,6 +27,7 @@ import SimulationSpeedGroup from './helper/SimulationSpeedGroup/SimulationSpeedG
 import SimulationMiscGroup from './helper/SimulationMiscGroup/SimulationMiscGroup';
 import ModelGroup from './helper/ModelGroup/ModelGroup';
 import SimulationActionGroup from './helper/SimulationActionGroup/SimulationActionGroup';
+import EvaluationFunctionGroup from './helper/EvaluationFunctionGroup/EvaluationFunctionGroup';
 
 const DEFAULT_SPACING = 5;
 
@@ -124,7 +125,9 @@ const BpeToolbar = () => {
           <DefaultToolbar />
         ) : toolbarMode === TOOLBAR_MODE.SIMULATING ? (
           <SimulationToolbar />
-        ) : null}
+        ) : (
+          <EvaluationFunctionGroup />
+        )}
       </Group>
     </Header>
   );

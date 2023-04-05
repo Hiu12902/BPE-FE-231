@@ -116,6 +116,21 @@ class PropertiesParts {
       },
     ];
   };
+
+  public lanePropertyEntries = (element: any) => {
+    console.log(element);
+
+    return [
+      {
+        id: PROPERTY_TYPES.UNIT_COST,
+        label: 'Unit Cost',
+        element,
+        property: PROPERTY_TYPES.UNIT_COST,
+        component: TextField,
+        isEdited: isTextFieldEntryEdited,
+      },
+    ];
+  };
 }
 
 export default PropertiesParts.instance;

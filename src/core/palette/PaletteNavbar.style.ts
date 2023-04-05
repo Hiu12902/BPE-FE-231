@@ -1,10 +1,10 @@
-import { createStyles } from '@mantine/core';
+import { createStyles, getStylesRef } from '@mantine/core';
 
-export const usePaletteNavbarStyles = createStyles((theme, _params, getRef) => ({
-  label: { ref: getRef('label'), color: theme.white },
-  chevron: { ref: getRef('chevron'), color: theme.white },
+export const usePaletteNavbarStyles = createStyles((theme, _params) => ({
+  label: { ref: getStylesRef('label'), color: theme.white },
+  chevron: { ref: getStylesRef('chevron'), color: theme.white },
   control: {
-    [`&:hover .${getRef('label')}`]: { color: 'black' },
-    [`&:hover .${getRef('chevron')}`]: { color: 'black' },
+    [`&:hover .${getStylesRef('label')}`]: { color: 'black' },
+    [`&:hover .${getStylesRef('chevron')}`]: { color: 'black' },
   },
 }));
