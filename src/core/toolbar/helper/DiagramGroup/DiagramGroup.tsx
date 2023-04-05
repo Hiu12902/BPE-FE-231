@@ -12,24 +12,36 @@ import useGetModelerModules from '@/core/hooks/useGetModelerModule';
 import { ToolbarModeContext } from '@/core/context/ToolbarModeContext';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
 import { useAppDispatch } from '@/redux/store';
-import { toolSliceActions, tabsSliceActions } from '@/redux/slices';
+import { toolSliceActions, tabsSliceActions, evaluatedResultActions } from '@/redux/slices';
 import * as toolSelectors from '@/redux/selectors';
 import * as tabsSelector from '@/redux/selectors';
+import { getElementForGraph } from './helper/getElementJson';
+import { useClipboard } from '@mantine/hooks';
+import evaluatedResultApi from '@/api/evaluatedResult';
+import { TabVariant } from '@/redux/slices/tabs';
 
 const planeSuffix = '_plane';
 
 const DiagramGroup = () => {
   const dispatch = useAppDispatch();
   const currentElement = useSelector(toolSelectors.selectElementSelected);
+  const clipboard = useClipboard();
   const tabs = useSelector(tabsSelector.getTabs);
   const modeler = useContext(ModelerContext);
-  const [toolbarMode, setToolbarMode] = useContext(ToolbarModeContext);
+  const [, setToolbarMode] = useContext(ToolbarModeContext);
   const [showAffix, setShowAffix] = useState(false);
-  const [toggleMode, canvas, eventBus] = useGetModelerModules(modeler, [
+  const [toggleMode, canvas, eventBus, elementRegistry] = useGetModelerModules(modeler, [
     'toggleMode',
     'canvas',
     'eventBus',
+    'elementRegistry',
   ]);
+
+  const getJsonFromModel = () => {
+    const jsonObj = getElementForGraph(elementRegistry);
+    clipboard.copy(JSON.stringify(jsonObj));
+    return JSON.stringify(jsonObj);
+  };
 
   const handleSwitchToSimulation = () => {
     //@ts-ignore
@@ -55,8 +67,48 @@ const DiagramGroup = () => {
   const onOpenNewTab = () => {
     //@ts-ignore
     const parentRoot = canvas?.findRoot(currentElement.id);
-    dispatch(tabsSliceActions.setTabs([parentRoot.id, currentElement.id + planeSuffix]));
+    dispatch(
+      tabsSliceActions.setTabs([
+        {
+          label: parentRoot.id as string,
+          value: parentRoot.id as string,
+          variant: TabVariant.SUB_PROCESS,
+        },
+        {
+          label: currentElement.id,
+          value: currentElement.id + planeSuffix,
+          variant: TabVariant.SUB_PROCESS,
+        },
+      ])
+    );
     dispatch(tabsSliceActions.setActiveTab(currentElement.id + planeSuffix));
+  };
+
+  const onEvaluateModel = async () => {
+    try {
+      const result = await evaluatedResultApi.evaluate(getJsonFromModel());
+      if (result) {
+        dispatch(evaluatedResultActions.setEvaluatedResult(result));
+        dispatch(
+          tabsSliceActions.setTabs([
+            {
+              label: 'abc',
+              //@ts-ignore
+              value: canvas?.getRootElement()?.id || '',
+              variant: TabVariant.MODEL,
+            },
+            {
+              label: 'Evaluated Result',
+              value: 'evaluateResult',
+              variant: TabVariant.RESULT,
+            },
+          ])
+        );
+        dispatch(tabsSliceActions.setActiveTab('evaluateResult'));
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
@@ -86,6 +138,7 @@ const DiagramGroup = () => {
             title="Evaluate Model"
             orientation="vertical"
             size="large"
+            onClick={onEvaluateModel}
           />
           <ToolbarIcon
             icon={IconBpeCompare}

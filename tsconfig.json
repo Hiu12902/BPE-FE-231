@@ -45,6 +45,12 @@
       ],
       "@/assets/*": [
         "src/assets/*"
+      ],
+      "@/api/*": [
+        "src/api/*"
+      ],
+      "@/interfaces/*": [
+        "src/interfaces/*"
       ]
     }
   },

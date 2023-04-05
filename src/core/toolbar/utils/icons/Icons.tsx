@@ -49,6 +49,8 @@ import { ReactComponent as IconBpeBranching } from './branching.svg';
 import { ReactComponent as IconBpeBranchingWhite } from './branching-white.svg';
 import { ReactComponent as IconBpePausepointActive } from './pausepoint-active.svg';
 import { ReactComponent as IconBpePausepointInactive } from './pausepoint-inactive.svg';
+import { ReactComponent as IconBpeExportLarge } from './export-large.svg';
+import { ReactComponent as IconBpeSaveLarge } from './save-large.svg';
 
 export {
   IconBpePaste,
@@ -102,4 +104,6 @@ export {
   IconBpePlayWhite,
   IconBpePausepointActive,
   IconBpePausepointInactive,
+  IconBpeExportLarge,
+  IconBpeSaveLarge,
 };

@@ -99,6 +99,17 @@
           "type": "string"
         }
       ]
+    },
+    {
+      "name": "BpeLane",
+      "extends": ["bpmn:Lane", "bpmn:Participant"],
+      "properties": [
+        {
+          "name": "unitCost",
+          "isAttr": true,
+          "type": "number"
+        }
+      ]
     }
   ]
 }

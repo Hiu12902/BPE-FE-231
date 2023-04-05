@@ -6,7 +6,7 @@ import { IconBpeImport, IconBpeExport } from '../../utils/icons/Icons';
 import { ChangeEvent, createRef, useContext } from 'react';
 import { ModelerContext } from '../../../context/ModelerContext';
 import useGetModelerModules from '../../../hooks/useGetModelerModule';
-import { getElementForGraph } from './helper/getElementJson';
+import { getElementForGraph } from '../DiagramGroup/helper/getElementJson';
 import { useClipboard } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 

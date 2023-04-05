@@ -1,5 +1,4 @@
 //@ts-ignore
-import { useService } from 'bpmn-js-properties-panel';
 import PropertiesParts from './entries';
 
 class PropertiesGroups {
@@ -65,6 +64,14 @@ class PropertiesGroups {
       id: 'codeProperty',
       label: translate('Code Information'),
       entries: PropertiesParts.codePropertyEntries(element),
+    };
+  };
+
+  createLaneGroup = (element: any, translate: any) => {
+    return {
+      id: 'lane',
+      label: translate('Lane Information'),
+      entries: PropertiesParts.lanePropertyEntries(element),
     };
   };
 }

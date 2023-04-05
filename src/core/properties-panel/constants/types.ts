@@ -7,4 +7,5 @@ export const PROPERTY_TYPES = {
   DURATION: 'duration',
   IS_START: 'isStart',
   CODE: 'code',
+  UNIT_COST: 'unitCost',
 };
