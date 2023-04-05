@@ -1,17 +1,19 @@
-import { NotificationsProvider } from '@mantine/notifications';
-import { ModalsProvider } from '@mantine/modals';
-import BpeBpmnModeler from './core/modeler/BpmnModeler';
 import { store } from '@/redux/store';
+import { MantineProvider } from '@mantine/core';
+import { ModalsProvider } from '@mantine/modals';
+import { Notifications } from '@mantine/notifications';
 import { Provider } from 'react-redux';
+import BpeBpmnModeler from './core/modeler/BpmnModeler';
 
 function App() {
   return (
     <Provider store={store}>
-      <NotificationsProvider>
+      <MantineProvider withNormalizeCSS withGlobalStyles>
+        <Notifications />
         <ModalsProvider>
           <BpeBpmnModeler />
         </ModalsProvider>
-      </NotificationsProvider>
+      </MantineProvider>
     </Provider>
   );
 }
