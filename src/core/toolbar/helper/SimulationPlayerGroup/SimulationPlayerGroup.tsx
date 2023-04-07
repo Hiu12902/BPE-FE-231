@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
 import { Button, Group, Menu, Stack, Text } from '@mantine/core';
+import React, { useEffect, useState } from 'react';
 //@ts-ignore
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
-import { ModelerContext } from '@/core/context/ModelerContext';
 import useGetModelerModules from '@/core/hooks/useGetModelerModule';
 import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import {
@@ -14,10 +13,12 @@ import {
   IconBpeStartPoints,
   IconBpeStop,
 } from '@/core/toolbar/utils/icons/Icons';
+import { getCurrentModeler } from '@/redux/selectors';
+import { useSelector } from 'react-redux';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const SimulationPlayerGroup = () => {
-  const modeler = useContext(ModelerContext);
+  const modeler = useSelector(getCurrentModeler)?.modeler;
   const [openPlayMenu, setOpenPlayMenu] = useState(false);
   const [startEvents, setStartEvents] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -26,7 +27,7 @@ const SimulationPlayerGroup = () => {
   const [simulationEntriesHistory, setSimulationEntriesHistory] = useState<string>('');
   const buttonRef = React.createRef<HTMLButtonElement>();
   const [elementRegistry, simulationSupport, pauseSimulation, eventBus, resetSimulation] =
-    useGetModelerModules(modeler, [
+    useGetModelerModules([
       'elementRegistry',
       'simulationSupport',
       'pauseSimulation',

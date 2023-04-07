@@ -1,38 +1,39 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import 'bpmn-js/dist/assets/diagram-js.css';
 import 'bpmn-font/dist/css/bpmn-embedded.css';
-import BpmnModeler from 'bpmn-js/lib/Modeler';
 import lintModule from 'bpmn-js-bpmnlint';
 import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import TokenSimulationModule from 'bpmn-js-token-simulation';
 import SimulationSupportModule from 'bpmn-js-token-simulation/lib/simulation-support';
 import SimulationBehaviorModule from 'bpmn-js-token-simulation/lib/simulator/behaviors';
-import { baseXml } from '@/assets/baseXml';
+import 'bpmn-js/dist/assets/diagram-js.css';
+import BpmnModeler from 'bpmn-js/lib/Modeler';
+import { useEffect } from 'react';
+import { batch, useSelector } from 'react-redux';
 import './BpmnModeler.css';
 
+import 'bpmn-js-bpmnlint/dist/assets/css/bpmn-js-bpmnlint.css';
 import 'bpmn-js-properties-panel/dist/assets/element-templates.css';
 import 'bpmn-js-properties-panel/dist/assets/properties-panel.css';
 import 'bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css';
-import 'bpmn-js-bpmnlint/dist/assets/css/bpmn-js-bpmnlint.css';
 
-import { AppShell, Box, Aside, createStyles, Footer, Tabs, ActionIcon } from '@mantine/core';
-import { PaletteNavbar } from '@/core/palette/PaletteNavbar';
-import BpeToolbar from '@/core/toolbar/Toolbar';
-import { ModelerContext } from '@/core/context/ModelerContext';
-import { PRIMARY_COLOR, PROPERTIES_PANEL_WIDTH } from '@/constants/theme/themeConstants';
+import ResultTable from '@/components/ResultTable/ResultTable';
+import { PRIMARY_COLOR } from '@/constants/theme/themeConstants';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
-import { ToolbarModeContext } from '@/core/context/ToolbarModeContext';
+import { ModelerContext } from '@/core/context/ModelerContext';
+import { PaletteNavbar } from '@/core/palette/PaletteNavbar';
 import PropertiesProviderModule from '@/core/properties-panel';
 import PropertiesModdleDescripter from '@/core/properties-panel/descriptors/bpeDescriptor';
-import linterConfig from '../../../packed-config';
+import BpeToolbar from '@/core/toolbar/Toolbar';
 import ValidationTerminal from '@/core/validation-terminal';
-import * as tabsSelector from '@/redux/selectors';
-import { useAppDispatch } from '@/redux/store';
-import { tabsSliceActions } from '@/redux/slices';
+import * as selectors from '@/redux/selectors';
+import { lintingActions, modelActions, tabsSliceActions, toolSliceActions } from '@/redux/slices';
 import { TabVariant } from '@/redux/slices/tabs';
-import ResultTable from '@/components/ResultTable/ResultTable';
+import { useAppDispatch } from '@/redux/store';
+import { ActionIcon, AppShell, Container, Footer, Tabs, createStyles } from '@mantine/core';
+import { randomId } from '@mantine/hooks';
+import { find } from 'lodash';
+import linterConfig from '../../../packed-config';
 import { IconBpeCancel } from '../toolbar/utils/icons/Icons';
+import Modeler from './components/Modeler';
 
 const useStyles = createStyles((theme) => ({
   main: {
@@ -72,22 +73,25 @@ const useStyles = createStyles((theme) => ({
 
 const BpeBpmnModeler = () => {
   const dispatch = useAppDispatch();
-  const [modeler, setModeler] = useState();
-  const [canvas, setCanvas] = useState();
-  const [toolbarMode, setToolbarMode] = useState(TOOLBAR_MODE.DEFAULT);
-  const [lintingActive, setLintingActive] = useState(false);
-  const [lintingIssues, setLintingIssues] = useState(false);
-  const tabs = useSelector(tabsSelector.getTabs);
-  const activeTab = useSelector(tabsSelector.getActiveTab);
-  const canvasRef = useRef(null);
+  const currentModeler = useSelector(selectors.getCurrentModeler);
+  const modelers = useSelector(selectors.getModelers);
+  const lintingActive = useSelector(selectors.getLintingState);
+  const lintingIssues = useSelector(selectors.getLintingIssues);
+  const toolbarMode = useSelector(selectors.selectToolbarMode);
+  const evaluatedResults = useSelector(selectors.getEvaluatedResult);
+  const tabs = useSelector(selectors.getTabs);
+  const activeTab = useSelector(selectors.getActiveTab);
   const { classes, cx } = useStyles();
 
-  useEffect(() => {
+  const detaching = () => {
+    currentModeler?.modeler?.detach();
+    currentModeler?.modeler?.get('propertiesPanel').detach();
+  };
+
+  const createNewModeler = () => {
+    detaching();
+
     const modeler = new BpmnModeler({
-      container: canvasRef.current,
-      propertiesPanel: {
-        parent: '#properties',
-      },
       linting: {},
       additionalModules: [
         BpmnPropertiesPanelModule,
@@ -105,45 +109,34 @@ const BpeBpmnModeler = () => {
         bindTo: document,
       },
     });
-
+    const newId = randomId();
     const linting = modeler.get('linting');
     linting.setLinterConfig(linterConfig);
-    setCanvas(modeler.get('canvas'));
-    setModeler(modeler);
-    (async () => {
-      try {
-        await modeler.importXML(baseXml);
-        const canvas = modeler.get('canvas');
-        canvas.zoom('fit-viewport', 'auto');
-      } catch (err) {
-        console.log(err);
-      }
-    })();
+    dispatch(modelActions.setModelers({ modeler: modeler, id: newId }));
+    dispatch(modelActions.setCurrentModeler(newId));
+  };
+
+  useEffect(() => {
+    createNewModeler();
   }, []);
 
   useEffect(() => {
-    if (modeler) {
-      const eventBus = modeler.get('eventBus');
+    if (currentModeler?.modeler) {
+      const eventBus = currentModeler.modeler.get('eventBus');
       eventBus?.on('linting.toggle', ({ active }) => {
-        setLintingActive(() => active);
+        dispatch(lintingActions.setIsLintingActive(active));
       });
 
-      //@ts-ignore
       eventBus?.on('linting.completed', ({ issues }) => {
-        console.log(issues);
-        setLintingIssues(() => Object.values(issues).flat());
+        dispatch(lintingActions.setLintingIssues(Object.values(issues).flat()));
       });
     }
-  }, [modeler]);
+  }, [currentModeler]);
 
   useEffect(() => {
     if (activeTab.variant === TabVariant.RESULT) {
-      modeler?.detach();
-      setToolbarMode(TOOLBAR_MODE.EVALUATING);
-    } else {
-      modeler?.attachTo(canvasRef.current);
-      canvas?.setRootElement(canvas?.findRoot(activeTab.value));
-      setToolbarMode(TOOLBAR_MODE.DEFAULT);
+      detaching();
+      dispatch(lintingActions.setIsLintingActive(false));
     }
   }, [activeTab]);
 
@@ -155,21 +148,10 @@ const BpeBpmnModeler = () => {
   };
 
   return (
-    <ModelerContext.Provider value={modeler}>
+    <ModelerContext.Provider value={currentModeler?.modeler}>
       <AppShell
         navbar={<PaletteNavbar />}
-        aside={
-          toolbarMode !== TOOLBAR_MODE.EVALUATING && (
-            <Aside height="100vh" width={{ base: PROPERTIES_PANEL_WIDTH }}>
-              <Box id="properties" />
-            </Aside>
-          )
-        }
-        header={
-          <ToolbarModeContext.Provider value={[toolbarMode, setToolbarMode]}>
-            <BpeToolbar />
-          </ToolbarModeContext.Provider>
-        }
+        header={<BpeToolbar />}
         classNames={{
           main: cx(classes.main, {
             [classes.mainSimulation]: toolbarMode === TOOLBAR_MODE.SIMULATING,
@@ -186,36 +168,68 @@ const BpeBpmnModeler = () => {
       >
         {tabs.length > 1 ? (
           <Tabs
-            value={activeTab.value}
+            value={activeTab.id}
             onTabChange={(tab) => {
-              console.log(tab);
-              dispatch(tabsSliceActions.setActiveTab(tab));
+              if (tab === activeTab.id) {
+                return;
+              }
+              const nextTab = find(tabs, (e) => e.id === tab);
+              batch(() => {
+                dispatch(tabsSliceActions.setActiveTab(tab));
+                dispatch(toolSliceActions.setToolbarMode(nextTab.toolMode));
+              });
+              if (nextTab.variant === TabVariant.MODEL) {
+                // Change this and the tool is doomed
+                detaching();
+                dispatch(modelActions.setCurrentModeler(tab));
+              }
             }}
             variant="outline"
             keepMounted={false}
           >
             <Tabs.List>
-              {tabs.map((tab) => (
-                <Tabs.Tab
-                  value={tab.value}
-                  rightSection={
-                    tab.variant !== TabVariant.MODEL && (
-                      <ActionIcon>
-                        <IconBpeCancel
-                          onClick={() => dispatch(tabsSliceActions.closeTab(tab.value))}
-                        />
-                      </ActionIcon>
-                    )
-                  }
-                >
-                  {tab.label}
-                </Tabs.Tab>
-              ))}
+              {tabs.map((tab) => {
+                return (
+                  <Tabs.Tab
+                    disabled={toolbarMode === TOOLBAR_MODE.SIMULATING && tab.id !== activeTab.id}
+                    value={tab.id}
+                    rightSection={
+                      !(tab.variant === TabVariant.MODEL && modelers.length < 2) && (
+                        <ActionIcon>
+                          <IconBpeCancel
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              dispatch(tabsSliceActions.closeTab(tab.id));
+                              if (tab.variant === TabVariant.MODEL) {
+                                detaching();
+                                dispatch(modelActions.deleteModeler(tab.id));
+                              }
+                            }}
+                          />
+                        </ActionIcon>
+                      )
+                    }
+                  >
+                    {tab.label}
+                  </Tabs.Tab>
+                );
+              })}
             </Tabs.List>
+
+            {tabs.map((tab) => {
+              return (
+                tab.variant === TabVariant.RESULT && (
+                  <Tabs.Panel value={tab.id} pt="lg">
+                    <Container size="100%">
+                      <ResultTable evaluatedResult={evaluatedResults[tab.id]} />
+                    </Container>
+                  </Tabs.Panel>
+                )
+              );
+            })}
           </Tabs>
         ) : null}
-        {renderTabContent()}
-        <Box ref={canvasRef} style={{ height: '100%' }} />;
+        <Modeler />
       </AppShell>
     </ModelerContext.Provider>
   );

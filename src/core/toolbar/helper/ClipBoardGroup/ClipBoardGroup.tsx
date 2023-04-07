@@ -1,20 +1,22 @@
-import { useContext } from 'react';
 import { Divider, Group, Stack, Text } from '@mantine/core';
-import { useSetState, useLocalStorage } from '@mantine/hooks';
+import { useLocalStorage, useSetState } from '@mantine/hooks';
+import { useEffect } from 'react';
 
-import { ModelerContext } from '@/core/context/ModelerContext';
-import useGetModelerModules from '@/core/hooks/useGetModelerModule';
-import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
-import { IconBpeCopy, IconBpeCut, IconBpePaste } from '@/core/toolbar/utils/icons/Icons';
-import ToolbarIcon from '@/core/toolbar/helper/ToolbarIcon/ToolbarIcon';
-import { createReviver } from './helper/createReviver';
 import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
+import { getCurrentModeler } from '@/redux/selectors';
+import { useSelector } from 'react-redux';
+import useGetModelerModules from '../../../hooks/useGetModelerModule';
+import { DEFAULT_SPACING } from '../../constants/size';
+import { IconBpeCopy, IconBpeCut, IconBpePaste } from '../../utils/icons/Icons';
+import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
+import { createReviver } from './helper/createReviver';
 
 const BPMN_CLIPBOARD = 'bpmnClipboard';
 
 const ClipBoardGroup = () => {
-  const modeler = useContext(ModelerContext);
-  const [clipboard, copyPaste, eventBus, moddle, editorActions] = useGetModelerModules(modeler, [
+  const modeler = useSelector(getCurrentModeler)?.modeler;
+
+  const [clipboard, copyPaste, eventBus, moddle, editorActions] = useGetModelerModules([
     'clipboard',
     'copyPaste',
     'eventBus',
