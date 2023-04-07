@@ -59,49 +59,57 @@ const UtilsGroup = () => {
   return (
     <Stack spacing={DEFAULT_SPACING + 7}>
       <Group>
-        <ToolbarIcon
-          icon={IconBpeHand}
-          label="Hand Tool"
-          title="Activate Hand Tool"
-          orientation="vertical"
-          size="large"
-          onClick={() => toggleTool(handTool, 'handTool')}
-          active={currentActiveTool === 'handTool'}
-          hotkey={TOOLBAR_HOTKEYS.HAND_TOOL}
-        />
-        <ToolbarIcon
-          icon={IconBpeLasso}
-          label="Lasso Tool"
-          title="Activate Lasso Tool"
-          orientation="vertical"
-          size="large"
-          //@ts-ignore
-          onClick={() => toggleTool(lassoTool, 'lassoTool')}
-          active={currentActiveTool === 'lassoTool'}
-          hotkey={TOOLBAR_HOTKEYS.LASSO_TOOL}
-        />
-        <ToolbarIcon
-          icon={IconBpeSpace}
-          label="Space Tool"
-          title="Activate Space Tool"
-          orientation="vertical"
-          size="large"
-          //@ts-ignore
-          onClick={() => toggleTool(spaceTool, 'spaceTool')}
-          active={currentActiveTool === 'spaceTool'}
-          hotkey={TOOLBAR_HOTKEYS.SPACE_TOOL}
-        />
-        <ToolbarIcon
-          icon={IconBpeConnector}
-          label="Global Connector"
-          title="Activate Global Connector"
-          orientation="vertical"
-          size="large"
-          //@ts-ignore
-          onClick={() => toggleTool(globalConnect, 'globalConnect')}
-          active={currentActiveTool === 'globalConnect'}
-          hotkey={TOOLBAR_HOTKEYS.GLOBAL_CONNECT}
-        />
+        <Stack>
+          <ToolbarIcon
+            icon={IconBpeHand}
+            label="Hand Tool"
+            title="Activate Hand Tool"
+            orientation="horizontal"
+            size="small"
+            onClick={() => toggleTool(handTool, 'handTool')}
+            active={currentActiveTool === 'handTool'}
+            hotkey={TOOLBAR_HOTKEYS.HAND_TOOL}
+            overflow
+          />
+          <ToolbarIcon
+            icon={IconBpeLasso}
+            label="Lasso Tool"
+            title="Activate Lasso Tool"
+            orientation="horizontal"
+            size="small"
+            //@ts-ignore
+            onClick={() => toggleTool(lassoTool, 'lassoTool')}
+            active={currentActiveTool === 'lassoTool'}
+            hotkey={TOOLBAR_HOTKEYS.LASSO_TOOL}
+            overflow
+          />
+        </Stack>
+        <Stack>
+          <ToolbarIcon
+            icon={IconBpeSpace}
+            label="Space Tool"
+            title="Activate Space Tool"
+            orientation="horizontal"
+            size="small"
+            //@ts-ignore
+            onClick={() => toggleTool(spaceTool, 'spaceTool')}
+            active={currentActiveTool === 'spaceTool'}
+            hotkey={TOOLBAR_HOTKEYS.SPACE_TOOL}
+            overflow
+          />
+          <ToolbarIcon
+            icon={IconBpeConnector}
+            label="Global Connector"
+            title="Activate Global Connector"
+            orientation="horizontal"
+            size="small"
+            //@ts-ignore
+            onClick={() => toggleTool(globalConnect, 'globalConnect')}
+            active={currentActiveTool === 'globalConnect'}
+            hotkey={TOOLBAR_HOTKEYS.GLOBAL_CONNECT}
+            overflow
+          />
+        </Stack>
       </Group>
       <Text size="xs" align="center" weight="bold">
         Utilities
