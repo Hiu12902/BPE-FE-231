@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Group, Stack, Text } from '@mantine/core';
 
 import { ModelerContext } from '../../../context/ModelerContext';
@@ -6,15 +6,54 @@ import useGetModelerModules from '../../../hooks/useGetModelerModule';
 import { DEFAULT_SPACING } from '../../constants/size';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import { IconBpeConnector, IconBpeHand, IconBpeLasso, IconBpeSpace } from '../../utils/icons/Icons';
+import { useHotkeys } from '@mantine/hooks';
+import { TOOLBAR_HOTKEYS } from '../../constants/hotkeys';
 
 const UtilsGroup = () => {
   const modeler = useContext(ModelerContext);
-  const [handTool, lassoTool, spaceTool, globalConnect] = useGetModelerModules(modeler, [
+  const [handTool, lassoTool, spaceTool, globalConnect, eventBus] = useGetModelerModules(modeler, [
     'handTool',
     'lassoTool',
     'spaceTool',
     'globalConnect',
+    'eventBus',
   ]);
+  const [currentActiveTool, setCurrentActiveTool] = useState<string | undefined>();
+
+  const toggleTool = (tool: any, toolName: string) => {
+    //@ts-ignore
+    tool.toggle();
+    setCurrentActiveTool((tool) => (tool !== toolName ? toolName : undefined));
+  };
+
+  //@ts-ignore
+  useHotkeys([
+    [TOOLBAR_HOTKEYS.HAND_TOOL, () => toggleTool(handTool, 'handTool')],
+    [TOOLBAR_HOTKEYS.LASSO_TOOL, () => toggleTool(lassoTool, 'lassoTool')],
+    [TOOLBAR_HOTKEYS.SPACE_TOOL, () => toggleTool(spaceTool, 'spaceTool')],
+    [TOOLBAR_HOTKEYS.GLOBAL_CONNECT, () => toggleTool(globalConnect, 'globalConnect')],
+  ]);
+
+  //@ts-ignore
+  eventBus?.once(['hand.ended', 'lasso.ended', 'spaceTool.ended', 'global-connect.ended'], () => {
+    setCurrentActiveTool(undefined);
+  });
+
+  useEffect(() => {
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setCurrentActiveTool(undefined);
+      }
+    });
+
+    return () => {
+      document.removeEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setCurrentActiveTool(undefined);
+        }
+      });
+    };
+  }, []);
 
   return (
     <Stack spacing={DEFAULT_SPACING - 2}>
@@ -25,8 +64,9 @@ const UtilsGroup = () => {
           title="Activate Hand Tool"
           orientation="vertical"
           size="large"
-          //@ts-ignore
-          onClick={(event) => handTool.activateHand(event)}
+          onClick={() => toggleTool(handTool, 'handTool')}
+          active={currentActiveTool === 'handTool'}
+          hotkey={TOOLBAR_HOTKEYS.HAND_TOOL}
         />
         <ToolbarIcon
           icon={IconBpeLasso}
@@ -35,7 +75,9 @@ const UtilsGroup = () => {
           orientation="vertical"
           size="large"
           //@ts-ignore
-          onClick={(event) => lassoTool.activateSelection(event)}
+          onClick={() => toggleTool(lassoTool, 'lassoTool')}
+          active={currentActiveTool === 'lassoTool'}
+          hotkey={TOOLBAR_HOTKEYS.LASSO_TOOL}
         />
         <ToolbarIcon
           icon={IconBpeSpace}
@@ -44,7 +86,9 @@ const UtilsGroup = () => {
           orientation="vertical"
           size="large"
           //@ts-ignore
-          onClick={(event) => spaceTool.activateSelection(event)}
+          onClick={() => toggleTool(spaceTool, 'spaceTool')}
+          active={currentActiveTool === 'spaceTool'}
+          hotkey={TOOLBAR_HOTKEYS.SPACE_TOOL}
         />
         <ToolbarIcon
           icon={IconBpeConnector}
@@ -53,7 +97,9 @@ const UtilsGroup = () => {
           orientation="vertical"
           size="large"
           //@ts-ignore
-          onClick={(event) => globalConnect.start(event)}
+          onClick={() => toggleTool(globalConnect, 'globalConnect')}
+          active={currentActiveTool === 'globalConnect'}
+          hotkey={TOOLBAR_HOTKEYS.GLOBAL_CONNECT}
         />
       </Group>
       <Text size="xs" align="center" weight="bold">

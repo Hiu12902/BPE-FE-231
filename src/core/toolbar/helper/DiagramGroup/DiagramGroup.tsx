@@ -1,24 +1,25 @@
-import { useSelector } from 'react-redux';
-import { useContext, useEffect, useState } from 'react';
 import { Affix, Button, Group, Stack, Text, Transition } from '@mantine/core';
+import { useContext, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 //@ts-ignore
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
-import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
-import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
-import { IconBpeSimulate, IconBpeEvaluate, IconBpeCompare } from '@/core/toolbar/utils/icons/Icons';
-import { ModelerContext } from '@/core/context/ModelerContext';
-import useGetModelerModules from '@/core/hooks/useGetModelerModule';
-import { ToolbarModeContext } from '@/core/context/ToolbarModeContext';
-import { TOOLBAR_MODE } from '@/constants/toolbar';
-import { useAppDispatch } from '@/redux/store';
-import { toolSliceActions, tabsSliceActions, evaluatedResultActions } from '@/redux/slices';
-import * as toolSelectors from '@/redux/selectors';
-import * as tabsSelector from '@/redux/selectors';
-import { getElementForGraph } from './helper/getElementJson';
-import { useClipboard } from '@mantine/hooks';
 import evaluatedResultApi from '@/api/evaluatedResult';
+import { TOOLBAR_MODE } from '@/constants/toolbar';
+import { ModelerContext } from '@/core/context/ModelerContext';
+import { ToolbarModeContext } from '@/core/context/ToolbarModeContext';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
+import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
+import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
+import { IconBpeCompare, IconBpeEvaluate, IconBpeSimulate } from '@/core/toolbar/utils/icons/Icons';
+import * as tabsSelector from '@/redux/selectors';
+import * as toolSelectors from '@/redux/selectors';
+import { evaluatedResultActions, tabsSliceActions, toolSliceActions } from '@/redux/slices';
 import { TabVariant } from '@/redux/slices/tabs';
+import { useAppDispatch } from '@/redux/store';
+import { useClipboard, useHotkeys } from '@mantine/hooks';
+import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
+import { getElementForGraph } from './helper/getElementJson';
 
 const planeSuffix = '_plane';
 
@@ -120,6 +121,12 @@ const DiagramGroup = () => {
     };
   }, [eventBus]);
 
+  useHotkeys([
+    [TOOLBAR_HOTKEYS.SIMULATE, handleSwitchToSimulation],
+    [TOOLBAR_HOTKEYS.EVALUATE, () => console.log('reserve for evaluation')],
+    [TOOLBAR_HOTKEYS.COMPARE, () => console.log('reserve for comparison')],
+  ]);
+
   return (
     <>
       <Stack spacing={DEFAULT_SPACING}>
@@ -131,6 +138,7 @@ const DiagramGroup = () => {
             orientation="vertical"
             size="large"
             onClick={handleSwitchToSimulation}
+            hotkey={TOOLBAR_HOTKEYS.SIMULATE}
           />
           <ToolbarIcon
             icon={IconBpeEvaluate}
@@ -139,6 +147,7 @@ const DiagramGroup = () => {
             orientation="vertical"
             size="large"
             onClick={onEvaluateModel}
+            hotkey={TOOLBAR_HOTKEYS.EVALUATE}
           />
           <ToolbarIcon
             icon={IconBpeCompare}
@@ -146,6 +155,7 @@ const DiagramGroup = () => {
             title="Compare Model's Versions"
             orientation="vertical"
             size="large"
+            hotkey={TOOLBAR_HOTKEYS.COMPARE}
           />
         </Group>
         <Text size="xs" align="center">

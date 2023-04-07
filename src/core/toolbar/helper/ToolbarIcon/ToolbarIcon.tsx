@@ -1,6 +1,8 @@
-import { UnstyledButton, Stack, Text, Group, Tooltip, Center } from '@mantine/core';
+import { UnstyledButton, Stack, Text, Group, Tooltip, Center, Title } from '@mantine/core';
 import React from 'react';
+import { HOTKEY_MAP, TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
 import { useToolbarIconStyle } from './ToolbarIcon.style';
+import { useOs } from '@mantine/hooks';
 
 interface IToolbarIcon {
   icon: React.FC<React.SVGProps<SVGSVGElement>>;
@@ -10,18 +12,42 @@ interface IToolbarIcon {
   title: string;
   disabled?: boolean;
   active?: boolean;
+  hotkey?: TOOLBAR_HOTKEYS;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const ToolbarIcon = React.forwardRef<HTMLButtonElement, IToolbarIcon>(
   (
-    { icon: Icon, size, orientation, label, title, disabled, active, onClick }: IToolbarIcon,
+    {
+      icon: Icon,
+      size,
+      orientation,
+      label,
+      title,
+      disabled,
+      active,
+      hotkey,
+      onClick,
+    }: IToolbarIcon,
     ref
   ) => {
     const { classes, cx } = useToolbarIconStyle();
+    const os = useOs();
     const GroupComponent = orientation === 'horizontal' ? Group : Stack;
+
+    const TooltipLabel = () => (
+      <Stack>
+        {hotkey && (
+          <Title order={6} size={12}>
+            {os === 'macos' ? HOTKEY_MAP[hotkey!].macOs : HOTKEY_MAP[hotkey!].windows}
+          </Title>
+        )}
+        <Text size={12}>{title}</Text>
+      </Stack>
+    );
+
     return (
-      <Tooltip label={title} zIndex={101} position="bottom">
+      <Tooltip label={<TooltipLabel />} zIndex={101} position="bottom">
         <UnstyledButton
           className={cx(classes.button, {
             [classes.buttonDisabled]: disabled,

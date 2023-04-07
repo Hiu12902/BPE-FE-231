@@ -1,14 +1,14 @@
-import { Stack, Text, Space, Anchor, TextInput, Button } from '@mantine/core';
+import { Anchor, Stack, Text } from '@mantine/core';
+import { useClipboard, useHotkeys } from '@mantine/hooks';
 
-import { DEFAULT_SPACING } from '../../constants/size';
-import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
-import { IconBpeImport, IconBpeExport } from '../../utils/icons/Icons';
-import { ChangeEvent, createRef, useContext } from 'react';
-import { ModelerContext } from '../../../context/ModelerContext';
-import useGetModelerModules from '../../../hooks/useGetModelerModule';
-import { getElementForGraph } from '../DiagramGroup/helper/getElementJson';
-import { useClipboard } from '@mantine/hooks';
+import { ModelerContext } from '@/core/context/ModelerContext';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
+import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
+import ToolbarIcon from '@/core/toolbar/helper/ToolbarIcon/ToolbarIcon';
+import { IconBpeExport, IconBpeImport } from '@/core/toolbar/utils/icons/Icons';
 import { showNotification } from '@mantine/notifications';
+import { ChangeEvent, createRef, useContext } from 'react';
+import { getElementForGraph } from '../DiagramGroup/helper/getElementJson';
 
 const ImportExportGroup = () => {
   const modeler = useContext(ModelerContext);
@@ -59,10 +59,12 @@ const ImportExportGroup = () => {
       title: 'Copied!',
       message: 'JSON format of model is copied!',
     });
-    // let dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(jsonObj));
-    // jsonDownloadLinkRef.current?.setAttribute('href', dataStr);
-    // jsonDownloadLinkRef.current?.setAttribute('download', 'diagram.json');
   };
+
+  useHotkeys([
+    [TOOLBAR_HOTKEYS.IMPORT, () => uploadLinkRef.current?.click()],
+    [TOOLBAR_HOTKEYS.EXPORT, () => downloadLinkRef?.current?.click()],
+  ]);
 
   return (
     <Stack spacing={0}>
@@ -80,6 +82,7 @@ const ImportExportGroup = () => {
         size="small"
         disabled={!modeler}
         onClick={() => uploadLinkRef.current?.click()}
+        hotkey={TOOLBAR_HOTKEYS.IMPORT}
       />
       <Anchor onClick={saveBpmn} href="#" ref={downloadLinkRef} download>
         <ToolbarIcon
@@ -88,6 +91,7 @@ const ImportExportGroup = () => {
           title="Export File"
           orientation="horizontal"
           size="small"
+          hotkey={TOOLBAR_HOTKEYS.EXPORT}
         />
       </Anchor>
       <Anchor onClick={saveAsJson} href="#" ref={jsonDownloadLinkRef} download>
