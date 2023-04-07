@@ -140,13 +140,6 @@ const BpeBpmnModeler = () => {
     }
   }, [activeTab]);
 
-  const renderTabContent = () => {
-    switch (activeTab.variant) {
-      case TabVariant.RESULT:
-        return <ResultTable />;
-    }
-  };
-
   return (
     <ModelerContext.Provider value={currentModeler?.modeler}>
       <AppShell
@@ -200,8 +193,10 @@ const BpeBpmnModeler = () => {
                             onClick={(e) => {
                               e.stopPropagation();
                               dispatch(tabsSliceActions.closeTab(tab.id));
-                              if (tab.variant === TabVariant.MODEL) {
+                              if (activeTab.id === tab.id) {
                                 detaching();
+                              }
+                              if (tab.variant === TabVariant.MODEL) {
                                 dispatch(modelActions.deleteModeler(tab.id));
                               }
                             }}

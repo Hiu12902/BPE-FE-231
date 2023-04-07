@@ -50,7 +50,9 @@ const tabsSlice = createSlice({
         find(state.tabsRoot, (tab) => tab.id === action.payload)
       );
       remove(state.tabsRoot, (tab) => tab.id === action.payload);
-      state.activeTab = state.tabsRoot[index - 1];
+      if (state.activeTab?.id === action.payload) {
+        state.activeTab = state.tabsRoot[index - 1];
+      }
     },
     updateActiveTab: (state, action: PayloadAction<tab>) => {
       state.tabsRoot = state.tabsRoot.map((tab) =>

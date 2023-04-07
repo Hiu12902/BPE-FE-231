@@ -1,6 +1,6 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import { find, remove } from 'lodash';
+import { find, indexOf, remove } from 'lodash';
 
 interface Modeler {
   modeler: any;
@@ -35,9 +35,13 @@ const modelSlice = createSlice({
       state.currentModeler = action.payload;
     },
     deleteModeler: (state, action: PayloadAction<string>) => {
+      const index = indexOf(
+        state.modelers,
+        find(state.modelers, (modeler) => modeler.id === action.payload)
+      );
       remove(state.modelers, (modeler) => modeler.id === action.payload);
       if (state.currentModeler?.id === action.payload) {
-        state.currentModeler = state.modelers[state.modelers.length - 1];
+        state.currentModeler = state.modelers[index - 1];
       }
     },
   },

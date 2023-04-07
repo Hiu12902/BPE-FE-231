@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { camelCase } from 'lodash';
 
 declare module 'axios' {
@@ -26,7 +26,7 @@ class Client {
 
   public constructor() {
     this.axiosInstance = axios.create({
-      baseURL: 'http://127.0.0.1:8001/api/v1/',
+      baseURL: 'http://127.0.0.1:8000/api/v1/',
     });
     this.axiosInstance.defaults.headers.common['Content-Type'] = 'application/json';
 
@@ -57,22 +57,20 @@ class Client {
   };
 
   private _initializeResponseInterceptor = () => {
-    this.axiosInstance.interceptors.response.use(this._handleResponse, this._handleError);
+    this.axiosInstance.interceptors.response.use(this._handleResponse);
   };
   private _handleResponse = ({ data }: any) => {
     return camelizeKeys(data);
   };
 
-  protected _handleError = async (error: AxiosError) => {
-    console.log(error.response);
-
-    if (!error.response && !error.request) {
-      return Promise.reject(error);
-    }
-    if (!error.response && error.request) {
-      return Promise.reject({ message: 'No response received' });
-    }
-  };
+  // protected _handleError = async (error: AxiosError) => {
+  //   if (!error.response && !error.request) {
+  //     return Promise.reject(error);
+  //   }
+  //   if (!error.response && error.request) {
+  //     return Promise.reject({ message: 'No response received' });
+  //   }
+  // };
 
   public get<T = unknown, R = AxiosResponse<T>, D = any>(
     url: string,
