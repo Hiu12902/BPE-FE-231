@@ -1,29 +1,18 @@
-import React, { useContext, useEffect } from 'react';
-import { Alert, Box, Container, Group, ScrollArea, Space, Stack, Text, Title } from '@mantine/core';
+import { Alert, Box, Group, ScrollArea, Space, Stack, Text } from '@mantine/core';
 
 import { PALETTE_WIDTH, PROPERTIES_PANEL_WIDTH } from '@/constants/theme/themeConstants';
-import { IconAlertCircle } from '@tabler/icons';
-import { ModelerContext } from '../context/ModelerContext';
+import { IIssue } from '@/interfaces/linting';
+import { getCurrentModeler } from '@/redux/selectors';
+import { useSelector } from 'react-redux';
 import useGetModelerModules from '../hooks/useGetModelerModule';
 
-interface IIssue {
-  category: string;
-  id: string;
-  message: string;
-  rule: string;
-}
-
 const ValidationTerminal = ({ issues }: { issues: IIssue[] }) => {
-  const modeler = useContext(ModelerContext);
-  const [canvas, selection, elementRegistry] = useGetModelerModules(modeler, [
+  const modeler = useSelector(getCurrentModeler)?.modeler;
+  const [canvas, selection, elementRegistry] = useGetModelerModules([
     'canvas',
     'selection',
     'elementRegistry',
   ]);
-
-  useEffect(() => {
-    console.log(issues);
-  }, [issues]);
 
   const centerElement = (elementId: string) => {
     //@ts-ignore

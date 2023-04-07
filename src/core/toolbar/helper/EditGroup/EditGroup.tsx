@@ -1,7 +1,11 @@
+import { getCurrentModeler } from '@/redux/selectors';
 import { Divider, Group, Stack, Text } from '@mantine/core';
-import { DEFAULT_SPACING } from '../../constants/size';
-import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import { useHotkeys } from '@mantine/hooks';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import useGetModelerModules from '../../../hooks/useGetModelerModule';
+import { TOOLBAR_HOTKEYS } from '../../constants/hotkeys';
+import { DEFAULT_SPACING } from '../../constants/size';
 import {
   IconBpeDelete,
   IconBpeRedo,
@@ -9,18 +13,19 @@ import {
   IconBpeZoomIn,
   IconBpeZoomOut,
   IconBpeZoomReset,
-} from '@/core/toolbar/utils/icons/Icons';
-import { useContext, useState } from 'react';
-import { ModelerContext } from '@/core/context/ModelerContext';
-import useGetModelerModules from '@/core/hooks/useGetModelerModule';
-import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
+} from '../../utils/icons/Icons';
+import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const EditingGroup = () => {
-  const modeler = useContext(ModelerContext);
-  const [editorActions, eventBus, zoomScroll, canvas, commandStack] = useGetModelerModules(
-    modeler,
-    ['editorActions', 'eventBus', 'zoomScroll', 'canvas', 'commandStack']
-  );
+  const modeler = useSelector(getCurrentModeler)?.modeler;
+
+  const [editorActions, eventBus, zoomScroll, canvas, commandStack] = useGetModelerModules([
+    'editorActions',
+    'eventBus',
+    'zoomScroll',
+    'canvas',
+    'commandStack',
+  ]);
 
   const [deleteAccess, setDeleteAccess] = useState(false);
 
