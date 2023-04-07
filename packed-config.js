@@ -1,22 +1,22 @@
 function getAugmentedNamespace(n) {
   var f = n.default;
-	if (typeof f == "function") {
-		var a = function () {
-			return f.apply(this, arguments);
-		};
-		a.prototype = f.prototype;
+  if (typeof f == "function") {
+    var a = function () {
+      return f.apply(this, arguments);
+    };
+    a.prototype = f.prototype;
   } else a = {};
-  Object.defineProperty(a, '__esModule', {value: true});
-	Object.keys(n).forEach(function (k) {
-		var d = Object.getOwnPropertyDescriptor(n, k);
-		Object.defineProperty(a, k, d.get ? d : {
-			enumerable: true,
-			get: function () {
-				return n[k];
-			}
-		});
-	});
-	return a;
+  Object.defineProperty(a, '__esModule', { value: true });
+  Object.keys(n).forEach(function (k) {
+    var d = Object.getOwnPropertyDescriptor(n, k);
+    Object.defineProperty(a, k, d.get ? d : {
+      enumerable: true,
+      get: function () {
+        return n[k];
+      }
+    });
+  });
+  return a;
 }
 
 /**
@@ -25,7 +25,7 @@ function getAugmentedNamespace(n) {
  * either default flows _or_ have a condition attached
  */
 
-var conditionalFlows = function() {
+var conditionalFlows = function () {
 
   function check(node, reporter) {
 
@@ -42,7 +42,7 @@ var conditionalFlows = function() {
       );
 
       if (missingCondition) {
-        reporter.report(flow.id, 'Sequence flow is missing condition', [ 'conditionExpression' ]);
+        reporter.report(flow.id, 'Sequence flow is missing condition', ['conditionExpression']);
       }
     });
   }
@@ -80,7 +80,7 @@ function isDefaultFlow$1(node, flow) {
  *
  * @return {Boolean}
  */
-function is$d(node, type) {
+function is$c(node, type) {
 
   if (type.indexOf(':') === -1) {
     type = 'bpmn:' + type;
@@ -101,42 +101,42 @@ function is$d(node, type) {
  *
  * @return {Boolean}
  */
-function isAny$6(node, types) {
-  return types.some(function(type) {
-    return is$d(node, type);
+function isAny$5(node, types) {
+  return types.some(function (type) {
+    return is$c(node, type);
   });
 }
 
 var index_esm$1 = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	is: is$d,
-	isAny: isAny$6
+  __proto__: null,
+  is: is$c,
+  isAny: isAny$5
 });
 
 var require$$0 = /*@__PURE__*/getAugmentedNamespace(index_esm$1);
 
 const {
-  is: is$c,
-  isAny: isAny$5
+  is: is$b,
+  isAny: isAny$4
 } = require$$0;
 
 
 /**
  * A rule that checks the presence of an end event per scope.
  */
-var endEventRequired = function() {
+var endEventRequired = function () {
 
   function hasEndEvent(node) {
     const flowElements = node.flowElements || [];
 
     return (
-      flowElements.some(node => is$c(node, 'bpmn:EndEvent'))
+      flowElements.some(node => is$b(node, 'bpmn:EndEvent'))
     );
   }
 
   function check(node, reporter) {
 
-    if (!isAny$5(node, [
+    if (!isAny$4(node, [
       'bpmn:Process',
       'bpmn:SubProcess'
     ])) {
@@ -144,7 +144,7 @@ var endEventRequired = function() {
     }
 
     if (!hasEndEvent(node)) {
-      const type = is$c(node, 'bpmn:SubProcess') ? 'Sub process' : 'Process';
+      const type = is$b(node, 'bpmn:SubProcess') ? 'Sub process' : 'Process';
 
       reporter.report(node.id, type + ' is missing end event');
     }
@@ -154,33 +154,33 @@ var endEventRequired = function() {
 };
 
 const {
-  is: is$b
+  is: is$a
 } = require$$0;
 
 /**
  * A rule that checks that start events inside an event sub-process
  * are typed.
  */
-var eventSubProcessTypedStartEvent = function() {
+var eventSubProcessTypedStartEvent = function () {
 
   function check(node, reporter) {
 
-    if (!is$b(node, 'bpmn:SubProcess') || !node.triggeredByEvent) {
+    if (!is$a(node, 'bpmn:SubProcess') || !node.triggeredByEvent) {
       return;
     }
 
     const flowElements = node.flowElements || [];
 
-    flowElements.forEach(function(flowElement) {
+    flowElements.forEach(function (flowElement) {
 
-      if (!is$b(flowElement, 'bpmn:StartEvent')) {
+      if (!is$a(flowElement, 'bpmn:StartEvent')) {
         return false;
       }
 
       const eventDefinitions = flowElement.eventDefinitions || [];
 
       if (eventDefinitions.length === 0) {
-        reporter.report(flowElement.id, 'Start event is missing event definition', [ 'eventDefinitions' ]);
+        reporter.report(flowElement.id, 'Start event is missing event definition', ['eventDefinitions']);
       }
     });
   }
@@ -192,7 +192,7 @@ var eventSubProcessTypedStartEvent = function() {
 };
 
 const {
-  isAny: isAny$4
+  isAny: isAny$3
 } = require$$0;
 
 /**
@@ -202,11 +202,11 @@ const {
  * Users should model a parallel joining gateway
  * to achieve the desired behavior.
  */
-var fakeJoin = function() {
+var fakeJoin = function () {
 
   function check(node, reporter) {
 
-    if (!isAny$4(node, [
+    if (!isAny$3(node, [
       'bpmn:Task',
       'bpmn:Event'
     ])) {
@@ -227,19 +227,19 @@ var fakeJoin = function() {
 };
 
 const {
-  is: is$a,
-  isAny: isAny$3
+  is: is$9,
+  isAny: isAny$2
 } = require$$0;
 
 
 /**
  * A rule that checks the presence of a label.
  */
-var labelRequired = function() {
+var labelRequired = function () {
 
   function check(node, reporter) {
 
-    if (isAny$3(node, [
+    if (isAny$2(node, [
       'bpmn:ParallelGateway',
       'bpmn:EventBasedGateway'
     ])) {
@@ -247,28 +247,28 @@ var labelRequired = function() {
     }
 
     // ignore joining gateways
-    if (is$a(node, 'bpmn:Gateway') && !isForking(node)) {
+    if (is$9(node, 'bpmn:Gateway') && !isForking(node)) {
       return;
     }
 
-    if (is$a(node, 'bpmn:BoundaryEvent')) {
+    if (is$9(node, 'bpmn:BoundaryEvent')) {
       return;
     }
 
     // ignore sub-processes
-    if (is$a(node, 'bpmn:SubProcess')) {
+    if (is$9(node, 'bpmn:SubProcess')) {
 
       // TODO(nikku): better ignore expanded sub-processes only
       return;
     }
 
     // ignore sequence flow without condition
-    if (is$a(node, 'bpmn:SequenceFlow') && !hasCondition$1(node)) {
+    if (is$9(node, 'bpmn:SequenceFlow') && !hasCondition$1(node)) {
       return;
     }
 
     // ignore data objects and artifacts for now
-    if (isAny$3(node, [
+    if (isAny$2(node, [
       'bpmn:FlowNode',
       'bpmn:SequenceFlow',
       'bpmn:Participant',
@@ -278,7 +278,7 @@ var labelRequired = function() {
       const name = (node.name || '').trim();
 
       if (name.length === 0) {
-        reporter.report(node.id, 'Element is missing label/name', [ 'name' ]);
+        reporter.report(node.id, 'Element is missing label/name', ['name']);
       }
     }
   }
@@ -993,50 +993,50 @@ function merge(target) {
 }
 
 var index_esm = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	assign: assign,
-	bind: bind,
-	debounce: debounce,
-	ensureArray: ensureArray,
-	every: every,
-	filter: filter,
-	find: find,
-	findIndex: findIndex,
-	flatten: flatten$1,
-	forEach: forEach,
-	get: get,
-	groupBy: groupBy,
-	has: has,
-	isArray: isArray,
-	isDefined: isDefined,
-	isFunction: isFunction,
-	isNil: isNil,
-	isNumber: isNumber,
-	isObject: isObject,
-	isString: isString,
-	isUndefined: isUndefined,
-	keys: keys,
-	map: map,
-	matchPattern: matchPattern,
-	merge: merge,
-	omit: omit,
-	pick: pick,
-	reduce: reduce,
-	set: set,
-	size: size,
-	some: some,
-	sortBy: sortBy,
-	throttle: throttle,
-	unionBy: unionBy,
-	uniqueBy: uniqueBy,
-	values: values,
-	without: without
+  __proto__: null,
+  assign: assign,
+  bind: bind,
+  debounce: debounce,
+  ensureArray: ensureArray,
+  every: every,
+  filter: filter,
+  find: find,
+  findIndex: findIndex,
+  flatten: flatten$1,
+  forEach: forEach,
+  get: get,
+  groupBy: groupBy,
+  has: has,
+  isArray: isArray,
+  isDefined: isDefined,
+  isFunction: isFunction,
+  isNil: isNil,
+  isNumber: isNumber,
+  isObject: isObject,
+  isString: isString,
+  isUndefined: isUndefined,
+  keys: keys,
+  map: map,
+  matchPattern: matchPattern,
+  merge: merge,
+  omit: omit,
+  pick: pick,
+  reduce: reduce,
+  set: set,
+  size: size,
+  some: some,
+  sortBy: sortBy,
+  throttle: throttle,
+  unionBy: unionBy,
+  uniqueBy: uniqueBy,
+  values: values,
+  without: without
 });
 
 var require$$1 = /*@__PURE__*/getAugmentedNamespace(index_esm);
 
 const {
-  is: is$9
+  is: is$8
 } = require$$0;
 
 const {
@@ -1047,11 +1047,11 @@ const {
  * A rule that checks that there is no BPMNDI information missing for elements,
  * which require BPMNDI.
  */
-var noBpmndi = function() {
+var noBpmndi = function () {
 
   function check(node, reporter) {
 
-    if (!is$9(node, 'bpmn:Definitions')) {
+    if (!is$8(node, 'bpmn:Definitions')) {
       return false;
     }
 
@@ -1153,7 +1153,7 @@ function getAllDiBpmnReferences(definitionsNode) {
 }
 
 function hasVisualRepresentation(element) {
-  const noVisRepresentation = [ 'bpmn:DataObject' ];
+  const noVisRepresentation = ['bpmn:DataObject'];
 
   return noVisRepresentation.includes(element.$type) ? false : true;
 }
@@ -1169,7 +1169,7 @@ function hasChildLaneSet(element) {
 var helper = {};
 
 const {
-  is: is$8
+  is: is$7
 } = require$$0;
 
 /**
@@ -1181,11 +1181,11 @@ const {
  */
 function disallowNodeType$2(type) {
 
-  return function() {
+  return function () {
 
     function check(node, reporter) {
 
-      if (is$8(node, type)) {
+      if (is$7(node, type)) {
         reporter.report(node.id, 'Element has disallowed type <' + type + '>');
       }
     }
@@ -1205,8 +1205,8 @@ const disallowNodeType$1 = helper.disallowNodeType;
 var noComplexGateway = disallowNodeType$1('bpmn:ComplexGateway');
 
 const {
-  isAny: isAny$2,
-  is: is$7
+  isAny: isAny$1,
+  is: is$6
 } = require$$0;
 
 
@@ -1215,11 +1215,11 @@ const {
  * flow elements, i.e. elements without incoming
  * _or_ outgoing sequence flows
  */
-var noDisconnected = function() {
+var noDisconnected = function () {
 
   function check(node, reporter) {
 
-    if (!isAny$2(node, [
+    if (!isAny$1(node, [
       'bpmn:Task',
       'bpmn:Gateway',
       'bpmn:SubProcess',
@@ -1255,7 +1255,7 @@ function isCompensationBoundary(node) {
 
   var eventDefinitions = node.eventDefinitions;
 
-  if (!is$7(node, 'bpmn:BoundaryEvent')) {
+  if (!is$6(node, 'bpmn:BoundaryEvent')) {
     return false;
   }
 
@@ -1263,7 +1263,7 @@ function isCompensationBoundary(node) {
     return false;
   }
 
-  return is$7(eventDefinitions[0], 'bpmn:CompensateEventDefinition');
+  return is$6(eventDefinitions[0], 'bpmn:CompensateEventDefinition');
 }
 
 function isCompensationActivity(node) {
@@ -1279,7 +1279,7 @@ function isCompensationLinked(node) {
 }
 
 const {
-  is: is$6
+  is: is$5
 } = require$$0;
 
 /**
@@ -1287,7 +1287,7 @@ const {
  * flow elements, i.e. elements without incoming
  * _or_ outgoing sequence flows
  */
-var noDuplicateSequenceFlows = function() {
+var noDuplicateSequenceFlows = function () {
 
   const keyed = {};
 
@@ -1296,7 +1296,7 @@ var noDuplicateSequenceFlows = function() {
 
   function check(node, reporter) {
 
-    if (!is$6(node, 'bpmn:SequenceFlow')) {
+    if (!is$5(node, 'bpmn:SequenceFlow')) {
       return;
     }
 
@@ -1344,7 +1344,7 @@ function flowKey(flow) {
 }
 
 const {
-  is: is$5
+  is: is$4
 } = require$$0;
 
 
@@ -1352,11 +1352,11 @@ const {
  * A rule that checks, whether a gateway forks and joins
  * at the same time.
  */
-var noGatewayJoinFork = function() {
+var noGatewayJoinFork = function () {
 
   function check(node, reporter) {
 
-    if (!is$5(node, 'bpmn:Gateway')) {
+    if (!is$4(node, 'bpmn:Gateway')) {
       return;
     }
 
@@ -1375,7 +1375,7 @@ var noGatewayJoinFork = function() {
 };
 
 const {
-  isAny: isAny$1
+  isAny
 } = require$$0;
 
 
@@ -1386,11 +1386,11 @@ const {
  * users should model the parallel splitting gateway
  * explicitly instead.
  */
-var noImplicitSplit = function() {
+var noImplicitSplit = function () {
 
   function check(node, reporter) {
 
-    if (!isAny$1(node, [
+    if (!isAny(node, [
       'bpmn:Task',
       'bpmn:Event'
     ])) {
@@ -1430,26 +1430,26 @@ const disallowNodeType = helper.disallowNodeType;
 var noInclusiveGateway = disallowNodeType('bpmn:InclusiveGateway');
 
 const {
-  is: is$4
+  is: is$3
 } = require$$0;
 
 /**
  * A rule that checks whether not more than one blank start event
  * exists per scope.
  */
-var singleBlankStartEvent = function() {
+var singleBlankStartEvent = function () {
 
   function check(node, reporter) {
 
-    if (!is$4(node, 'bpmn:FlowElementsContainer')) {
+    if (!is$3(node, 'bpmn:FlowElementsContainer')) {
       return;
     }
 
     const flowElements = node.flowElements || [];
 
-    const blankStartEvents = flowElements.filter(function(flowElement) {
+    const blankStartEvents = flowElements.filter(function (flowElement) {
 
-      if (!is$4(flowElement, 'bpmn:StartEvent')) {
+      if (!is$3(flowElement, 'bpmn:StartEvent')) {
         return false;
       }
 
@@ -1459,7 +1459,7 @@ var singleBlankStartEvent = function() {
     });
 
     if (blankStartEvents.length > 1) {
-      const type = is$4(node, 'bpmn:SubProcess') ? 'Sub process' : 'Process';
+      const type = is$3(node, 'bpmn:SubProcess') ? 'Sub process' : 'Process';
 
       reporter.report(node.id, type + ' has multiple blank start events');
     }
@@ -1472,25 +1472,25 @@ var singleBlankStartEvent = function() {
 };
 
 const {
-  is: is$3
+  is: is$2
 } = require$$0;
 
 
 /**
  * A rule that verifies that an event contains maximum one event definition.
  */
-var singleEventDefinition = function() {
+var singleEventDefinition = function () {
 
   function check(node, reporter) {
 
-    if (!is$3(node, 'bpmn:Event')) {
+    if (!is$2(node, 'bpmn:Event')) {
       return;
     }
 
     const eventDefinitions = node.eventDefinitions || [];
 
     if (eventDefinitions.length > 1) {
-      reporter.report(node.id, 'Event has multiple event definitions', [ 'eventDefinitions' ]);
+      reporter.report(node.id, 'Event has multiple event definitions', ['eventDefinitions']);
     }
   }
 
@@ -1498,44 +1498,6 @@ var singleEventDefinition = function() {
     check
   };
 
-};
-
-const {
-  is: is$2,
-  isAny
-} = require$$0;
-
-
-/**
- * A rule that checks for the presence of a start event per scope.
- */
-var startEventRequired = function() {
-
-  function hasStartEvent(node) {
-    const flowElements = node.flowElements || [];
-
-    return (
-      flowElements.some(node => is$2(node, 'bpmn:StartEvent'))
-    );
-  }
-
-  function check(node, reporter) {
-
-    if (!isAny(node, [
-      'bpmn:Process',
-      'bpmn:SubProcess'
-    ])) {
-      return;
-    }
-
-    if (!hasStartEvent(node)) {
-      const type = is$2(node, 'bpmn:SubProcess') ? 'Sub process' : 'Process';
-
-      reporter.report(node.id, type + ' is missing start event');
-    }
-  }
-
-  return { check };
 };
 
 const {
@@ -1547,7 +1509,7 @@ const {
  * A rule that checks that start events inside a normal sub-processes
  * are blank (do not have an event definition).
  */
-var subProcessBlankStartEvent = function() {
+var subProcessBlankStartEvent = function () {
 
   function check(node, reporter) {
 
@@ -1557,7 +1519,7 @@ var subProcessBlankStartEvent = function() {
 
     const flowElements = node.flowElements || [];
 
-    flowElements.forEach(function(flowElement) {
+    flowElements.forEach(function (flowElement) {
 
       if (!is$1(flowElement, 'bpmn:StartEvent')) {
         return false;
@@ -1566,7 +1528,7 @@ var subProcessBlankStartEvent = function() {
       const eventDefinitions = flowElement.eventDefinitions || [];
 
       if (eventDefinitions.length > 0) {
-        reporter.report(flowElement.id, 'Start event must be blank', [ 'eventDefinitions' ]);
+        reporter.report(flowElement.id, 'Start event must be blank', ['eventDefinitions']);
       }
     });
   }
@@ -1586,7 +1548,7 @@ const {
  *
  * Those gateways are superfluous since they don't do anything.
  */
-var superfluousGateway = function() {
+var superfluousGateway = function () {
 
   function check(node, reporter) {
 
@@ -1616,9 +1578,9 @@ const cache = {};
  *
  * @param {Object} cache
  */
-function Resolver() {}
+function Resolver() { }
 
-Resolver.prototype.resolveRule = function(pkg, ruleName) {
+Resolver.prototype.resolveRule = function (pkg, ruleName) {
 
   const rule = cache[pkg + '/' + ruleName];
 
@@ -1629,9 +1591,9 @@ Resolver.prototype.resolveRule = function(pkg, ruleName) {
   return rule;
 };
 
-Resolver.prototype.resolveConfig = function(pkg, configName) {
+Resolver.prototype.resolveConfig = function (pkg, configName) {
   throw new Error(
-    'cannot resolve config <' + configName + '> in <' + pkg +'>'
+    'cannot resolve config <' + configName + '> in <' + pkg + '>'
   );
 };
 
@@ -1652,7 +1614,7 @@ const rules = {
   "no-inclusive-gateway": "error",
   "single-blank-start-event": "error",
   "single-event-definition": "error",
-  "start-event-required": "error",
+  "start-event-required": 0,
   "sub-process-blank-start-event": "error",
   "superfluous-gateway": "warn"
 };
@@ -1679,7 +1641,6 @@ cache['bpmnlint/no-implicit-split'] = noImplicitSplit;
 cache['bpmnlint/no-inclusive-gateway'] = noInclusiveGateway;
 cache['bpmnlint/single-blank-start-event'] = singleBlankStartEvent;
 cache['bpmnlint/single-event-definition'] = singleEventDefinition;
-cache['bpmnlint/start-event-required'] = startEventRequired;
 cache['bpmnlint/sub-process-blank-start-event'] = subProcessBlankStartEvent;
 cache['bpmnlint/superfluous-gateway'] = superfluousGateway;
 

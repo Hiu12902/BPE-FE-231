@@ -34,6 +34,7 @@ const ModelGroup = () => {
         orientation="horizontal"
         size="small"
         hotkey={TOOLBAR_HOTKEYS.VALIDATE}
+        disabled
       />
       <ToolbarIcon
         icon={IconBpeValidate}
@@ -55,6 +56,7 @@ const ModelGroup = () => {
         orientation="horizontal"
         size="small"
         hotkey={TOOLBAR_HOTKEYS.HISTORY}
+        disabled
       />
       <Text size="xs" align="center">
         Model

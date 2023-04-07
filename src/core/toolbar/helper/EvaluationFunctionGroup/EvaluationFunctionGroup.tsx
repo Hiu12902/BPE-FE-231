@@ -1,8 +1,7 @@
-import { Group, Stack } from '@mantine/core';
-import React from 'react';
 import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
-import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import { IconBpeExportLarge, IconBpeSaveLarge } from '@/core/toolbar/utils/icons/Icons';
+import { Group, Stack } from '@mantine/core';
+import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const EvaluationFunctionGroup = () => {
   return (
@@ -14,6 +13,7 @@ const EvaluationFunctionGroup = () => {
           title="Save evaluated result"
           orientation="vertical"
           size="large"
+          disabled
         />
         <ToolbarIcon
           icon={IconBpeExportLarge}
@@ -21,6 +21,7 @@ const EvaluationFunctionGroup = () => {
           title="Export evaluated result"
           orientation="vertical"
           size="large"
+          disabled
         />
       </Group>
     </Stack>

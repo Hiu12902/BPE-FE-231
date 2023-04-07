@@ -1,6 +1,6 @@
-import { EvaluatedResultRecord } from '../interfaces';
+import { EvaluationResult } from '../interfaces';
 
-export const ResultTableTitleMap: Record<keyof EvaluatedResultRecord, string> = {
+export const ResultTableTitleMap: Record<keyof EvaluationResult, string> = {
   totalCycleTime: 'Total Cycle Time',
   exceptionHandling: 'Exception Handling',
   flexibility: 'Flexibility',
@@ -17,12 +17,19 @@ export const ResultTableTitleMap: Record<keyof EvaluatedResultRecord, string> = 
   handledTasks: 'Handled Tasks',
   totalCost: 'Total Cost',
   quality: 'Quality',
+  transparency: 'Transparency',
+  logsCycleTime: 'Log Cycle Time',
+  logsFlexibility: 'Log Flexibility',
+  logsQuality: 'Log Quality',
+  unitCost: 'Unit Cost',
 };
 
 export const EXCLUDED_FIELDS = [
   'logsCycleTime',
   'logsFlexibility',
   'logsQuality',
-  'transparency',
-  'unitCost',
+  'totalLoop',
+  'handledTasks',
+  'unHandledTasks',
+  'totalLoopProbability',
 ];

@@ -2,6 +2,7 @@
   "extends": "bpmnlint:recommended",
   "rules": {
     "label-required": "warn",
-    "fake-join": "error"
+    "fake-join": "error",
+    "start-event-required": "off"
   }
 }
