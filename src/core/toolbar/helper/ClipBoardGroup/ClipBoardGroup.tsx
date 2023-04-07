@@ -1,13 +1,14 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { Divider, Group, Stack, Text } from '@mantine/core';
 import { useSetState, useLocalStorage } from '@mantine/hooks';
 
-import { ModelerContext } from '../../../context/ModelerContext';
-import useGetModelerModules from '../../../hooks/useGetModelerModule';
-import { DEFAULT_SPACING } from '../../constants/size';
-import { IconBpeCopy, IconBpeCut, IconBpePaste } from '../../utils/icons/Icons';
-import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
+import { ModelerContext } from '@/core/context/ModelerContext';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
+import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
+import { IconBpeCopy, IconBpeCut, IconBpePaste } from '@/core/toolbar/utils/icons/Icons';
+import ToolbarIcon from '@/core/toolbar/helper/ToolbarIcon/ToolbarIcon';
 import { createReviver } from './helper/createReviver';
+import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
 
 const BPMN_CLIPBOARD = 'bpmnClipboard';
 
@@ -90,6 +91,7 @@ const ClipBoardGroup = () => {
           size="large"
           disabled={!modeler || !bpmnClipboard}
           onClick={handlePasteElement}
+          hotkey={TOOLBAR_HOTKEYS.PASTE}
         />
         <Stack spacing={0}>
           <ToolbarIcon
@@ -100,6 +102,7 @@ const ClipBoardGroup = () => {
             label="Copy"
             disabled={!modeler || !accessState.copy}
             onClick={handleCopy}
+            hotkey={TOOLBAR_HOTKEYS.COPY}
           />
           <Divider my="xs" />
           <ToolbarIcon
@@ -110,6 +113,7 @@ const ClipBoardGroup = () => {
             label="Cut"
             disabled={!modeler || !accessState.copy}
             onClick={handleCut}
+            hotkey={TOOLBAR_HOTKEYS.CUT}
           />
         </Stack>
       </Group>
