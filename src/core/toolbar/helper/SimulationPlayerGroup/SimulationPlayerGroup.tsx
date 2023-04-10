@@ -23,7 +23,6 @@ const SimulationPlayerGroup = () => {
   const [startEvents, setStartEvents] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [simulationStarted, setSimulationStarted] = useState(false);
-  let simulationCount = 0;
   const [simulationEntriesHistory, setSimulationEntriesHistory] = useState<string>('');
   const buttonRef = React.createRef<HTMLButtonElement>();
   const [elementRegistry, simulationSupport, pauseSimulation, eventBus, resetSimulation] =
@@ -63,16 +62,12 @@ const SimulationPlayerGroup = () => {
 
   const onTraceSimulation = (context: any) => {
     if (context?.action === 'signal' && context?.element?.type === 'bpmn:StartEvent') {
-      simulationCount++;
       setIsPlaying(() => true);
     } else if (context?.action === 'enter' && context?.element?.type === 'bpmn:EndEvent') {
-      simulationCount--;
-      if (simulationCount === 0) {
-        setIsPlaying(() => false);
-        setSimulationStarted(() => false);
-        //@ts-ignore
-        pauseSimulation.isActive = false;
-      }
+      setIsPlaying(() => false);
+      setSimulationStarted(() => false);
+      //@ts-ignore
+      pauseSimulation.isActive = false;
     }
   };
 
@@ -205,7 +200,7 @@ const SimulationPlayerGroup = () => {
           size="large"
         />
       </Group>
-      <Text size="xs" align="center">
+      <Text size="xs" align="center" weight="bold">
         Player
       </Text>
     </Stack>

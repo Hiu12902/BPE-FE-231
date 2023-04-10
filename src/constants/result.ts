@@ -22,6 +22,7 @@ export const ResultTableTitleMap: Record<keyof EvaluationResult, string> = {
   logsFlexibility: 'Log Flexibility',
   logsQuality: 'Log Quality',
   unitCost: 'Unit Cost',
+  steps: 'Steps',
 };
 
 export const EXCLUDED_FIELDS = [
@@ -32,4 +33,5 @@ export const EXCLUDED_FIELDS = [
   'handledTasks',
   'unHandledTasks',
   'totalLoopProbability',
+  'steps',
 ];

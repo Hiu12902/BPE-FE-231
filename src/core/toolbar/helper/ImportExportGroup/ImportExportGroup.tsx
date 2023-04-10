@@ -1,14 +1,15 @@
 import { Anchor, Stack, Text } from '@mantine/core';
 
 import * as selectors from '@/redux/selectors';
-import { tabsSliceActions } from '@/redux/slices';
+import { modelActions, tabsSliceActions } from '@/redux/slices';
 import { useAppDispatch } from '@/redux/store';
 import { useClipboard, useHotkeys } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import { ChangeEvent, createRef } from 'react';
-import { useSelector } from 'react-redux';
+import { batch, useSelector } from 'react-redux';
 import useGetModelerModules from '../../../hooks/useGetModelerModule';
 import { TOOLBAR_HOTKEYS } from '../../constants/hotkeys';
+import { DEFAULT_SPACING } from '../../constants/size';
 import { IconBpeExport, IconBpeImport } from '../../utils/icons/Icons';
 import { getElementForGraph } from '../DiagramGroup/helper/getElementJson';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
@@ -27,8 +28,10 @@ const ImportExportGroup = () => {
   const handleImportDiagram = (event: ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader();
     const input = event.target;
+    let fileName = 'diagram';
     if (input.files) {
       reader.readAsText(input.files[0]);
+      fileName = input.files[0].name.replace('.bpmn', '');
     }
     reader.onloadend = async (e) => {
       let xml = e.target?.result;
@@ -40,7 +43,11 @@ const ImportExportGroup = () => {
         canvas.zoom('fit-viewport', 'auto');
         dispatch(
           //@ts-ignore
-          tabsSliceActions.updateActiveTab({ ...activeTab, value: canvas?.getRootElement()?.id })
+          tabsSliceActions.updateActiveTab({
+            ...activeTab,
+            value: canvas?.getRootElement()?.id,
+            label: fileName || activeTab?.label || 'diagram',
+          })
         );
       } catch (err) {
         console.log(err);
@@ -78,34 +85,36 @@ const ImportExportGroup = () => {
   ]);
 
   return (
-    <Stack spacing={0}>
+    <Stack spacing={DEFAULT_SPACING + 15}>
       <input
         type="file"
         onChange={handleImportDiagram}
         ref={uploadLinkRef}
         style={{ display: 'none' }}
       />
-      <ToolbarIcon
-        icon={IconBpeImport}
-        label="Import"
-        title="Import File"
-        orientation="horizontal"
-        size="small"
-        disabled={!modeler}
-        onClick={() => uploadLinkRef.current?.click()}
-        hotkey={TOOLBAR_HOTKEYS.IMPORT}
-      />
-      <Anchor onClick={saveBpmn} href="#" ref={downloadLinkRef} download>
+      <Stack spacing={5}>
         <ToolbarIcon
-          icon={IconBpeExport}
-          label="Export"
-          title="Export File"
+          icon={IconBpeImport}
+          label="Import"
+          title="Import File"
           orientation="horizontal"
           size="small"
-          hotkey={TOOLBAR_HOTKEYS.EXPORT}
+          disabled={!modeler}
+          onClick={() => uploadLinkRef.current?.click()}
+          hotkey={TOOLBAR_HOTKEYS.IMPORT}
         />
-      </Anchor>
-      <Anchor onClick={saveAsJson} href="#" ref={jsonDownloadLinkRef} download>
+        <Anchor onClick={saveBpmn} href="#" ref={downloadLinkRef} download>
+          <ToolbarIcon
+            icon={IconBpeExport}
+            label="Export"
+            title="Export File"
+            orientation="horizontal"
+            size="small"
+            hotkey={TOOLBAR_HOTKEYS.EXPORT}
+          />
+        </Anchor>
+      </Stack>
+      {/* <Anchor onClick={saveAsJson} href="#" ref={jsonDownloadLinkRef} download>
         <ToolbarIcon
           icon={IconBpeExport}
           label="JSON"
@@ -113,7 +122,7 @@ const ImportExportGroup = () => {
           orientation="horizontal"
           size="small"
         />
-      </Anchor>
+      </Anchor> */}
       <Text size="xs" align="center" weight="bold">
         I/O
       </Text>

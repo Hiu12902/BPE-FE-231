@@ -160,7 +160,7 @@ const SimulationActionGroup = () => {
             )
         )}
       </Group>
-      <Text size="xs" align="center">
+      <Text size="xs" align="center" weight="bold">
         Actions
       </Text>
     </Stack>

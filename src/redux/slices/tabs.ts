@@ -15,6 +15,7 @@ export interface tab {
   variant: TabVariant;
   toolMode: TOOLBAR_MODE;
   id: string;
+  isCompare?: boolean;
 }
 
 interface TabsProps {

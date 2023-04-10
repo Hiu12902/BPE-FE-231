@@ -1,5 +1,11 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import { evaluatedResultSlice, lintingSlice, modelSlice, toolSlice } from '../slices';
+import {
+  comparingSlice,
+  evaluatedResultSlice,
+  lintingSlice,
+  modelSlice,
+  toolSlice,
+} from '../slices';
 import tabsSlice from '../slices/tabs';
 
 const rootReducer = combineReducers({
@@ -8,6 +14,7 @@ const rootReducer = combineReducers({
   [evaluatedResultSlice.name]: evaluatedResultSlice.reducer,
   [lintingSlice.name]: lintingSlice.reducer,
   [modelSlice.name]: modelSlice.reducer,
+  [comparingSlice.name]: comparingSlice.reducer,
 });
 
 export default rootReducer;

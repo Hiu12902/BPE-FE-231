@@ -1,4 +1,14 @@
-import { Affix, Button, Group, Stack, Text, Transition } from '@mantine/core';
+import {
+  Affix,
+  Button,
+  Container,
+  Group,
+  Modal,
+  NumberInput,
+  Stack,
+  Text,
+  Transition,
+} from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { batch, useSelector } from 'react-redux';
 //@ts-ignore
@@ -11,6 +21,7 @@ import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import { IconBpeCompare, IconBpeEvaluate, IconBpeSimulate } from '@/core/toolbar/utils/icons/Icons';
 import * as selectors from '@/redux/selectors';
 import {
+  comparingActions,
   evaluatedResultActions,
   lintingActions,
   tabsSliceActions,
@@ -18,54 +29,42 @@ import {
 } from '@/redux/slices';
 import { TabVariant } from '@/redux/slices/tabs';
 import { useAppDispatch } from '@/redux/store';
+import { useForm } from '@mantine/form';
 import { randomId, useClipboard, useHotkeys } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { filter, flatten, values } from 'lodash';
+import { filter, findIndex, flatten, keys, map, values } from 'lodash';
 import { TOOLBAR_HOTKEYS } from '../../constants/hotkeys';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import { getElementForGraph } from './helper/getElementJson';
 
 const planeSuffix = '_plane';
 
-const mockPayload = {
-  target: {
-    cycleTime: 5,
-    cost: 3,
-  },
-  worst: {
-    cycleTime: 20,
-    cost: 10,
-  },
-  as_is: {
-    name: 'Process 1',
-    cycleTime: 6.25,
-    cost: 3.125,
-    transparency: [
-      {
-        view: 'Process 1',
-        numberOfExplicitTask: 2,
-        transparency: 0.4,
-      },
-    ],
-    flexibility: 0.5,
-    exceptionHandling: 0.3,
-    quality: 0.8,
-  },
-  to_be: {
-    name: 'Process 2',
-    cycleTime: 6,
-    cost: 3,
-    transparency: [
-      {
-        view: 'Process 1',
-        numberOfExplicitTask: 2,
-        transparency: 0.6,
-      },
-    ],
-    flexibility: 0.9,
-    exceptionHandling: 0.5,
-    quality: 0.6,
-  },
+interface UserInputProps {
+  cycleTime: number | undefined;
+  cost: number | undefined;
+  quality: number | undefined;
+  flexibility: number | undefined;
+  transparency: number | undefined;
+  exceptionHandling: number | undefined;
+}
+
+interface UserInputForm {
+  target: UserInputProps;
+  worst: UserInputProps;
+}
+
+const UserInputFormTitleMap: Record<keyof UserInputForm, string> = {
+  target: 'Target',
+  worst: 'Worst',
+};
+
+const UserInputFormLableMap: Record<keyof UserInputProps, string> = {
+  cycleTime: 'Cycle Time',
+  cost: 'Cost',
+  quality: 'Quality',
+  flexibility: 'Flexibility',
+  transparency: 'Transparency',
+  exceptionHandling: 'Exception Handling',
 };
 
 const DiagramGroup = () => {
@@ -74,6 +73,7 @@ const DiagramGroup = () => {
   const tabs = useSelector(selectors.getTabs);
   const clipboard = useClipboard();
   const modeler = useSelector(selectors.getCurrentModeler)?.modeler;
+  const currentModeler = useSelector(selectors.getCurrentModeler);
   const modelers = useSelector(selectors.getModelers);
   const [showAffix, setShowAffix] = useState(false);
   const [toggleMode, canvas, eventBus, elementRegistry, linting] = useGetModelerModules([
@@ -83,6 +83,78 @@ const DiagramGroup = () => {
     'elementRegistry',
     'linting',
   ]);
+
+  const userInputForm = useForm<UserInputForm>({
+    initialValues: {
+      target: {
+        cycleTime: undefined,
+        cost: undefined,
+        flexibility: 100,
+        quality: 100,
+        exceptionHandling: 100,
+        transparency: 100,
+      },
+      worst: {
+        cycleTime: undefined,
+        cost: undefined,
+        flexibility: 0,
+        quality: 0,
+        exceptionHandling: 0,
+        transparency: 0,
+      },
+    },
+  });
+
+  const [openInputModal, setOpenInputModal] = useState(false);
+  const [isInputValid, setIsInputValid] = useState(false);
+
+  const checkUserInput = () => {
+    const invalidValue = findIndex(
+      flatten(map(values(userInputForm.values), (obj) => values(obj))),
+      (value) => typeof value !== 'number'
+    );
+    return invalidValue < 0;
+  };
+
+  useEffect(() => {
+    setIsInputValid(() => !checkUserInput());
+  }, [userInputForm.values]);
+
+  const renderInputModal = () => {
+    return (
+      <Modal
+        onClose={() => setOpenInputModal(false)}
+        opened={openInputModal}
+        title="Please Input Your Expected values"
+        size="lg"
+      >
+        <Container>
+          <Stack>
+            <Group position="apart">
+              {keys(userInputForm.values).map((key) => (
+                <Stack>
+                  {keys(userInputForm.values[key as keyof UserInputForm]).map((subkey) => (
+                    <NumberInput
+                      label={`${UserInputFormTitleMap[key as keyof UserInputForm]} ${
+                        UserInputFormLableMap[subkey as keyof UserInputProps]
+                      }`}
+                      {...userInputForm.getInputProps(`${key}.${subkey}`)}
+                    />
+                  ))}
+                </Stack>
+              ))}
+            </Group>
+
+            <Group position="right">
+              <Button onClick={batchEvaluate} disabled={isInputValid}>
+                Compare
+              </Button>
+            </Group>
+          </Stack>
+        </Container>
+      </Modal>
+    );
+  };
 
   const getJsonFromModel = (modeler: any) => {
     const elementRegistry = modeler.get('elementRegistry');
@@ -166,7 +238,7 @@ const DiagramGroup = () => {
           dispatch(
             tabsSliceActions.setTabs([
               {
-                label: 'Evaluated Result',
+                label: `Evaluated Result - ${currentModeler?.id.replace('mantine-', '')}`,
                 value: 'evaluateResult',
                 variant: TabVariant.RESULT,
                 toolMode: TOOLBAR_MODE.EVALUATING,
@@ -192,12 +264,10 @@ const DiagramGroup = () => {
     const obj: any = {};
 
     obj['target'] = {
-      cycleTime: 5,
-      cost: 3,
+      ...userInputForm.values.target,
     };
     obj['worst'] = {
-      cycleTime: 20,
-      cost: 10,
+      ...userInputForm.values.worst,
     };
     obj['as_is'] = payload[0];
     obj['to_be'] = payload[1];
@@ -207,22 +277,45 @@ const DiagramGroup = () => {
 
   const batchEvaluate = async () => {
     try {
-      // const results = await Promise.all(
-      //   modelers.map(async (modeler) => {
-      //     return await evaluatedResultApi.evaluate(getJsonFromModel(modeler.modeler));
-      //   })
-      // );
-      // const flattenResult = flatten(results);
-      // const payload = flattenResult.map((result) => ({
-      //   cycleTime: result.totalCycleTime,
-      //   cost: result.totalCost,
-      //   transparency: result.transparency,
-      //   flexibility: result.flexibility,
-      //   exceptionHandling: result.exceptionHandling,
-      //   quality: result.quality,
-      // }));
-      const res = await evaluatedResultApi.compare(JSON.stringify(mockPayload));
-      console.log(res);
+      const results = await Promise.all(
+        modelers.map(async (modeler) => {
+          return await evaluatedResultApi.evaluate(getJsonFromModel(modeler.modeler));
+        })
+      );
+      const flattenResult = flatten(results);
+      const payload = flattenResult.map((result) => ({
+        cycleTime: result.totalCycleTime,
+        cost: result.totalCost,
+        transparency: result.transparency,
+        flexibility: result.flexibility,
+        exceptionHandling: result.exceptionHandling,
+        quality: result.quality,
+      }));
+      const res = await evaluatedResultApi.compare(JSON.stringify(buildComparePayload(payload)));
+      const newId = randomId();
+      batch(() => {
+        dispatch(evaluatedResultActions.setEvaluatedResult({ result: flattenResult, id: newId }));
+        dispatch(comparingActions.setCompareResult(res));
+        dispatch(
+          comparingActions.setDiagrams({
+            toCompareDiagram: modelers[1].id.replace('mantine-', ''),
+            diagramComparedTo: modelers[0].id.replace('mantine-', ''),
+          })
+        );
+        dispatch(
+          tabsSliceActions.setTabs([
+            {
+              label: `Comparing - ${currentModeler?.id.replace('mantine-', '')}`,
+              value: 'evaluateResult',
+              variant: TabVariant.RESULT,
+              toolMode: TOOLBAR_MODE.EVALUATING,
+              id: newId,
+              isCompare: true,
+            },
+          ])
+        );
+        dispatch(toolSliceActions.setToolbarMode(TOOLBAR_MODE.EVALUATING));
+      });
     } catch (err) {
       console.error(err);
     }
@@ -245,6 +338,7 @@ const DiagramGroup = () => {
 
   return (
     <>
+      {renderInputModal()}
       <Stack spacing={DEFAULT_SPACING}>
         <Group>
           <ToolbarIcon
@@ -270,11 +364,11 @@ const DiagramGroup = () => {
             title="Compare Model's Versions"
             orientation="vertical"
             size="large"
-            // disabled={modelers.length < 2}
-            onClick={batchEvaluate}
+            disabled={modelers.length < 2}
+            onClick={() => setOpenInputModal(true)}
           />
         </Group>
-        <Text size="xs" align="center">
+        <Text size="xs" align="center" weight="bold">
           Diagram
         </Text>
       </Stack>

@@ -12,7 +12,6 @@ import ImportExportGroup from './helper/ImportExportGroup/ImportExportGroup';
 import MiscGroup from './helper/MiscGroup/MiscGroup';
 import ModelGroup from './helper/ModelGroup/ModelGroup';
 import SimulationActionGroup from './helper/SimulationActionGroup/SimulationActionGroup';
-import SimulationDiagramGroup from './helper/SimulationDiagramGroup/SimulationDiagramGroup';
 import SimulationMiscGroup from './helper/SimulationMiscGroup/SimulationMiscGroup';
 import SimulationModesGroup from './helper/SimulationModesGroup/SimulationModesGroup';
 import SimulationPlayerGroup from './helper/SimulationPlayerGroup/SimulationPlayerGroup';
@@ -100,8 +99,8 @@ const DefaultToolbar = () => {
 const SimulationToolbar = () => {
   return (
     <>
-      <SimulationDiagramGroup />
-      <Divider size="xs" orientation="vertical" />
+      {/* <SimulationDiagramGroup />
+      <Divider size="xs" orientation="vertical" /> */}
       <SimulationModesGroup />
       <Divider size="xs" orientation="vertical" />
       <SimulationPlayerGroup />

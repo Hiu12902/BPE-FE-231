@@ -1,3 +1,13 @@
+export interface EvaluatedResultStep {
+  activity?: string;
+  cycleTime?: number;
+  cost?: number;
+  label?: string;
+  event?: string;
+  gateWay?: string;
+  branchingProbability?: number[];
+  rework?: number;
+}
 export interface EvaluatedResultRecord {
   totalCycleTime?: number;
   exceptionHandling?: number;
@@ -22,4 +32,5 @@ export interface EvaluationResult extends EvaluatedResultRecord {
   logsQuality?: any[];
   transparency?: any;
   unitCost?: any[];
+  steps?: EvaluatedResultStep[];
 }
