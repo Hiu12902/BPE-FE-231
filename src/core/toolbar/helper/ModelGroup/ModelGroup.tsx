@@ -58,7 +58,7 @@ const ModelGroup = () => {
         hotkey={TOOLBAR_HOTKEYS.HISTORY}
         disabled
       />
-      <Text size="xs" align="center">
+      <Text size="xs" align="center" weight="bold">
         Model
       </Text>
     </Stack>

@@ -2,10 +2,12 @@ import { EXCLUDED_FIELDS, ResultTableTitleMap } from '@/constants/result';
 import { EvaluatedResultRecord, EvaluationResult } from '@/interfaces/evaluatedResult';
 import * as selectors from '@/redux/selectors';
 import { Button, Group, Space, Stack, Title, createStyles } from '@mantine/core';
-import { keysIn, remove, round } from 'lodash';
+import { keysIn, remove, round, values } from 'lodash';
 import { DataTable } from 'mantine-datatable';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import CompareResultComponent from './helper/CompareResult';
+import ResultDetailSteps from './helper/ResultDetailSteps';
 
 const useStyles = createStyles(() => ({
   table: {
@@ -32,7 +34,9 @@ export default function ResultTable({
     { view: string; numberOfExplicitTask: number; transparency: number }[]
   >([]);
   const currentModeler = useSelector(selectors.getCurrentModeler);
-  return (
+  const activeTab = useSelector(selectors.getActiveTab);
+
+  return !activeTab?.isCompare ? (
     <>
       <Stack>
         <Title order={4}>
@@ -71,7 +75,7 @@ export default function ResultTable({
                           setOpenUnitCost(false);
                         }
                         setOpenTransparency(true);
-                        record.transparency && setTransparency(record.transparency);
+                        record.transparency && setTransparency(values(record.transparency));
                       }
                     }}
                   >
@@ -86,40 +90,48 @@ export default function ResultTable({
         />
       </Stack>
       <Space h={50} />
-      {openUnitCost && (
-        <Stack>
-          <Title order={4}>Unit Cost</Title>
-          <DataTable
-            withBorder
-            borderRadius="sm"
-            withColumnBorders
-            striped
-            highlightOnHover
-            className={classes.table}
-            records={unitCost}
-            columns={[
-              {
-                accessor: 'lane',
-                title: 'Lane',
-                textAlignment: 'left',
-              },
-              {
-                accessor: 'cost',
-                title: 'Cost',
-                textAlignment: 'center',
-              },
-            ]}
-          />
-          <Group position="right">
-            <Button
-              onClick={() => {
-                setOpenUnitCost(false);
-              }}
-            >
-              Close
-            </Button>
-          </Group>
-        </Stack>
+      {!(openUnitCost || openTransparency) ? (
+        <>
+          <Title order={4}>Evaluated Result Detail</Title>
+          <Space h="sm" />
+          <ResultDetailSteps />
+        </>
+      ) : (
+        openUnitCost && (
+          <Stack>
+            <Title order={4}>Unit Cost</Title>
+            <DataTable
+              withBorder
+              borderRadius="sm"
+              withColumnBorders
+              striped
+              highlightOnHover
+              className={classes.table}
+              records={unitCost}
+              columns={[
+                {
+                  accessor: 'lane',
+                  title: 'Lane',
+                  textAlignment: 'left',
+                },
+                {
+                  accessor: 'cost',
+                  title: 'Unit Cost',
+                  textAlignment: 'center',
+                },
+              ]}
+            />
+            <Group position="right">
+              <Button
+                onClick={() => {
+                  setOpenUnitCost(false);
+                }}
+              >
+                Close
+              </Button>
+            </Group>
+          </Stack>
+        )
       )}
       {openTransparency && (
         <Stack>
@@ -161,7 +173,8 @@ export default function ResultTable({
           </Group>
         </Stack>
       )}
-      {/*<StatsGrid data={mockData} />*/}
     </>
+  ) : (
+    <CompareResultComponent />
   );
 }

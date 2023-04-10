@@ -60,6 +60,7 @@ const ClipBoardGroup = () => {
     copyPaste.copy(selectedElements);
     //@ts-ignore
     const copiedElements = clipboard.get();
+
     setBpmnClipboard(() => copiedElements);
   };
 

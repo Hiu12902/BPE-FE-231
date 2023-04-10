@@ -155,7 +155,7 @@ const SimulationModesGroup = () => {
         size="small"
         disabled
       />
-      <Text size="xs" align="center">
+      <Text size="xs" align="center" weight="bold">
         Modes
       </Text>
     </Stack>

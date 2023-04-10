@@ -1,3 +1,4 @@
+import comparingSlice from './comparing';
 import evaluatedResultSlice from './evaluateResult';
 import lintingSlice from './linting';
 import modelSlice from './model';
@@ -9,6 +10,7 @@ const tabsSliceActions = tabsSlice.actions;
 const evaluatedResultActions = evaluatedResultSlice.actions;
 const lintingActions = lintingSlice.actions;
 const modelActions = modelSlice.actions;
+const comparingActions = comparingSlice.actions;
 
 export {
   toolSliceActions,
@@ -21,4 +23,6 @@ export {
   lintingSlice,
   modelActions,
   modelSlice,
+  comparingActions,
+  comparingSlice,
 };

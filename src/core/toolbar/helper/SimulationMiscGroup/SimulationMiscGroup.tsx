@@ -45,7 +45,7 @@ const SimulationMiscGroup = () => {
           onClick={handleSwitchToDefault}
         />
       </Group>
-      <Text size="xs" align="center">
+      <Text size="xs" align="center" weight="bold">
         Misc
       </Text>
     </Stack>

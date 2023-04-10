@@ -55,7 +55,7 @@ const SimulationSpeedGroup = () => {
         active={speed === AnimationSpeed.FAST}
         onClick={() => setSpeed(AnimationSpeed.FAST)}
       />
-      <Text size="xs" align="center">
+      <Text size="xs" align="center" weight="bold">
         Speed
       </Text>
     </Stack>

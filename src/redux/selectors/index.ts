@@ -1,3 +1,4 @@
+export * from './comparingSelector';
 export * from './evaluatedResultSelector';
 export * from './lintingSelector';
 export * from './modelSelector';

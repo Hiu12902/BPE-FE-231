@@ -9,6 +9,7 @@ import 'bpmn-js-properties-panel/dist/assets/element-templates.css';
 import 'bpmn-js-properties-panel/dist/assets/properties-panel.css';
 import 'bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css';
 
+import { baseXml } from '@/assets/baseXml';
 import { PROPERTIES_PANEL_WIDTH } from '@/constants/theme/themeConstants';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
 import * as selectors from '@/redux/selectors';
@@ -28,6 +29,7 @@ const Modeler = () => {
 
   useEffect(() => {
     if (currentModeler?.modeler) {
+      const modeling = currentModeler?.modeler?.get('modeling');
       const propertiesPanel = currentModeler.modeler.get('propertiesPanel');
       propertiesPanel.detach();
       propertiesPanel.attachTo(propertiesPanelRef.current);
@@ -35,7 +37,15 @@ const Modeler = () => {
       currentModeler.modeler.attachTo(canvasRef.current);
       setCanvas(canvas);
       if (currentModeler.isNew) {
-        currentModeler.modeler.createDiagram();
+        (async () => {
+          try {
+            await currentModeler?.modeler?.importXML(baseXml);
+            const canvas = currentModeler?.modeler?.get('canvas');
+            canvas.zoom('fit-viewport', 'auto');
+          } catch (err) {
+            console.log(err);
+          }
+        })();
         batch(() => {
           dispatch(
             tabsSliceActions.setTabs([
