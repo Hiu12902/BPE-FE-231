@@ -1,4 +1,4 @@
-import { Accordion, Navbar, ScrollArea, Stack, Text } from '@mantine/core';
+import { Accordion, Button, Navbar, ScrollArea, Stack, Text } from '@mantine/core';
 import { assign } from 'min-dash';
 //@ts-ignore
 import { getDi } from 'bpmn-js/lib/util/ModelUtil';
@@ -17,8 +17,11 @@ import {
   subProcessSymbols,
   taskSymbols,
 } from './utils/symbols';
+import { ReactComponent as IconArrowLeft } from '@tabler/icons/icons/arrow-left.svg';
+import { useNavigate } from 'react-router-dom';
 
 export function PaletteNavbar() {
+  const navigate = useNavigate();
   const { classes } = usePaletteNavbarStyles();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const modeler = useSelector(getCurrentModeler)?.modeler;
@@ -60,7 +63,18 @@ export function PaletteNavbar() {
         top: 0,
       })}
     >
-      <Navbar.Section grow component={ScrollArea} mx="-xs" px="xs">
+      <Navbar.Section>
+        <Button
+          fullWidth
+          style={{ backgroundColor: 'white', color: 'black' }}
+          variant="filled"
+          leftIcon={<IconArrowLeft />}
+          onClick={() => navigate('/')}
+        >
+          Back to Projects
+        </Button>
+      </Navbar.Section>
+      <Navbar.Section grow component={ScrollArea} mx="-xs" px="xs" mt={20}>
         {isCollapsed ? null : (
           <Accordion
             defaultValue="gateway"

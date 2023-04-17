@@ -1,6 +1,6 @@
 import { Button, Group, Modal, ModalProps, Space, Stack, Text } from '@mantine/core';
 import React from 'react';
-import FileCard from '../FileCard/FileCard';
+import FileCard from '../FileItem/FileItem';
 
 const FilesListModal = (props: ModalProps) => {
   return (
