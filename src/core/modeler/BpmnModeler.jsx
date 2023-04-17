@@ -108,6 +108,14 @@ const BpeBpmnModeler = () => {
       keyboard: {
         bindTo: document,
       },
+      textRenderer: {
+        defaultStyle: {
+          fontSize: '15px',
+        },
+        externalStyle: {
+          fontSize: '15px',
+        },
+      },
     });
     const newId = randomId();
     const linting = modeler.get('linting');
