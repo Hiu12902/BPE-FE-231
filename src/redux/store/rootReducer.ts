@@ -5,6 +5,7 @@ import {
   lintingSlice,
   modelSlice,
   toolSlice,
+  userSlice,
 } from '../slices';
 import tabsSlice from '../slices/tabs';
 
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   [lintingSlice.name]: lintingSlice.reducer,
   [modelSlice.name]: modelSlice.reducer,
   [comparingSlice.name]: comparingSlice.reducer,
+  [userSlice.name]: userSlice.reducer,
 });
 
 export default rootReducer;

@@ -1,0 +1,189 @@
+diff --git a/node_modules/bpmnlint/config/all.js b/node_modules/bpmnlint/config/all.js
+index 67ba0df..62a6e22 100644
+--- a/node_modules/bpmnlint/config/all.js
++++ b/node_modules/bpmnlint/config/all.js
+@@ -15,12 +15,16 @@ const allRules = [
+   'single-event-definition',
+   'start-event-required',
+   'sub-process-blank-start-event',
+-  'superfluous-gateway'
++  'superfluous-gateway',
++  // BPE custom rules
++  'no-outgoing-flow',
++  'no-cycle-time-task',
++  'no-link-code-link-event'
+ ];
+ 
+ 
+ module.exports = {
+-  rules: allRules.reduce(function(rules, ruleName) {
++  rules: allRules.reduce(function (rules, ruleName) {
+     rules[ruleName] = 'error';
+ 
+     return rules;
+diff --git a/node_modules/bpmnlint/config/recommended.js b/node_modules/bpmnlint/config/recommended.js
+index c03f3ce..07bb61a 100644
+--- a/node_modules/bpmnlint/config/recommended.js
++++ b/node_modules/bpmnlint/config/recommended.js
+@@ -16,6 +16,10 @@ module.exports = {
+     'single-event-definition': 'error',
+     'start-event-required': 'error',
+     'sub-process-blank-start-event': 'error',
+-    'superfluous-gateway': 'warn'
++    'superfluous-gateway': 'warn',
++    // BPE custom rules
++    'no-outgoing-flow': 'error',
++    'no-cycle-time-task': 'error',
++    'no-link-code-link-event': 'error',
+   }
+ };
+diff --git a/node_modules/bpmnlint/rules/no-cycle-time-task.js b/node_modules/bpmnlint/rules/no-cycle-time-task.js
+new file mode 100644
+index 0000000..cb6ead9
+--- /dev/null
++++ b/node_modules/bpmnlint/rules/no-cycle-time-task.js
+@@ -0,0 +1,23 @@
++const {
++  is,
++} = require('bpmnlint-utils');
++
++
++/**
++ * A rule that checks the presence of a label.
++ */
++module.exports = function () {
++
++  function check(node, reporter) {
++    if (is(node, 'Task')) {
++
++      const cycleTime = node.cycleTime;
++
++      if (!cycleTime) {
++        reporter.report(node.id, 'Element is missing cycle time', ['name']);
++      }
++    }
++  }
++
++  return { check };
++};
+diff --git a/node_modules/bpmnlint/rules/no-link-code-link-event.js b/node_modules/bpmnlint/rules/no-link-code-link-event.js
+new file mode 100644
+index 0000000..2673b34
+--- /dev/null
++++ b/node_modules/bpmnlint/rules/no-link-code-link-event.js
+@@ -0,0 +1,20 @@
++const { hasEventDefinition } = require('../utils');
++/**
++ * A rule that checks the presence of a label.
++ */
++module.exports = function () {
++
++  function check(node, reporter) {
++    console.log(hasEventDefinition(node, 'bpmn:LinkEventDefinition'));
++    if (hasEventDefinition(node, 'bpmn:LinkEventDefinition')) {
++
++      const linkCode = node.linkCode;
++
++      if (!linkCode?.length) {
++        reporter.report(node.id, 'Element is missing link code', ['name']);
++      }
++    }
++  }
++
++  return { check };
++};
+diff --git a/node_modules/bpmnlint/rules/no-outgoing-flow.js b/node_modules/bpmnlint/rules/no-outgoing-flow.js
+new file mode 100644
+index 0000000..e6d2e69
+--- /dev/null
++++ b/node_modules/bpmnlint/rules/no-outgoing-flow.js
+@@ -0,0 +1,35 @@
++// This is a BPE custom rule
++/**
++ * All flow objects other than end events and  compensating activities must have an  outgoing sequence flow, if the process level  includes any start or end events.
++ */
++
++const {
++  isAny, is
++} = require('bpmnlint-utils');
++
++const { isEventSubProcess, hasEventDefinition } = require('../utils');
++
++module.exports = function () {
++
++  function check(node, reporter) {
++
++    if (isAny(node, ['SequenceFlow', 'MessageFlow', 'ConditionalFlow', 'EndEvent']) || isEventSubProcess(node) || hasEventDefinition(node, 'bpmn:CompensateEventDefinition') || hasEventDefinition(node, 'bpmn:LinkEventDefinition')) {
++      return;
++    }
++
++    if (!is(node, 'FlowNode')) {
++      return;
++    }
++
++    const outgoing = node.outgoing || [];
++
++    if (outgoing.length === 0) {
++      reporter.report(node.id, 'Flow nodes must have an outgoing sequence flow');
++    }
++  }
++
++  return {
++    check
++  };
++
++};
+\ No newline at end of file
+diff --git a/node_modules/bpmnlint/rules/superfluous-gateway.js b/node_modules/bpmnlint/rules/superfluous-gateway.js
+index 0d10443..8c941ca 100644
+--- a/node_modules/bpmnlint/rules/superfluous-gateway.js
++++ b/node_modules/bpmnlint/rules/superfluous-gateway.js
+@@ -7,7 +7,7 @@ const {
+  *
+  * Those gateways are superfluous since they don't do anything.
+  */
+-module.exports = function() {
++module.exports = function () {
+ 
+   function check(node, reporter) {
+ 
+diff --git a/node_modules/bpmnlint/utils/index.js b/node_modules/bpmnlint/utils/index.js
+new file mode 100644
+index 0000000..64c6415
+--- /dev/null
++++ b/node_modules/bpmnlint/utils/index.js
+@@ -0,0 +1,34 @@
++// BPE customization
++'use strict';
++
++const { is } = require("bpmnlint-utils");
++const { forEach } = require("lodash");
++
++Object.defineProperty(exports, '__esModule', { value: true });
++
++function getBusinessObject(element) {
++  return (element && element.businessObject) || element;
++}
++
++function isEventSubProcess(element) {
++  return element && !!getBusinessObject(element).triggeredByEvent;
++}
++
++function hasEventDefinition(element, eventType) {
++  var bo = getBusinessObject(element),
++    hasEventDefinition = false;
++
++  if (bo.eventDefinitions) {
++    forEach(bo.eventDefinitions, function (event) {
++      if (is(event, eventType)) {
++        hasEventDefinition = true;
++      }
++    });
++  }
++
++  return hasEventDefinition;
++}
++
++
++exports.isEventSubProcess = isEventSubProcess;
++exports.hasEventDefinition = hasEventDefinition;

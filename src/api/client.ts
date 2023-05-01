@@ -1,4 +1,5 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { ACCESS_TOKEN } from '@/constants/localStorageKeys';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { camelCase } from 'lodash';
 
 declare module 'axios' {
@@ -26,7 +27,7 @@ class Client {
 
   public constructor() {
     this.axiosInstance = axios.create({
-      baseURL: 'http://127.0.0.1:8001/api/v1/',
+      baseURL: 'http://127.0.0.1:8000/api/v1/',
     });
     this.axiosInstance.defaults.headers.common['Content-Type'] = 'application/json';
 
@@ -45,10 +46,10 @@ class Client {
   private _initializeRequestInterceptor = () => {
     this.axiosInstance.interceptors.request.use((config) => {
       if (typeof window !== 'undefined') {
-        const accessToken = localStorage.getItem('accessToken');
+        const accessToken = localStorage.getItem(ACCESS_TOKEN);
 
         if (accessToken && config.headers) {
-          config.headers.Authorization = `Bearer ${accessToken}`;
+          config.headers.Authorization = `Bearer ${JSON.parse(accessToken)}`;
         }
       }
 
@@ -57,20 +58,21 @@ class Client {
   };
 
   private _initializeResponseInterceptor = () => {
-    this.axiosInstance.interceptors.response.use(this._handleResponse);
+    this.axiosInstance.interceptors.response.use(this._handleResponse, this._handleError);
   };
   private _handleResponse = ({ data }: any) => {
     return camelizeKeys(data);
   };
 
-  // protected _handleError = async (error: AxiosError) => {
-  //   if (!error.response && !error.request) {
-  //     return Promise.reject(error);
-  //   }
-  //   if (!error.response && error.request) {
-  //     return Promise.reject({ message: 'No response received' });
-  //   }
-  // };
+  protected _handleError = async (error: AxiosError) => {
+    if (!error.response && !error.request) {
+      return Promise.reject(error);
+    } else if (!error.response && error.request) {
+      return Promise.reject({ message: 'No response received' });
+    } else if (error.response) {
+      return Promise.reject(error.response);
+    }
+  };
 
   public get<T = unknown, R = AxiosResponse<T>, D = any>(
     url: string,

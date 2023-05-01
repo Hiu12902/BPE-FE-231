@@ -2,9 +2,25 @@ import { IWorkspace } from '@/interfaces/projects';
 import { Accordion, Box, Button, Divider, Group, Title } from '@mantine/core';
 import ProjectItem from '@/components/ProjectItem';
 import { ReactComponent as IconChevronRight } from '@tabler/icons/icons/chevron-right.svg';
+import { useEffect } from 'react';
+import projectApi from '@/api/project';
 
 const Workspace = (workspace: IWorkspace) => {
   const { name, id, projects } = workspace;
+
+  const getAllProjects = async () => {
+    try {
+      const projects = await projectApi.getAllProjects();
+      console.log(projects);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    getAllProjects();
+  }, []);
+
   return (
     <Box>
       <Group position="apart">

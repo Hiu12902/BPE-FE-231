@@ -10,20 +10,40 @@ import {
   Divider,
   Anchor,
   Stack,
-  Flex,
   Badge,
+  Alert,
+  createStyles,
 } from '@mantine/core';
 import { ReactComponent as GoogleIcon } from '@/icons/google.svg';
+import { ReactComponent as IconAlertCircle } from '@tabler/icons/icons/alert-circle.svg';
 import { useNavigate } from 'react-router-dom';
+import { IUserSignin } from '@/interfaces/user';
+import userApi from '@/api/user';
+import { useInterval, useLocalStorage } from '@mantine/hooks';
+import { ACCESS_TOKEN } from '@/constants/localStorageKeys';
+import { useEffect, useState } from 'react';
+
+const useStyles = createStyles((theme) => ({
+  linkDisabled: {
+    pointerEvents: 'none',
+    textDecoration: 'underline',
+    color: theme.colors.gray[7],
+  },
+}));
 
 const Login = (props: PaperProps) => {
+  const { classes, cx } = useStyles();
   const navigate = useNavigate();
-  const form = useForm({
+  const [, setAccessToken] = useLocalStorage({ key: ACCESS_TOKEN });
+  const [error, setError] = useState(false);
+  const [notVerified, setNotVerified] = useState(false);
+  const [seconds, setSeconds] = useState(60);
+  const [userEmail, setUserEmail] = useState<string>();
+  const interval = useInterval(() => setSeconds((s) => s - 1), 1000);
+  const form = useForm<IUserSignin>({
     initialValues: {
       email: '',
-      name: '',
       password: '',
-      terms: true,
     },
 
     validate: {
@@ -31,6 +51,47 @@ const Login = (props: PaperProps) => {
       password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
     },
   });
+
+  const onUserSignIn = async (user: IUserSignin) => {
+    try {
+      const accessToken = await userApi.signIn(user);
+      if (accessToken) {
+        setAccessToken(accessToken);
+        navigate('/');
+      }
+    } catch (err) {
+      console.error(err);
+      //@ts-ignore
+      if (err.data === 'Your account has not been verified') {
+        setNotVerified(true);
+        setError(false);
+        setUserEmail(user.email);
+      } else {
+        setError(true);
+        setNotVerified(false);
+      }
+    }
+  };
+
+  const onResendVerificationEmail = async () => {
+    try {
+      if (userEmail) {
+        const res = await userApi.resendVerificationEmail({ email: userEmail });
+        if (res) {
+          setSeconds(60);
+          interval.start();
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (seconds === 0) {
+      interval.stop();
+    }
+  }, [seconds]);
 
   return (
     <Paper radius="md" p="xl" withBorder {...props} shadow="lg" w={500}>
@@ -66,7 +127,7 @@ const Login = (props: PaperProps) => {
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
 
-      <form onSubmit={form.onSubmit(() => {})}>
+      <form onSubmit={form.onSubmit(onUserSignIn)}>
         <Stack>
           <TextInput
             required
@@ -87,6 +148,26 @@ const Login = (props: PaperProps) => {
             error={form.errors.password && 'Password should include at least 6 characters'}
             radius="md"
           />
+
+          {error ? (
+            <Alert icon={<IconAlertCircle width="1rem" height="1rem" />} color="red">
+              Please check your email or password and try again!
+            </Alert>
+          ) : null}
+
+          {notVerified ? (
+            <Alert icon={<IconAlertCircle width="1rem" height="1rem" />} color="red">
+              Your account hasn't been verified yet! Click{' '}
+              <Anchor
+                onClick={onResendVerificationEmail}
+                className={cx({ [classes.linkDisabled]: interval.active })}
+              >
+                Here
+              </Anchor>{' '}
+              to receive a verification email!{' '}
+              {interval.active && <Text span>(can resend after {seconds} seconds)</Text>}
+            </Alert>
+          ) : null}
         </Stack>
 
         <Group position="apart" mt="xl">

@@ -59,6 +59,8 @@ import { ReactComponent as IconBpeValidate } from './validate.svg';
 import { ReactComponent as IconBpeZoomIn } from './zoomin.svg';
 import { ReactComponent as IconBpeZoomOut } from './zoomout.svg';
 import { ReactComponent as IconBpeZoomReset } from './zoomreset.svg';
+import { ReactComponent as IconBpeExportBpmn } from './export-bpmn.svg';
+import { ReactComponent as IconBpeExportPng } from './export-png.svg';
 
 export {
   IconBpePaste,
@@ -122,4 +124,6 @@ export {
   IconBpeSubprocess,
   IconBpeTask,
   IconBpeFiles,
+  IconBpeExportBpmn,
+  IconBpeExportPng,
 };

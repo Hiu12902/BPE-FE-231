@@ -13,61 +13,52 @@ import {
   Title,
   createStyles,
 } from '@mantine/core';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import loginBgImage from '@/assets/authen-bg.svg';
 import registerBgImage from '@/assets/register-bg.svg';
-import verificationBgImage from '@/assets/verification.png';
 import { ReactComponent as IconShapes } from '@tabler/icons/icons/category-2.svg';
 import { ReactComponent as IconEvaluate } from '@tabler/icons/icons/calculator.svg';
 import { ReactComponent as IconSimulate } from '@tabler/icons/icons/3d-cube-sphere.svg';
 import { ReactComponent as IconValidate } from '@tabler/icons/icons/discount-check.svg';
+import { ACCESS_TOKEN } from '@/constants/localStorageKeys';
 
-const useStyles = createStyles(
-  (
-    theme,
-    { isRegister, isAtVerificationSent }: { isRegister?: boolean; isAtVerificationSent?: boolean }
-  ) => ({
-    main: {
-      position: 'relative',
-      backgroundImage: !isAtVerificationSent
-        ? isRegister
-          ? `url(${registerBgImage})`
-          : `url(${loginBgImage})`
-        : `url(${verificationBgImage})`,
-      backgroundSize: !isAtVerificationSent ? 'cover' : '50%',
-      backgroundPosition: !isAtVerificationSent ? 'bottom' : 'left',
-      backgroundRepeat: 'no-repeat',
-    },
+const useStyles = createStyles((theme, { isRegister }: { isRegister?: boolean }) => ({
+  main: {
+    position: 'relative',
+    backgroundImage: isRegister ? `url(${registerBgImage})` : `url(${loginBgImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'bottom',
+    backgroundRepeat: 'no-repeat',
+  },
 
-    header: {
-      boxShadow: 'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;',
-      backgroundColor: PRIMARY_COLOR[0],
-      borderBottom: 'unset',
-    },
+  header: {
+    boxShadow: 'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;',
+    backgroundColor: PRIMARY_COLOR[0],
+    borderBottom: 'unset',
+  },
 
-    button: {
-      borderColor: 'white',
-      color: 'white',
-    },
+  button: {
+    borderColor: 'white',
+    color: 'white',
+  },
 
-    item: {
-      display: 'flex',
-    },
+  item: {
+    display: 'flex',
+  },
 
-    itemIcon: {
-      padding: theme.spacing.xs,
-      marginRight: theme.spacing.md,
-    },
+  itemIcon: {
+    padding: theme.spacing.xs,
+    marginRight: theme.spacing.md,
+  },
 
-    itemTitle: {
-      marginBottom: `calc(${theme.spacing.xs} / 2)`,
-    },
+  itemTitle: {
+    marginBottom: `calc(${theme.spacing.xs} / 2)`,
+  },
 
-    logo: {
-      cursor: 'pointer',
-    },
-  })
-);
+  logo: {
+    cursor: 'pointer',
+  },
+}));
 
 interface FeatureImage {
   image: React.FC<React.SVGProps<SVGSVGElement>>;
@@ -102,14 +93,18 @@ const data: FeatureImage[] = [
 ];
 
 const AuthenticationLayout = () => {
+  const accessToken = localStorage.getItem(ACCESS_TOKEN);
+
+  if (accessToken) {
+    return <Navigate to="/" replace />;
+  }
+
   const navigate = useNavigate();
   const location = useLocation();
-  const isAtVerificationSent = location.pathname === '/verification-sent';
   const isAtForgotPassword = location.pathname === '/forgot-password';
   const isAtResetPassword = location.pathname === '/reset-password';
   const { classes, theme } = useStyles({
     isRegister: location.pathname === '/register',
-    isAtVerificationSent: isAtVerificationSent,
   });
   const items = data.map((item, index) => {
     const Icon = item.image;
@@ -164,7 +159,7 @@ const AuthenticationLayout = () => {
       }
     >
       <Container size="xl">
-        {!isAtVerificationSent && !isAtForgotPassword && !isAtResetPassword ? (
+        {!isAtForgotPassword && !isAtResetPassword ? (
           <Grid>
             <Grid.Col span={6}>
               <Flex align="center" justify="center" h="100%">

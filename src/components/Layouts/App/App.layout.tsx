@@ -3,9 +3,35 @@ import { AppShell, Box, Header, Navbar, Title } from '@mantine/core';
 import { Outlet, useNavigate } from 'react-router-dom';
 import AppHeader from './components/AppHeader';
 import AppNavbar from './components/AppNavbar';
+import { useEffect } from 'react';
+import userApi from '@/api/user';
+import { useAppDispatch } from '@/redux/store';
+import { useSelector } from 'react-redux';
+import { getCurrentUser } from '@/redux/selectors';
+import { userActions } from '@/redux/slices';
 
 const AppLayout = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const currentUser = useSelector(getCurrentUser);
+
+  const getUser = async () => {
+    try {
+      const res = await userApi.getMe();
+      if (res) {
+        dispatch(userActions.setUser(res));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (!currentUser.id) {
+      getUser();
+    }
+  }, []);
+
   return (
     <AppShell
       navbar={

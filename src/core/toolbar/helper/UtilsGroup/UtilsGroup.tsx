@@ -57,7 +57,7 @@ const UtilsGroup = () => {
   }, []);
 
   return (
-    <Stack spacing={DEFAULT_SPACING + 7}>
+    <Stack spacing={DEFAULT_SPACING + 10}>
       <Group>
         <Stack>
           <ToolbarIcon
