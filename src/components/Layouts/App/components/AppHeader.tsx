@@ -1,30 +1,39 @@
-import { ActionIcon, Avatar, Group, TextInput, useMantineTheme } from '@mantine/core';
-import { ReactComponent as IconSearch } from '@tabler/icons/icons/search.svg';
-import { ReactComponent as IconGear } from '@tabler/icons/icons/settings.svg';
-import { ReactComponent as IconNotification } from '@tabler/icons/icons/bell.svg';
+import UserInformation from '@/components/UserInformation/UserInformation';
+import { getCurrentUser } from '@/redux/selectors';
+import { ActionIcon, Avatar, Group, Menu } from '@mantine/core';
+import { useSelector } from 'react-redux';
+import { ReactComponent as IconSignOut } from '@tabler/icons/icons/logout.svg';
+import { ACCESS_TOKEN } from '@/constants/localStorageKeys';
 
 const AppHeader = () => {
-  const theme = useMantineTheme();
+  const currentUser = useSelector(getCurrentUser);
+
+  const onSignOut = () => {
+    localStorage.removeItem(ACCESS_TOKEN);
+    window.location.reload();
+  };
 
   return (
     <Group position="apart">
       <div />
-      <TextInput
-        icon={<IconSearch width="1.1rem" />}
-        radius="lg"
-        size="sm"
-        w={500}
-        placeholder="Search..."
-        rightSectionWidth={42}
-      />
       <Group mr={20}>
-        <ActionIcon>
-          <IconGear width={30} color={theme.colors.gray[7]} />
-        </ActionIcon>
-        <ActionIcon>
-          <IconNotification width={30} color={theme.colors.gray[7]} />
-        </ActionIcon>
-        <Avatar radius="xl" />
+        <Menu>
+          <Menu.Target>
+            <ActionIcon>
+              <Avatar src={currentUser.avatar} radius="xl" />
+            </ActionIcon>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <Menu.Item>
+              <UserInformation />
+            </Menu.Item>
+            <Menu.Divider />
+            <Menu.Item color="red" icon={<IconSignOut />} onClick={onSignOut}>
+              Sign Out
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
       </Group>
     </Group>
   );

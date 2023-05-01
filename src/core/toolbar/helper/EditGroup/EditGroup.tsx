@@ -54,7 +54,7 @@ const EditingGroup = () => {
   ]);
 
   return (
-    <Stack spacing={DEFAULT_SPACING}>
+    <Stack spacing={DEFAULT_SPACING + 3}>
       <Group spacing={DEFAULT_SPACING}>
         <ToolbarIcon
           icon={IconBpeDelete}

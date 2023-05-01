@@ -46,6 +46,8 @@ const SimulationModesGroup = () => {
       !is(element, 'bpmn:StartEvent') &&
       !is(element, 'bpmn:EndEvent')
     ) {
+      console.log(simulator?.getEvent(element));
+
       dispatch(toolSliceActions.setElementSelected(element));
       //@ts-ignore
       const isWait = simulator?.getConfig(element).wait;

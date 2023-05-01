@@ -10,30 +10,50 @@ import {
   Divider,
   Anchor,
   Stack,
-  Flex,
   Badge,
 } from '@mantine/core';
 import { ReactComponent as GoogleIcon } from '@/icons/google.svg';
 import { useNavigate } from 'react-router-dom';
+import { IUserSignup } from '@/interfaces/user';
+import userApi from '@/api/user';
+import { useState } from 'react';
+import VerificationSent from '../VerificationSent/VerificationSent';
 
 const Register = (props: PaperProps) => {
   const navigate = useNavigate();
-  const form = useForm({
+  const [signUpSuccess, setSignUpSuccess] = useState(false);
+  const form = useForm<IUserSignup>({
     initialValues: {
       email: '',
+      name: '',
       password: '',
       confirmPassword: '',
     },
 
     validate: {
       email: (val) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
+      name: (val) => (val.length < 1 ? 'Name must not be empty' : null),
       password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
       confirmPassword: (value, values) =>
         value !== values.password ? 'Passwords did not match' : null,
     },
   });
 
-  return (
+  const onSignUp = async (user: IUserSignup) => {
+    try {
+      delete user.confirmPassword;
+      const res = await userApi.signUp(user);
+      if (res) {
+        setSignUpSuccess(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return signUpSuccess ? (
+    <VerificationSent email={form.values.email} />
+  ) : (
     <Paper radius="md" p="xl" withBorder {...props} shadow="lg" w={500}>
       <Badge size="lg">Register</Badge>
       <Group position="apart">
@@ -65,9 +85,9 @@ const Register = (props: PaperProps) => {
         Sign up with Google
       </Button>
 
-      <Divider label="Or continue with email" labelPosition="center" my="lg" />
+      <Divider label="Or continue with email" labelPosition="center" my="md" />
 
-      <form onSubmit={form.onSubmit(() => {})}>
+      <form onSubmit={form.onSubmit(onSignUp)}>
         <Stack>
           <TextInput
             required
@@ -76,6 +96,16 @@ const Register = (props: PaperProps) => {
             value={form.values.email}
             onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
             error={form.errors.email && 'Invalid email'}
+            radius="md"
+          />
+
+          <TextInput
+            required
+            label="Name"
+            placeholder="John Doe"
+            value={form.values.name}
+            onChange={(event) => form.setFieldValue('name', event.currentTarget.value)}
+            error={form.errors.name}
             radius="md"
           />
 

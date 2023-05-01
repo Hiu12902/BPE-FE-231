@@ -41,7 +41,7 @@ const useStyles = createStyles((theme) => ({
     paddingBottom: 'var(--mantine-footer-height, 0px) !important',
     paddingLeft: 'var(--mantine-navbar-width, 0px) !important',
     paddingRight: 'var(--mantine-aside-width, 0px) !important',
-
+    overflowY: 'hidden',
     '.bjs-drilldown': {
       display: 'none',
     },
@@ -110,10 +110,10 @@ const BpeBpmnModeler = () => {
       },
       textRenderer: {
         defaultStyle: {
-          fontSize: '15px',
+          fontSize: '14px',
         },
         externalStyle: {
-          fontSize: '15px',
+          fontSize: '14px',
         },
       },
     });

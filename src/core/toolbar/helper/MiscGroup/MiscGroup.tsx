@@ -17,22 +17,16 @@ import PropertiesModdleDescripter from '@/core/properties-panel/descriptors/bpeD
 import { getCurrentModeler } from '@/redux/selectors';
 import { modelActions, tabsSliceActions } from '@/redux/slices';
 import { useAppDispatch } from '@/redux/store';
-import { Anchor, Button, Group, Menu, Stack, Text } from '@mantine/core';
+import { Group, Menu, Stack, Text } from '@mantine/core';
 import { randomId } from '@mantine/hooks';
 //@ts-ignore
 import SimulationBehaviorModule from 'bpmn-js-token-simulation/lib/simulator/behaviors';
-import { ChangeEvent, createRef, useEffect, useState } from 'react';
+import { ChangeEvent, createRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import linterConfig from '../../../../../packed-config';
 import { DEFAULT_SPACING } from '../../constants/size';
-import {
-  IconBpeComment,
-  IconBpeExport,
-  IconBpeFiles,
-  IconBpeResult,
-} from '../../utils/icons/Icons';
+import { IconBpeComment, IconBpeFiles, IconBpeResult } from '../../utils/icons/Icons';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
-import generateImage from './utils/exportImages';
 
 const MiscGroup = () => {
   const dispatch = useAppDispatch();
@@ -41,7 +35,6 @@ const MiscGroup = () => {
   const [openFileMenu, setOpenFileMenu] = useState(false);
   const currentModeler = useSelector(getCurrentModeler);
   const uploadLinkRef = createRef<HTMLInputElement>();
-  const downloadLinkRef = createRef<HTMLAnchorElement>();
 
   const detaching = () => {
     currentModeler?.modeler?.detach();
@@ -72,13 +65,6 @@ const MiscGroup = () => {
     };
   };
 
-  const saveSvg = async () => {
-    const { svg } = await currentModeler?.modeler.saveSVG();
-    const dataUrl = await generateImage('png', svg);
-    downloadLinkRef.current?.setAttribute('href', dataUrl);
-    downloadLinkRef.current?.setAttribute('download', 'diagram.png');
-  };
-
   const createNewModeler = () => {
     detaching();
 
@@ -99,6 +85,14 @@ const MiscGroup = () => {
       keyboard: {
         bindTo: document,
       },
+      textRenderer: {
+        defaultStyle: {
+          fontSize: '14px',
+        },
+        externalStyle: {
+          fontSize: '14px',
+        },
+      },
     });
     const newId = randomId();
     const linting = modeler.get('linting');
@@ -108,7 +102,7 @@ const MiscGroup = () => {
   };
 
   return (
-    <Stack spacing={DEFAULT_SPACING - 2}>
+    <Stack spacing={DEFAULT_SPACING}>
       <Group>
         <CommentSection
           opened={openCommentSection}
@@ -157,15 +151,6 @@ const MiscGroup = () => {
             <Menu.Item>Open Model</Menu.Item>
           </Menu.Dropdown>
         </Menu>
-        <Anchor onClick={saveSvg} href="#" ref={downloadLinkRef} download>
-          <ToolbarIcon
-            icon={IconBpeExport}
-            label="Export PNG"
-            title="Export File"
-            orientation="vertical"
-            size="large"
-          />
-        </Anchor>
       </Group>
       <Text size="xs" align="center" weight="bold">
         Misc

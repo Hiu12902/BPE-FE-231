@@ -1,18 +1,24 @@
-import { Anchor, Stack, Text } from '@mantine/core';
+import { Anchor, Menu, Stack, Text } from '@mantine/core';
 
 import * as selectors from '@/redux/selectors';
-import { modelActions, tabsSliceActions } from '@/redux/slices';
+import { tabsSliceActions } from '@/redux/slices';
 import { useAppDispatch } from '@/redux/store';
 import { useClipboard, useHotkeys } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
-import { ChangeEvent, createRef } from 'react';
-import { batch, useSelector } from 'react-redux';
+import { ChangeEvent, createRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import useGetModelerModules from '../../../hooks/useGetModelerModule';
 import { TOOLBAR_HOTKEYS } from '../../constants/hotkeys';
 import { DEFAULT_SPACING } from '../../constants/size';
-import { IconBpeExport, IconBpeImport } from '../../utils/icons/Icons';
+import {
+  IconBpeExport,
+  IconBpeExportBpmn,
+  IconBpeExportPng,
+  IconBpeImport,
+} from '../../utils/icons/Icons';
 import { getElementForGraph } from '../DiagramGroup/helper/getElementJson';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
+import generateImage from './utils/exportImages';
 
 const ImportExportGroup = () => {
   const dispatch = useAppDispatch();
@@ -24,7 +30,7 @@ const ImportExportGroup = () => {
   const clipboard = useClipboard();
   const uploadLinkRef = createRef<HTMLInputElement>();
   const downloadLinkRef = createRef<HTMLAnchorElement>();
-  const jsonDownloadLinkRef = createRef<HTMLAnchorElement>();
+  const pngDownloadLinkRef = createRef<HTMLAnchorElement>();
   const handleImportDiagram = (event: ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader();
     const input = event.target;
@@ -79,13 +85,20 @@ const ImportExportGroup = () => {
     });
   };
 
+  const saveSvg = async () => {
+    const { svg } = await currentModeler?.modeler.saveSVG();
+    const dataUrl = await generateImage('png', svg);
+    pngDownloadLinkRef.current?.setAttribute('href', dataUrl);
+    pngDownloadLinkRef.current?.setAttribute('download', 'diagram.png');
+  };
+
   useHotkeys([
     [TOOLBAR_HOTKEYS.IMPORT, () => uploadLinkRef.current?.click()],
     [TOOLBAR_HOTKEYS.EXPORT, () => downloadLinkRef?.current?.click()],
   ]);
 
   return (
-    <Stack spacing={DEFAULT_SPACING + 15}>
+    <Stack spacing={DEFAULT_SPACING + 20}>
       <input
         type="file"
         onChange={handleImportDiagram}
@@ -103,16 +116,37 @@ const ImportExportGroup = () => {
           onClick={() => uploadLinkRef.current?.click()}
           hotkey={TOOLBAR_HOTKEYS.IMPORT}
         />
-        <Anchor onClick={saveBpmn} href="#" ref={downloadLinkRef} download>
-          <ToolbarIcon
-            icon={IconBpeExport}
-            label="Export"
-            title="Export File"
-            orientation="horizontal"
-            size="small"
-            hotkey={TOOLBAR_HOTKEYS.EXPORT}
-          />
-        </Anchor>
+        <Menu shadow="md" position="bottom">
+          <Menu.Target>
+            <ToolbarIcon
+              icon={IconBpeExport}
+              label="Export"
+              title="Export File"
+              orientation="horizontal"
+              size="small"
+              hotkey={TOOLBAR_HOTKEYS.EXPORT}
+            />
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <Menu.Item icon={<IconBpeExportBpmn width={30} height={30} />}>
+              <Anchor onClick={saveBpmn} href="#" ref={downloadLinkRef} download underline={false}>
+                Export as bpmn file
+              </Anchor>
+            </Menu.Item>
+            <Menu.Item icon={<IconBpeExportPng width={30} height={30} />}>
+              <Anchor
+                onClick={saveSvg}
+                href="#"
+                ref={pngDownloadLinkRef}
+                download
+                underline={false}
+              >
+                Export as png file
+              </Anchor>
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
       </Stack>
       {/* <Anchor onClick={saveAsJson} href="#" ref={jsonDownloadLinkRef} download>
         <ToolbarIcon

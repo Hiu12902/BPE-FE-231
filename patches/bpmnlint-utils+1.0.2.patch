@@ -1,0 +1,13 @@
+diff --git a/node_modules/bpmnlint-utils/dist/index.js b/node_modules/bpmnlint-utils/dist/index.js
+index 0466b70..bec76bb 100644
+--- a/node_modules/bpmnlint-utils/dist/index.js
++++ b/node_modules/bpmnlint-utils/dist/index.js
+@@ -32,7 +32,7 @@ function is(node, type) {
+  * @return {Boolean}
+  */
+ function isAny(node, types) {
+-  return types.some(function(type) {
++  return types.some(function (type) {
+     return is(node, type);
+   });
+ }
