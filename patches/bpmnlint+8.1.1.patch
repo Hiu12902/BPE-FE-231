@@ -149,15 +149,14 @@ index 0d10443..8c941ca 100644
  
 diff --git a/node_modules/bpmnlint/utils/index.js b/node_modules/bpmnlint/utils/index.js
 new file mode 100644
-index 0000000..64c6415
+index 0000000..3db4ed8
 --- /dev/null
 +++ b/node_modules/bpmnlint/utils/index.js
-@@ -0,0 +1,34 @@
+@@ -0,0 +1,33 @@
 +// BPE customization
 +'use strict';
 +
 +const { is } = require("bpmnlint-utils");
-+const { forEach } = require("lodash");
 +
 +Object.defineProperty(exports, '__esModule', { value: true });
 +
@@ -174,7 +173,7 @@ index 0000000..64c6415
 +    hasEventDefinition = false;
 +
 +  if (bo.eventDefinitions) {
-+    forEach(bo.eventDefinitions, function (event) {
++    bo.eventDefinitions.forEach(function (event) {
 +      if (is(event, eventType)) {
 +        hasEventDefinition = true;
 +      }

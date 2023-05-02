@@ -1,6 +1,6 @@
 import { Button, Group, Modal, ModalProps, Space, Stack, Text } from '@mantine/core';
 import React from 'react';
-import FileCard from '../FileItem/FileItem';
+import FileItem from '../FileItem/FileItem';
 
 const FilesListModal = (props: ModalProps) => {
   return (
@@ -12,7 +12,7 @@ const FilesListModal = (props: ModalProps) => {
     >
       <Stack spacing={0}>
         {[1, 2, 3].map((x) => (
-          <FileCard />
+          <FileItem id={x.toString()} />
         ))}
       </Stack>
       <Space h="md" />

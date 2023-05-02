@@ -14,6 +14,10 @@ class ProjectApi {
   public getAllProjects(): Promise<any> {
     return Client.get('/project/all');
   }
+
+  public createNewProject(projectName: string): Promise<any> {
+    return Client.post('/project', { name: projectName });
+  }
 }
 
 export default ProjectApi.instance;

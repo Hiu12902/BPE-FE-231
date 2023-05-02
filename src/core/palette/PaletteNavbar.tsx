@@ -2,9 +2,10 @@ import { Accordion, Button, Navbar, ScrollArea, Stack, Text } from '@mantine/cor
 import { assign } from 'min-dash';
 //@ts-ignore
 import { getDi } from 'bpmn-js/lib/util/ModelUtil';
-
+//@ts-ignore
+import { hasEventDefinition } from 'bpmn-js/lib/util/DiUtil';
 import { getCurrentModeler } from '@/redux/selectors';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { PALETTE_WIDTH } from '../../constants/theme/themeConstants';
 import { usePaletteNavbarStyles } from './PaletteNavbar.style';
@@ -19,12 +20,14 @@ import {
 } from './utils/symbols';
 import { ReactComponent as IconArrowLeft } from '@tabler/icons/icons/arrow-left.svg';
 import { useNavigate } from 'react-router-dom';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
 
 export function PaletteNavbar() {
   const navigate = useNavigate();
   const { classes } = usePaletteNavbarStyles();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const modeler = useSelector(getCurrentModeler)?.modeler;
+  const [eventBus, modeling] = useGetModelerModules(['eventBus', 'modeling']);
 
   const handleGateway = (
     event: React.DragEvent<HTMLButtonElement> | React.MouseEvent<HTMLButtonElement>,
@@ -51,6 +54,26 @@ export function PaletteNavbar() {
       }
     }
   };
+
+  const onCreateConditionalEvent = (ctx: any) => {
+    const { context } = ctx;
+    if (hasEventDefinition(context.shape, 'bpmn:ConditionalEventDefinition')) {
+      modeling.updateProperties(context.shape, {
+        percentage: 0.5,
+        condition: 'Default percentage for a conditional event is 50%',
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!eventBus) {
+      return;
+    }
+    eventBus?.on('commandStack.shape.create.postExecuted', onCreateConditionalEvent);
+    return () => {
+      eventBus?.off('commandStack.shape.create.postExecuted', onCreateConditionalEvent);
+    };
+  }, [eventBus]);
 
   return (
     <Navbar
