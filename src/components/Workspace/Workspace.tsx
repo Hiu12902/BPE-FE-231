@@ -4,6 +4,7 @@ import ProjectItem from '@/components/ProjectItem';
 import { ReactComponent as IconChevronRight } from '@tabler/icons/icons/chevron-right.svg';
 import { useEffect } from 'react';
 import projectApi from '@/api/project';
+import CreateProjectButton from '../CreateProjectButton/CreateProjectButton';
 
 const Workspace = (workspace: IWorkspace) => {
   const { name, id, projects } = workspace;
@@ -25,7 +26,7 @@ const Workspace = (workspace: IWorkspace) => {
     <Box>
       <Group position="apart">
         <Title order={3}>{name} Workspace</Title>
-        <Button>Create New Project</Button>
+        <CreateProjectButton />
       </Group>
       <Divider my="md" />
       <Accordion

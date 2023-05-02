@@ -3,6 +3,7 @@
   "rules": {
     "label-required": "warn",
     "fake-join": "error",
-    "start-event-required": "off"
+    "start-event-required": "off",
+    "end-event-required": "warn"
   }
 }
