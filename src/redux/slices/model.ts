@@ -4,13 +4,15 @@ import { find, indexOf, remove } from 'lodash';
 
 interface Modeler {
   modeler: any;
-  isNew: boolean;
+  isNew?: boolean;
   id: string;
+  projectId?: number;
+  projectName?: string;
 }
 
 interface ModelProps {
   modelers: Modeler[];
-  currentModeler: Modeler | undefined;
+  currentModeler?: Modeler;
 }
 
 const modelSlice = createSlice({
@@ -21,8 +23,8 @@ const modelSlice = createSlice({
   } as ModelProps,
 
   reducers: {
-    setModelers: (state, action: PayloadAction<{ modeler: any; id: string }>) => {
-      state.modelers.push({ modeler: action.payload.modeler, isNew: true, id: action.payload.id });
+    setModelers: (state, action: PayloadAction<Modeler>) => {
+      state.modelers.push({ ...action.payload, isNew: true });
     },
     setCurrentModeler: (state, action: PayloadAction<string>) => {
       const modeler = find(state.modelers, (modeler) => modeler.id === action.payload);

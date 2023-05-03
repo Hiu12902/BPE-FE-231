@@ -56,7 +56,7 @@ const ImportExportGroup = () => {
           })
         );
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     };
   };
@@ -71,7 +71,7 @@ const ImportExportGroup = () => {
 
   const saveBpmn = () => {
     //@ts-ignore
-    modeler.saveXML({ format: true }).then((xml, err) => {
+    modeler?.saveXML({ format: true }).then((xml, err) => {
       setEncoded(downloadLinkRef.current, 'diagram.bpmn', err ? null : xml);
     });
   };

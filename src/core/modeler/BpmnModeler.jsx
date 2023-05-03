@@ -34,6 +34,7 @@ import { find } from 'lodash';
 import linterConfig from '../../../packed-config';
 import { IconBpeCancel } from '../toolbar/utils/icons/Icons';
 import Modeler from './components/Modeler';
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = createStyles((theme) => ({
   main: {
@@ -73,6 +74,7 @@ const useStyles = createStyles((theme) => ({
 
 const BpeBpmnModeler = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const currentModeler = useSelector(selectors.getCurrentModeler);
   const modelers = useSelector(selectors.getModelers);
   const lintingActive = useSelector(selectors.getLintingState);
@@ -125,7 +127,9 @@ const BpeBpmnModeler = () => {
   };
 
   useEffect(() => {
-    createNewModeler();
+    if (modelers.length === 0) {
+      navigate('/');
+    }
   }, []);
 
   useEffect(() => {

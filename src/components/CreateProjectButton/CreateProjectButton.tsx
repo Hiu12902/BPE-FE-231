@@ -1,9 +1,14 @@
 import projectApi from '@/api/project';
+import { IProject } from '@/interfaces/projects';
 import { Button, Divider, Group, Modal, TextInput } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { useState } from 'react';
 
-const CreateProjectButton = () => {
+const CreateProjectButton = ({
+  onCreateProject,
+}: {
+  onCreateProject: (project: IProject) => void;
+}) => {
   const [open, setOpen] = useState(false);
   const [projectName, setProjectName] = useState<string>();
 
@@ -23,6 +28,7 @@ const CreateProjectButton = () => {
             message: 'You have successfully created a new project!',
             color: 'green',
           });
+          onCreateProject(res);
         }
       }
     } catch (err) {
