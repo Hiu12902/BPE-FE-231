@@ -9,6 +9,15 @@ import 'bpmn-js-properties-panel/dist/assets/element-templates.css';
 import 'bpmn-js-properties-panel/dist/assets/properties-panel.css';
 import 'bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css';
 
+import BpmnModeler from 'bpmn-js/lib/Modeler';
+import lintModule from 'bpmn-js-bpmnlint';
+import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
+import TokenSimulationModule from 'bpmn-js-token-simulation';
+import PropertiesProviderModule from '@/core/properties-panel';
+import PropertiesModdleDescripter from '@/core/properties-panel/descriptors/bpeDescriptor';
+import SimulationSupportModule from 'bpmn-js-token-simulation/lib/simulation-support';
+import SimulationBehaviorModule from 'bpmn-js-token-simulation/lib/simulator/behaviors';
+
 import { baseXml } from '@/assets/baseXml';
 import { PROPERTIES_PANEL_WIDTH } from '@/constants/theme/themeConstants';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
@@ -17,6 +26,8 @@ import { modelActions, tabsSliceActions, toolSliceActions } from '@/redux/slices
 import { TabVariant } from '@/redux/slices/tabs';
 import { useAppDispatch } from '@/redux/store';
 import { Aside, Box } from '@mantine/core';
+import linterConfig from '../../../../packed-config';
+import projectApi from '@/api/project';
 
 const Modeler = () => {
   const dispatch = useAppDispatch();
@@ -27,9 +38,41 @@ const Modeler = () => {
   const propertiesPanelRef = useRef(null);
   const activeTab = useSelector(selectors.getActiveTab);
 
+  const createNewModeler = () => {
+    const modeler = new BpmnModeler({
+      linting: {},
+      additionalModules: [
+        BpmnPropertiesPanelModule,
+        BpmnPropertiesProviderModule,
+        PropertiesProviderModule,
+        TokenSimulationModule,
+        SimulationSupportModule,
+        SimulationBehaviorModule,
+        lintModule,
+      ],
+      moddleExtensions: {
+        bpe: PropertiesModdleDescripter,
+      },
+      keyboard: {
+        bindTo: document,
+      },
+      textRenderer: {
+        defaultStyle: {
+          fontSize: '14px',
+        },
+        externalStyle: {
+          fontSize: '14px',
+        },
+      },
+    });
+    const linting = modeler.get('linting');
+    linting.setLinterConfig(linterConfig);
+
+    return modeler;
+  };
+
   useEffect(() => {
     if (currentModeler?.modeler) {
-      const modeling = currentModeler?.modeler?.get('modeling');
       const propertiesPanel = currentModeler.modeler.get('propertiesPanel');
       propertiesPanel.detach();
       propertiesPanel.attachTo(propertiesPanelRef.current);
@@ -39,7 +82,11 @@ const Modeler = () => {
       if (currentModeler.isNew) {
         (async () => {
           try {
-            await currentModeler?.modeler?.importXML(baseXml);
+            const xml = await projectApi.getBpmnFileContent({
+              projectId: currentModeler?.projectId,
+              version: currentModeler?.id,
+            });
+            await currentModeler?.modeler?.importXML(xml || baseXml);
             const canvas = currentModeler?.modeler?.get('canvas');
             canvas.zoom('fit-viewport', 'auto');
           } catch (err) {
@@ -50,17 +97,20 @@ const Modeler = () => {
           dispatch(
             tabsSliceActions.setTabs([
               {
-                label: `diagram-${currentModeler.id.replace('mantine-', '')}`,
+                label: `${currentModeler?.projectName}_ver_${currentModeler?.id}`,
                 value: '',
                 variant: TabVariant.MODEL,
                 toolMode: TOOLBAR_MODE.DEFAULT,
-                id: currentModeler.id,
+                id: currentModeler?.id,
               },
             ])
           );
           dispatch(modelActions.updateCurrentModeler({ ...currentModeler, isNew: false }));
         });
       }
+    } else {
+      const modeler = createNewModeler();
+      dispatch(modelActions.updateCurrentModeler({ ...currentModeler, modeler: modeler }));
     }
   }, [currentModeler]);
 

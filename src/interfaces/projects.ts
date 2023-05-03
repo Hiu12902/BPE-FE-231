@@ -1,9 +1,15 @@
 export interface IFile {
   variant?: 'general' | 'result';
   name?: string;
-  id: string;
   size?: number;
-  lastUpdated?: Date | string;
+  lastSaved?: Date | string;
+  version?: string;
+  documentLink?: string;
+  xmlFileLink?: string;
+  projectId?: number;
+  projectName?: string;
+  onDeleteFile?: (link?: string) => void;
+  canDelete?: boolean;
 }
 
 export interface IProject {
@@ -12,7 +18,8 @@ export interface IProject {
   owner?: string;
   size?: number;
   lastUpdated?: Date | string;
-  id: string;
+  createAt?: Date | string;
+  id: number;
   files?: IFile[];
 }
 
