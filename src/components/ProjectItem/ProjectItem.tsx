@@ -125,6 +125,10 @@ const ProjectItem = (props: IProject) => {
             projectName={projectNameRender}
             projectId={id}
             canDelete={bpmnFilesCount > 1}
+            onDeleteFile={(fileLink) => {
+              const tempFiles = files.filter((file) => file.xmlFileLink !== fileLink);
+              setFiles(tempFiles);
+            }}
           />
         ))}
       </Accordion.Panel>
