@@ -11,9 +11,9 @@ const FilesListModal = (props: ModalProps) => {
       size="lg"
     >
       <Stack spacing={0}>
-        {[1, 2, 3].map((x) => (
+        {/* {[1, 2, 3].map((x) => (
           <FileItem id={x.toString()} />
-        ))}
+        ))} */}
       </Stack>
       <Space h="md" />
       <Group position="right">

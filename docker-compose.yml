@@ -1,0 +1,9 @@
+version: '3'
+services:
+  bpe-fe:
+    build:
+      context: .
+    container_name: bpe-fe
+    image: bpe-fe
+    ports:
+      - '80:80'

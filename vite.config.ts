@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react-swc';
 import preact from '@preact/preset-vite';
 import resolve from '@rollup/plugin-node-resolve';
 import svgr from 'vite-plugin-svgr';
@@ -24,5 +23,8 @@ export default defineConfig({
   },
   resolve: {
     alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
+  },
+  preview: {
+    port: 8080,
   },
 });

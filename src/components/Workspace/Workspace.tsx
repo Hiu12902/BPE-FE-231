@@ -23,7 +23,7 @@ import { useSelector } from 'react-redux';
 import { getModelers } from '@/redux/selectors';
 
 const Workspace = (workspace: IWorkspace) => {
-  const { name, id } = workspace;
+  const { name } = workspace;
   const [projects, setProjects] = useState<IProject[]>([]);
   const [loading, setLoading] = useState(true);
   const modelers = useSelector(getModelers);
