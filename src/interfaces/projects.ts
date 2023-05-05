@@ -25,6 +25,4 @@ export interface IProject {
 
 export interface IWorkspace {
   name: string;
-  projects: IProject[];
-  id: string;
 }
