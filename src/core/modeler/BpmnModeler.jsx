@@ -1,11 +1,5 @@
 import 'bpmn-font/dist/css/bpmn-embedded.css';
-import lintModule from 'bpmn-js-bpmnlint';
-import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
-import TokenSimulationModule from 'bpmn-js-token-simulation';
-import SimulationSupportModule from 'bpmn-js-token-simulation/lib/simulation-support';
-import SimulationBehaviorModule from 'bpmn-js-token-simulation/lib/simulator/behaviors';
 import 'bpmn-js/dist/assets/diagram-js.css';
-import BpmnModeler from 'bpmn-js/lib/Modeler';
 import { useEffect } from 'react';
 import { batch, useSelector } from 'react-redux';
 import './BpmnModeler.css';
@@ -20,8 +14,6 @@ import { PRIMARY_COLOR } from '@/constants/theme/themeConstants';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
 import { ModelerContext } from '@/core/context/ModelerContext';
 import { PaletteNavbar } from '@/core/palette/PaletteNavbar';
-import PropertiesProviderModule from '@/core/properties-panel';
-import PropertiesModdleDescripter from '@/core/properties-panel/descriptors/bpeDescriptor';
 import BpeToolbar from '@/core/toolbar/Toolbar';
 import ValidationTerminal from '@/core/validation-terminal';
 import * as selectors from '@/redux/selectors';
@@ -29,9 +21,7 @@ import { lintingActions, modelActions, tabsSliceActions, toolSliceActions } from
 import { TabVariant } from '@/redux/slices/tabs';
 import { useAppDispatch } from '@/redux/store';
 import { ActionIcon, AppShell, Container, Footer, Tabs, createStyles } from '@mantine/core';
-import { randomId } from '@mantine/hooks';
 import { find } from 'lodash';
-import linterConfig from '../../../packed-config';
 import { IconBpeCancel } from '../toolbar/utils/icons/Icons';
 import Modeler from './components/Modeler';
 import { useNavigate } from 'react-router-dom';
@@ -88,42 +78,6 @@ const BpeBpmnModeler = () => {
   const detaching = () => {
     currentModeler?.modeler?.detach();
     currentModeler?.modeler?.get('propertiesPanel').detach();
-  };
-
-  const createNewModeler = () => {
-    detaching();
-
-    const modeler = new BpmnModeler({
-      linting: {},
-      additionalModules: [
-        BpmnPropertiesPanelModule,
-        BpmnPropertiesProviderModule,
-        PropertiesProviderModule,
-        TokenSimulationModule,
-        SimulationSupportModule,
-        SimulationBehaviorModule,
-        lintModule,
-      ],
-      moddleExtensions: {
-        bpe: PropertiesModdleDescripter,
-      },
-      keyboard: {
-        bindTo: document,
-      },
-      textRenderer: {
-        defaultStyle: {
-          fontSize: '14px',
-        },
-        externalStyle: {
-          fontSize: '14px',
-        },
-      },
-    });
-    const newId = randomId();
-    const linting = modeler.get('linting');
-    linting.setLinterConfig(linterConfig);
-    dispatch(modelActions.setModelers({ modeler: modeler, id: newId }));
-    dispatch(modelActions.setCurrentModeler(newId));
   };
 
   useEffect(() => {
