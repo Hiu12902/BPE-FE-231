@@ -1,13 +1,5 @@
 import { Anchor, Box, Grid, ScrollArea, Text, Timeline, createStyles } from '@mantine/core';
-//@ts-ignore
-import BpmnModeler from 'bpmn-js/lib/Modeler';
-//@ts-ignore
-import PropertiesProviderModule from '@/core/properties-panel';
-//@ts-ignore
-import PropertiesModdleDescripter from '@/core/properties-panel/descriptors/bpeDescriptor';
 import { getActiveTab, getCurrentModeler, getEvaluatedResult } from '@/redux/selectors';
-//@ts-ignore
-import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -29,25 +21,25 @@ const StepElement = ({ currentElement }: { currentElement?: string }) => {
   const [prevElement, setPrevElement] = useState<string>();
   const currentModeler = useSelector(getCurrentModeler)?.modeler;
 
-  useEffect(() => {
-    const modeler = new BpmnModeler({
-      container: containerRef.current,
-      propertiesPanel: {
-        parent: panelRef.current,
-      },
-      additionalModules: [
-        BpmnPropertiesPanelModule,
-        BpmnPropertiesProviderModule,
-        PropertiesProviderModule,
-      ],
-      moddleExtensions: {
-        bpe: PropertiesModdleDescripter,
-      },
-    });
+  // useEffect(() => {
+  //   const modeler = new BpmnModeler({
+  //     container: containerRef.current,
+  //     propertiesPanel: {
+  //       parent: panelRef.current,
+  //     },
+  //     additionalModules: [
+  //       BpmnPropertiesPanelModule,
+  //       BpmnPropertiesProviderModule,
+  //       PropertiesProviderModule,
+  //     ],
+  //     moddleExtensions: {
+  //       bpe: PropertiesModdleDescripter,
+  //     },
+  //   });
 
-    (async () => await modeler.createDiagram())();
-    setModeler(modeler);
-  }, []);
+  //   (async () => await modeler.createDiagram())();
+  //   setModeler(modeler);
+  // }, []);
 
   useEffect(() => {
     const elementRegistry = modeler?.get('elementRegistry'),

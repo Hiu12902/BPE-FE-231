@@ -18,7 +18,7 @@ const router = createBrowserRouter(
         <Route element={<AppLayout />}>
           <Route path="/" element={<MainScreen />} />
         </Route>
-        <Route path="/editor" element={<BpeBpmnModeler />} />
+        <Route path="editor" element={<BpeBpmnModeler />} />
       </Route>
       <Route element={<AuthenticationLayout />} errorElement={<CrashComponent />}>
         <Route path="login" element={<Login />} />
