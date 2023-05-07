@@ -21,6 +21,7 @@ import { ReactComponent as IconEvaluate } from '@tabler/icons/icons/calculator.s
 import { ReactComponent as IconSimulate } from '@tabler/icons/icons/3d-cube-sphere.svg';
 import { ReactComponent as IconValidate } from '@tabler/icons/icons/discount-check.svg';
 import { ACCESS_TOKEN } from '@/constants/localStorageKeys';
+import Logo from '@/components/Logo';
 
 const useStyles = createStyles((theme, { isRegister }: { isRegister?: boolean }) => ({
   main: {
@@ -134,9 +135,10 @@ const AuthenticationLayout = () => {
         <Header height={64} p="xs" className={classes.header}>
           <Container size="xl">
             <Group position="apart">
-              <Title order={4} color="white" onClick={() => navigate('/')} className={classes.logo}>
+              {/* <Title order={4} color="white" onClick={() => navigate('/')} className={classes.logo}>
                 BPSky
-              </Title>
+              </Title> */}
+              <Logo />
               <Group position="right">
                 <Button
                   variant="outline"

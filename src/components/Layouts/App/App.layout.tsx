@@ -9,6 +9,7 @@ import { useAppDispatch } from '@/redux/store';
 import { useSelector } from 'react-redux';
 import { getCurrentUser } from '@/redux/selectors';
 import { userActions } from '@/redux/slices';
+import Logo from '@/components/Logo';
 
 const AppLayout = () => {
   const navigate = useNavigate();
@@ -45,14 +46,7 @@ const AppLayout = () => {
             top: 0,
           })}
         >
-          <Title
-            order={4}
-            color="white"
-            onClick={() => navigate('/')}
-            style={{ cursor: 'pointer' }}
-          >
-            BPSky
-          </Title>
+          <Logo />
           <AppNavbar mt={35} />
         </Navbar>
       }
