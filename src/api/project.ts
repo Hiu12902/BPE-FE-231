@@ -51,6 +51,10 @@ class ProjectApi {
     const { projectId } = query;
     return Client.post(`/bpmnfile/${projectId}/create`, body);
   }
+
+  public deleteProject(projectId: number): Promise<any> {
+    return Client.delete(`/project/${projectId}`);
+  }
 }
 
 export default ProjectApi.instance;
