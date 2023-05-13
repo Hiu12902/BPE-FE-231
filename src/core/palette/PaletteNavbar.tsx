@@ -21,6 +21,7 @@ import {
 import { ReactComponent as IconArrowLeft } from '@tabler/icons/icons/arrow-left.svg';
 import { useNavigate } from 'react-router-dom';
 import useGetModelerModules from '@/core/hooks/useGetModelerModule';
+import BackButton from '@/components/BackButton';
 
 export function PaletteNavbar() {
   const navigate = useNavigate();
@@ -87,15 +88,7 @@ export function PaletteNavbar() {
       })}
     >
       <Navbar.Section>
-        <Button
-          fullWidth
-          style={{ backgroundColor: 'white', color: 'black' }}
-          variant="filled"
-          leftIcon={<IconArrowLeft />}
-          onClick={() => navigate('/')}
-        >
-          Back to Projects
-        </Button>
+        <BackButton />
       </Navbar.Section>
       <Navbar.Section grow component={ScrollArea} mx="-xs" px="xs" mt={20}>
         {isCollapsed ? null : (

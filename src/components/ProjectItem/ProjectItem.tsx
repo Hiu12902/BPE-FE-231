@@ -1,22 +1,24 @@
 import { PRIMARY_COLOR } from '@/constants/theme/themeConstants';
 import { Accordion, ActionIcon, Flex, Grid, Group, Menu, Text, TextInput } from '@mantine/core';
-import { ReactComponent as IconFilePlus } from '@tabler/icons/icons/file-plus.svg';
+import { ReactComponent as IconUserShare } from '@tabler/icons/icons/user-plus.svg';
 import { ReactComponent as IconFolder } from '@tabler/icons/icons/folder.svg';
 import { ReactComponent as IconAbc } from '@tabler/icons/icons/abc.svg';
 import { ReactComponent as IconInfo } from '@tabler/icons/icons/info-circle-filled.svg';
 import { ReactComponent as IconTrash } from '@tabler/icons/icons/trash.svg';
 import { ReactComponent as IconDots } from '@tabler/icons/icons/dots.svg';
-import { MouseEvent, useEffect, useRef, useState } from 'react';
+import { MouseEvent, useRef, useState } from 'react';
 import { IFile, IProject } from '@/interfaces/projects';
 import FileItem from '@/components/FileItem';
 import projectApi from '@/api/project';
 import { openConfirmModal } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
+import ShareModal from '@/components/ShareModal';
 
 const ProjectItem = (props: IProject) => {
-  const { name, id, createAt } = props;
+  const { name, id, createAt, onDeleteProject, shouldGetDocuments } = props;
   const [files, setFiles] = useState<IFile[]>([]);
   const [projectNameRender, setProjectNameRender] = useState<string | undefined>(name);
+  const [openShareModal, setOpenShareModal] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const bpmnFilesCount = files.filter((file) => file.xmlFileLink).length;
   const getProjectFiles = async () => {
@@ -24,11 +26,16 @@ const ProjectItem = (props: IProject) => {
       if (files.length > 0) {
         return;
       }
-      const response = await Promise.all([
-        projectApi.getBpmnFilesOfProject(id),
-        projectApi.getProjectDocument(id),
-      ]);
-      setFiles(response.flat());
+      if (shouldGetDocuments) {
+        const response = await Promise.all([
+          projectApi.getBpmnFilesOfProject(id),
+          projectApi.getProjectDocument(id),
+        ]);
+        setFiles(response.flat());
+      } else {
+        const response = await projectApi.getBpmnFilesOfProject(id);
+        setFiles(response);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -66,10 +73,50 @@ const ProjectItem = (props: IProject) => {
     });
   };
 
+  const onOpenShareModal = (e: MouseEvent) => {
+    e.stopPropagation();
+    setOpenShareModal(true);
+  };
+
+  const onOpenProject = (e: MouseEvent) => {
+    e.stopPropagation();
+    window.open(`/${name}/${id}`, '_blank');
+  };
+
+  const openDeleteModal = (e: MouseEvent) => {
+    e.stopPropagation();
+    openConfirmModal({
+      title: 'Delete this project',
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete this project? Your action will not be able to undo.
+        </Text>
+      ),
+      labels: { confirm: 'Delete', cancel: 'Cancel' },
+      confirmProps: { color: 'red' },
+      onConfirm: handleDeleteProject,
+    });
+  };
+
+  const handleDeleteProject = async () => {
+    try {
+      if (id) {
+        const res = await projectApi.deleteProject(id);
+        if (res) {
+          onDeleteProject?.(id);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <Accordion.Item value={id.toString()}>
-      <Accordion.Control onClick={getProjectFiles}>
+      <Accordion.Control onClick={getProjectFiles} onDoubleClick={onOpenProject}>
         <Grid>
+          <ShareModal opened={openShareModal} onClose={() => setOpenShareModal(false)} />
           <Grid.Col span={5}>
             <Group>
               <IconFolder width={30} height={30} color={PRIMARY_COLOR[0]} fill={PRIMARY_COLOR[0]} />
@@ -101,16 +148,16 @@ const ProjectItem = (props: IProject) => {
               </Menu.Target>
 
               <Menu.Dropdown>
-                {/* <Menu.Item icon={<IconFilePlus />} onClick={(e) => e.stopPropagation()}>
-                  Create New Version
-                </Menu.Item> */}
-                <Menu.Item icon={<IconAbc />} onClick={(e) => openRenameModal(e)}>
+                <Menu.Item icon={<IconUserShare />} onClick={onOpenShareModal}>
+                  Share
+                </Menu.Item>
+                <Menu.Item icon={<IconAbc />} onClick={openRenameModal}>
                   Rename
                 </Menu.Item>
                 <Menu.Item icon={<IconInfo />} onClick={(e) => e.stopPropagation()}>
                   Detail
                 </Menu.Item>
-                <Menu.Item color="red" icon={<IconTrash />} onClick={(e) => e.stopPropagation()}>
+                <Menu.Item color="red" icon={<IconTrash />} onClick={openDeleteModal}>
                   Delete
                 </Menu.Item>
               </Menu.Dropdown>

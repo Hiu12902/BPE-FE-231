@@ -24,7 +24,13 @@ const modelSlice = createSlice({
 
   reducers: {
     setModelers: (state, action: PayloadAction<Modeler>) => {
-      state.modelers.push({ ...action.payload, isNew: true });
+      const index = indexOf(
+        state.modelers,
+        find(state.modelers, (modeler) => modeler.id === action.payload.id)
+      );
+      if (index < 0) {
+        state.modelers.push({ ...action.payload, isNew: true });
+      }
     },
     setCurrentModeler: (state, action: PayloadAction<string>) => {
       const modeler = find(state.modelers, (modeler) => modeler.id === action.payload);

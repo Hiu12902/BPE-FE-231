@@ -1,3 +1,5 @@
+import { MouseEventHandler } from 'react';
+
 export interface IUser {
   id: string;
   email: string;
@@ -15,4 +17,12 @@ export interface IUserSignup {
 export interface IUserSignin {
   email: string;
   password: string;
+}
+
+export interface IUserInfoProps extends Partial<IUser> {
+  onClick?: MouseEventHandler<Element>;
+  onAddTeammate?: (user: IUser) => void;
+  isSearching?: boolean;
+  isSelectingRole?: boolean;
+  isProfile?: boolean;
 }

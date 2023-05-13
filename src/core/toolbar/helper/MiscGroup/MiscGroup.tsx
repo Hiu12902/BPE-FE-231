@@ -2,7 +2,7 @@ import CommentSection from '@/components/CommentSection/CommentSection';
 import FilesListModal from '@/components/FilesListModal/FilesListModal';
 import { getCurrentModeler } from '@/redux/selectors';
 import { useAppDispatch } from '@/redux/store';
-import { Group, Menu, Stack, Text } from '@mantine/core';
+import { Badge, Group, Menu, Modal, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { DEFAULT_SPACING } from '../../constants/size';
@@ -10,12 +10,14 @@ import { IconBpeComment, IconBpeFiles, IconBpeResult } from '../../utils/icons/I
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import projectApi from '@/api/project';
 import { showNotification } from '@mantine/notifications';
+import Workspace from '@/components/Workspace';
 
 const MiscGroup = () => {
   const dispatch = useAppDispatch();
   const [openCommentSection, setOpenCommentSection] = useState(false);
   const [openFilesList, setOpenFilesList] = useState(false);
   const [openFileMenu, setOpenFileMenu] = useState(false);
+  const [openModels, setOpenModels] = useState(false);
   const currentModeler = useSelector(getCurrentModeler);
 
   const onCreateNewVersion = async (): Promise<void> => {
@@ -44,6 +46,19 @@ const MiscGroup = () => {
     }
   };
 
+  const renderModelsModal = () => {
+    return (
+      <Modal
+        opened={openModels}
+        onClose={() => setOpenModels(false)}
+        title={<Badge size="lg">Open models from your workspace</Badge>}
+        size="xl"
+      >
+        <Workspace name="Personal" isOpenFromEditor />
+      </Modal>
+    );
+  };
+
   return (
     <Stack spacing={DEFAULT_SPACING}>
       <Group>
@@ -60,6 +75,7 @@ const MiscGroup = () => {
           size="large"
           onClick={() => setOpenCommentSection((o) => !o)}
           overflow
+          active={openCommentSection}
         />
         <ToolbarIcon
           icon={IconBpeResult}
@@ -85,9 +101,10 @@ const MiscGroup = () => {
 
           <Menu.Dropdown>
             <Menu.Item onClick={onCreateNewVersion}>Create New Version</Menu.Item>
-            <Menu.Item>Open Model</Menu.Item>
+            <Menu.Item onClick={() => setOpenModels(true)}>Open Models</Menu.Item>
           </Menu.Dropdown>
         </Menu>
+        {renderModelsModal()}
       </Group>
       <Text size="xs" align="center" weight="bold">
         Misc

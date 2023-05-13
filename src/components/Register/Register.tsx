@@ -18,8 +18,11 @@ import { IUserSignup } from '@/interfaces/user';
 import userApi from '@/api/user';
 import { useState } from 'react';
 import VerificationSent from '../VerificationSent/VerificationSent';
+import { useDocumentTitle } from '@mantine/hooks';
 
 const Register = (props: PaperProps) => {
+  useDocumentTitle('Sign up - BPSky');
+
   const navigate = useNavigate();
   const [signUpSuccess, setSignUpSuccess] = useState(false);
   const form = useForm<IUserSignup>({

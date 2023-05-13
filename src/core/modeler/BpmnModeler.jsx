@@ -25,6 +25,7 @@ import { find } from 'lodash';
 import { IconBpeCancel } from '../toolbar/utils/icons/Icons';
 import Modeler from './components/Modeler';
 import { useNavigate } from 'react-router-dom';
+import { useDocumentTitle } from '@mantine/hooks';
 
 const useStyles = createStyles((theme) => ({
   main: {
@@ -63,6 +64,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const BpeBpmnModeler = () => {
+  useDocumentTitle('Editor - BPSky');
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const currentModeler = useSelector(selectors.getCurrentModeler);

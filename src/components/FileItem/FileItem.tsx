@@ -78,13 +78,16 @@ const FileItem = (props: IFile) => {
       onConfirm: onDeleteBpmnFile,
     });
 
+  const onOpenDocument = () =>
+    window.open(`/document?project=${projectName}&p=${projectId}`, '_blank');
+
   return (
     <Box
       component={Stack}
       spacing={0}
       className={classes.container}
       p="sm"
-      onDoubleClick={onOpenBpmnFile}
+      onDoubleClick={xmlFileLink ? onOpenBpmnFile : onOpenDocument}
     >
       <Grid>
         <Grid.Col span={5}>
