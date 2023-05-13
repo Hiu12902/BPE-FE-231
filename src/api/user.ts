@@ -27,6 +27,10 @@ class UserApi {
   public resendVerificationEmail(payload: { email: string }): Promise<any> {
     return Client.post(`/user/resend`, payload);
   }
+
+  public searchUsers(searchQuery: string): Promise<any> {
+    return Client.get(`/user/search?s=${searchQuery}`);
+  }
 }
 
 export default UserApi.instance;

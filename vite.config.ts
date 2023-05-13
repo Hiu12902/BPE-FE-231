@@ -49,14 +49,8 @@ export default defineConfig({
       plugins: [
         babel({ babelHelpers: 'bundled' }),
         rollupNodePolyFill(),
-        nodeResolve({
-          module: true,
-          browser: true,
-          jsnext: true,
-        }),
-        commonjs({
-          include: ['/node_modules/**'],
-        }),
+        nodeResolve(),
+        commonjs(),
       ],
     },
     minify: false,

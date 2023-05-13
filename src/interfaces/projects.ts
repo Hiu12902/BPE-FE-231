@@ -1,3 +1,5 @@
+import { IUser } from './user';
+
 export interface IFile {
   variant?: 'general' | 'result';
   name?: string;
@@ -21,8 +23,20 @@ export interface IProject {
   createAt?: Date | string;
   id: number;
   files?: IFile[];
+  onDeleteProject?: (projectId: number) => void;
+  shouldGetDocuments?: boolean;
 }
 
 export interface IWorkspace {
   name: string;
+  isOpenFromEditor?: boolean;
+}
+
+export interface IComment {
+  id: number;
+  createAt: string;
+  content?: string;
+  userId: number;
+  xmlFileLink?: string;
+  projectId?: number;
 }

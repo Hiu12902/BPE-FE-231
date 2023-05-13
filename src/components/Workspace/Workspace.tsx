@@ -23,7 +23,7 @@ import { useSelector } from 'react-redux';
 import { getModelers } from '@/redux/selectors';
 
 const Workspace = (workspace: IWorkspace) => {
-  const { name } = workspace;
+  const { name, isOpenFromEditor } = workspace;
   const [projects, setProjects] = useState<IProject[]>([]);
   const [loading, setLoading] = useState(true);
   const modelers = useSelector(getModelers);
@@ -70,20 +70,27 @@ const Workspace = (workspace: IWorkspace) => {
     getAllProjects();
   }, []);
 
+  const onDeleteProject = (projectId: number) => {
+    const newProjects = projects.filter((p) => p.id !== projectId);
+    setProjects(() => newProjects);
+  };
+
   return (
     <Box>
       <Group position="apart">
         <Title order={3}>{name} Workspace</Title>
-        <Group>
-          <Button
-            variant="outline"
-            onClick={() => navigate('/editor')}
-            disabled={modelers.length < 1}
-          >
-            Open Editor
-          </Button>
-          <CreateProjectButton onCreateProject={onCreateNewProject} />
-        </Group>
+        {!isOpenFromEditor && (
+          <Group>
+            <Button
+              variant="outline"
+              onClick={() => navigate('/editor')}
+              disabled={modelers.length < 1}
+            >
+              Open Editor
+            </Button>
+            <CreateProjectButton onCreateProject={onCreateNewProject} />
+          </Group>
+        )}
       </Group>
       <Divider my="md" />
       {loading ? (
@@ -100,7 +107,12 @@ const Workspace = (workspace: IWorkspace) => {
           }}
         >
           {projects.map((project) => (
-            <ProjectItem {...project} key={project.id} />
+            <ProjectItem
+              {...project}
+              key={project.id}
+              onDeleteProject={onDeleteProject}
+              shouldGetDocuments={!isOpenFromEditor}
+            />
           ))}
         </Accordion>
       ) : (

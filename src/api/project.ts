@@ -53,7 +53,32 @@ class ProjectApi {
   }
 
   public deleteProject(projectId: number): Promise<any> {
-    return Client.delete(`/project/${projectId}`);
+    return Client.delete(`/project/${projectId}/delete`);
+  }
+
+  public getDocument(projectId: number): Promise<any> {
+    return Client.get(`/project/${projectId}/document`);
+  }
+
+  public getDocumentContent(projectId: number): Promise<any> {
+    return Client.get(`/project/${projectId}/document/text`);
+  }
+
+  public saveDocument(query: { projectId: number }, body: FormData): Promise<any> {
+    const { projectId } = query;
+    return Client.put(`/project/${projectId}/document/update`, body);
+  }
+
+  public getProjectMembers(projectId: number): Promise<any> {
+    return Client.get(`/project/${projectId}/user`);
+  }
+
+  public getModelsComments(body: { projectID: string; xmlFileLink: string }): Promise<any> {
+    return Client.post(`/bpmnfile/comment`, body);
+  }
+
+  public comment(body: { projectID: string; xmlFileLink: string; content: string }): Promise<any> {
+    return Client.post(`/bpmnfile/comment/add`, body);
   }
 }
 

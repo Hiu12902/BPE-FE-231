@@ -1,8 +1,10 @@
 import React from 'react';
 import { Avatar, Button, Card, Divider, Group, Space, Text } from '@mantine/core';
 import { openConfirmModal } from '@mantine/modals';
+import { IComment } from '@/interfaces/projects';
 
-const CommentCard = () => {
+const CommentCard = (props: IComment) => {
+  const { id, userId, createAt, content } = props;
   const openDeleteModal = () =>
     openConfirmModal({
       title: 'Delete this comment',
@@ -27,24 +29,21 @@ const CommentCard = () => {
             <Text>Zalter</Text>
           </Group>
           <Text size="sm" color="dimmed">
-            29 Nov 2022 20:30:06
+            {new Date(createAt).toDateString()}
           </Text>
         </Group>
       </Card.Section>
       <Space h="xs" />
       <Card.Section>
-        <Text size="sm">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Est maxime explicabo nam et
-          dignissimos repudiandae iure accusantium voluptatem architecto ullam.
-        </Text>
+        <Text size="sm">{content}</Text>
       </Card.Section>
       <Space h="xs" />
       <Card.Section>
-        <Group position="right">
+        {/* <Group position="right">
           <Button color="red" size="xs" onClick={openDeleteModal}>
             Delete
           </Button>
-        </Group>
+        </Group> */}
         <Divider my="sm" />
       </Card.Section>
     </Card>

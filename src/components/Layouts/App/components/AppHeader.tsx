@@ -26,7 +26,7 @@ const AppHeader = () => {
 
           <Menu.Dropdown>
             <Menu.Item>
-              <UserInformation />
+              <UserInformation isProfile/>
             </Menu.Item>
             <Menu.Divider />
             <Menu.Item color="red" icon={<IconSignOut />} onClick={onSignOut}>

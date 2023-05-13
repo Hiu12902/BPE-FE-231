@@ -19,7 +19,7 @@ import { ReactComponent as IconAlertCircle } from '@tabler/icons/icons/alert-cir
 import { useNavigate } from 'react-router-dom';
 import { IUserSignin } from '@/interfaces/user';
 import userApi from '@/api/user';
-import { useInterval, useLocalStorage } from '@mantine/hooks';
+import { useDocumentTitle, useInterval, useLocalStorage } from '@mantine/hooks';
 import { ACCESS_TOKEN } from '@/constants/localStorageKeys';
 import { useEffect, useState } from 'react';
 
@@ -32,6 +32,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const Login = (props: PaperProps) => {
+  useDocumentTitle('Sign in - BPSky');
   const { classes, cx } = useStyles();
   const navigate = useNavigate();
   const [, setAccessToken] = useLocalStorage({ key: ACCESS_TOKEN });
@@ -121,6 +122,9 @@ const Login = (props: PaperProps) => {
         fullWidth
         size="md"
         radius="md"
+        onClick={() =>
+          window.location.replace(import.meta.env.VITE_API_HOST + '/auth/login/google')
+        }
       >
         Sign in with Google
       </Button>

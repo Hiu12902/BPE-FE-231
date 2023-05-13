@@ -1,10 +1,12 @@
 import NotFound from '@/components/404';
 import CrashComponent from '@/components/CrashComponent';
+import DocumentEditor from '@/components/DocumentEditor';
 import ForgotPassword from '@/components/ForgotPassword';
 import AppLayout from '@/components/Layouts/App/App.layout';
 import AuthenticationLayout from '@/components/Layouts/Authentication';
 import Login from '@/components/Login';
 import MainScreen from '@/components/MainScreen';
+import Project from '@/components/Project';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Register from '@/components/Register';
 import ResetPassword from '@/components/ResetPassword';
@@ -17,6 +19,8 @@ const router = createBrowserRouter(
       <Route element={<ProtectedRoute />} errorElement={<CrashComponent />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<MainScreen />} />
+          <Route path="document" element={<DocumentEditor />} />
+          <Route path=":projectName/:projectId" element={<Project />} />
         </Route>
         <Route path="editor" element={<BpeBpmnModeler />} />
       </Route>
