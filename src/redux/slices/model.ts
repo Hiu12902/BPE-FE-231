@@ -49,7 +49,7 @@ const modelSlice = createSlice({
       );
       remove(state.modelers, (modeler) => modeler.id === action.payload);
       if (state.currentModeler?.id === action.payload) {
-        state.currentModeler = state.modelers[index - 1];
+        state.currentModeler = state.modelers[index > 0 ? index - 1 : 0];
       }
     },
   },

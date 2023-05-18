@@ -52,7 +52,7 @@ const tabsSlice = createSlice({
       );
       remove(state.tabsRoot, (tab) => tab.id === action.payload);
       if (state.activeTab?.id === action.payload) {
-        state.activeTab = state.tabsRoot[index - 1];
+        state.activeTab = state.tabsRoot[index > 0 ? index - 1 : 0];
       }
     },
     updateActiveTab: (state, action: PayloadAction<tab>) => {

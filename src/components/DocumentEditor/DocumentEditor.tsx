@@ -1,9 +1,18 @@
 import projectApi from '@/api/project';
-import { ActionIcon, Skeleton } from '@mantine/core';
+import {
+  ActionIcon,
+  Button,
+  Container,
+  Group,
+  Skeleton,
+  Tabs,
+  Textarea,
+  createStyles,
+} from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
-//@ts-ignore
-import MDEditor from '@uiw/react-md-editor';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ReactComponent as IconSave } from '@tabler/icons/icons/device-floppy.svg';
@@ -11,14 +20,23 @@ import { ReactComponent as IconSave } from '@tabler/icons/icons/device-floppy.sv
 const initialContent = `
 # Document
 ---
+
 `;
 
+const useStyles = createStyles(() => ({
+  editor: {
+    padding: 20,
+  },
+}));
+
 const DocumentEditor = () => {
+  const { classes } = useStyles();
   const [searchParams] = useSearchParams();
   const projectId = searchParams.get('p');
   const projectName = searchParams.get('project');
   const [loading, setLoading] = useState(true);
   const [value, setValue] = useState<string | undefined>(initialContent);
+  const [activeTab, setActiveTab] = useState<string | null>('preview');
   useDocumentTitle(`Document - ${projectName} - BPSky`);
 
   const getDocumentContent = async () => {
@@ -59,27 +77,42 @@ const DocumentEditor = () => {
     }
   };
 
-  const saveButton = {
-    name: 'title2',
-    keyCommand: 'title2',
-    render: () => {
-      return (
-        <ActionIcon aria-label="Insert title2" onClick={saveDocument}>
-          <IconSave />
-        </ActionIcon>
-      );
-    },
-  };
-
   useEffect(() => {
     getDocumentContent();
   }, []);
 
   return (
-    <div data-color-mode="light">
-      <MDEditor value={value} onChange={setValue} extraCommands={[saveButton]} />
-      {loading && <Skeleton height="85vh" />}
-    </div>
+    <Container size="xl">
+      {!loading ? (
+        <Tabs value={activeTab} onTabChange={setActiveTab}>
+          <Tabs.List>
+            <Group position="apart" w="100%">
+              <Group spacing={0}>
+                <Tabs.Tab value="editor">Editor</Tabs.Tab>
+                <Tabs.Tab value="preview">Preview</Tabs.Tab>
+              </Group>
+              <Button mb={5} onClick={saveDocument} leftIcon={<IconSave />}>
+                Save
+              </Button>
+            </Group>
+          </Tabs.List>
+
+          <Tabs.Panel value="editor" pt="xs">
+            <Textarea value={value} onChange={(e) => setValue(e.target.value)} autosize />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="preview" pt="xs">
+            <ReactMarkdown
+              children={value || initialContent}
+              remarkPlugins={[remarkGfm]}
+              className={classes.editor}
+            />
+          </Tabs.Panel>
+        </Tabs>
+      ) : (
+        <Skeleton height="85vh" />
+      )}
+    </Container>
   );
 };
 
