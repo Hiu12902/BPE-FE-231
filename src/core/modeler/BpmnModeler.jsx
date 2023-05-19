@@ -1,6 +1,6 @@
 import 'bpmn-font/dist/css/bpmn-embedded.css';
 import 'bpmn-js/dist/assets/diagram-js.css';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { batch, useSelector } from 'react-redux';
 import './BpmnModeler.css';
 
@@ -20,12 +20,24 @@ import * as selectors from '@/redux/selectors';
 import { lintingActions, modelActions, tabsSliceActions, toolSliceActions } from '@/redux/slices';
 import { TabVariant } from '@/redux/slices/tabs';
 import { useAppDispatch } from '@/redux/store';
-import { ActionIcon, AppShell, Container, Footer, Tabs, createStyles } from '@mantine/core';
+import {
+  ActionIcon,
+  AppShell,
+  Container,
+  Footer,
+  Grid,
+  Group,
+  Tabs,
+  createStyles,
+} from '@mantine/core';
 import { find } from 'lodash';
 import { IconBpeCancel } from '../toolbar/utils/icons/Icons';
 import Modeler from './components/Modeler';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentTitle } from '@mantine/hooks';
+import { ReactComponent as IconArrowLeft } from '@tabler/icons/icons/square-rounded-chevron-left-filled.svg';
+import { ReactComponent as IconArrowRight } from '@tabler/icons/icons/square-rounded-chevron-right-filled.svg';
+import { useBeforeUnload } from 'react-router-dom';
 
 const useStyles = createStyles((theme) => ({
   main: {
@@ -61,6 +73,37 @@ const useStyles = createStyles((theme) => ({
       },
     },
   },
+
+  tabs: {
+    overflowX: 'scroll',
+    flexWrap: 'unset',
+    scrollbarWidth: 'none',
+
+    '&::-webkit-scrollbar': {
+      display: 'none',
+    },
+  },
+
+  scrollBtnsContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottom: '0.0625rem solid #dee2e6',
+    borderLeft: '0.0625rem solid #dee2e6',
+    height: 48,
+    marginTop: 10,
+  },
+
+  scrollBtnsWrapper: {
+    position: 'absolute',
+    right: 240,
+    backgroundColor: 'white',
+    paddingRight: 20,
+  },
+
+  tabsWrapper: {
+    paddingRight: 0,
+  },
 }));
 
 const BpeBpmnModeler = () => {
@@ -76,6 +119,8 @@ const BpeBpmnModeler = () => {
   const tabs = useSelector(selectors.getTabs);
   const activeTab = useSelector(selectors.getActiveTab);
   const { classes, cx } = useStyles();
+  const [scrollBtnsVisibility, setScrollBtnsVisibility] = useState(false);
+  const tabsListRef = useRef();
 
   const detaching = () => {
     currentModeler?.modeler?.detach();
@@ -84,7 +129,31 @@ const BpeBpmnModeler = () => {
 
   useEffect(() => {
     if (modelers.length === 0) {
-      navigate('/');
+      const cachedModelers = JSON.parse(localStorage.modelers);
+      if (cachedModelers.length > 0) {
+        cachedModelers.map((modeler, index) => {
+          batch(() => {
+            dispatch(modelActions.setModelers(modeler));
+            dispatch(
+              tabsSliceActions.setTabs({
+                label: `${modeler?.projectName}_ver_${modeler?.id}`,
+                value: modeler?.id,
+                variant: TabVariant.MODEL,
+                toolMode: TOOLBAR_MODE.DEFAULT,
+                id: modeler?.id,
+              })
+            );
+          });
+        });
+
+        localStorage.currentOpenedModeler &&
+          batch(() => {
+            dispatch(modelActions.setCurrentModeler(localStorage.currentOpenedModeler));
+            dispatch(tabsSliceActions.setActiveTab(localStorage.currentOpenedModeler));
+          });
+      } else {
+        navigate('/');
+      }
     }
   }, []);
 
@@ -107,6 +176,25 @@ const BpeBpmnModeler = () => {
       dispatch(lintingActions.setIsLintingActive(false));
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    if (tabsListRef.current) {
+      setScrollBtnsVisibility(tabsListRef.current?.scrollWidth > tabsListRef.current?.clientWidth);
+    }
+  }, [tabsListRef.current?.scrollWidth, tabsListRef.current?.clientWidth]);
+
+  useBeforeUnload(
+    useCallback(() => {
+      localStorage.modelers = JSON.stringify(
+        modelers.map((modeler) => ({
+          id: modeler.id,
+          projectId: modeler.projectId,
+          projectName: modeler.projectName,
+        }))
+      );
+      localStorage.currentOpenedModeler = currentModeler?.id;
+    }, [modelers, currentModeler?.id])
+  );
 
   return (
     <ModelerContext.Provider value={currentModeler?.modeler}>
@@ -148,36 +236,67 @@ const BpeBpmnModeler = () => {
             variant="outline"
             keepMounted={false}
           >
-            <Tabs.List>
-              {tabs.map((tab) => {
-                return (
-                  <Tabs.Tab
-                    disabled={toolbarMode === TOOLBAR_MODE.SIMULATING && tab.id !== activeTab.id}
-                    value={tab.id}
-                    rightSection={
-                      !(tab.variant === TabVariant.MODEL && modelers.length < 2) && (
-                        <ActionIcon>
-                          <IconBpeCancel
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              dispatch(tabsSliceActions.closeTab(tab.id));
-                              if (activeTab.id === tab.id) {
-                                detaching();
-                              }
-                              if (tab.variant === TabVariant.MODEL) {
-                                dispatch(modelActions.deleteModeler(tab.id));
-                              }
-                            }}
-                          />
-                        </ActionIcon>
-                      )
-                    }
-                  >
-                    {tab.label}
-                  </Tabs.Tab>
-                );
-              })}
-            </Tabs.List>
+            <Grid>
+              <Grid.Col span={scrollBtnsVisibility ? 11 : 12} className={classes.tabsWrapper}>
+                <Tabs.List className={classes.tabs} ref={tabsListRef}>
+                  {tabs.map((tab) => {
+                    return (
+                      <Tabs.Tab
+                        disabled={
+                          toolbarMode === TOOLBAR_MODE.SIMULATING && tab.id !== activeTab.id
+                        }
+                        value={tab.id}
+                        rightSection={
+                          !(tab.variant === TabVariant.MODEL && modelers.length < 2) && (
+                            <ActionIcon>
+                              <IconBpeCancel
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  dispatch(tabsSliceActions.closeTab(tab.id));
+                                  if (activeTab.id === tab.id) {
+                                    detaching();
+                                  }
+                                  if (tab.variant === TabVariant.MODEL) {
+                                    dispatch(modelActions.deleteModeler(tab.id));
+                                  }
+                                }}
+                              />
+                            </ActionIcon>
+                          )
+                        }
+                      >
+                        {tab.label}
+                      </Tabs.Tab>
+                    );
+                  })}
+                </Tabs.List>
+              </Grid.Col>
+
+              {scrollBtnsVisibility && (
+                <Grid.Col span={1} className={classes.scrollBtnsContainer}>
+                  <Group className={classes.scrollBtnsWrapper} spacing={5}>
+                    <ActionIcon
+                      onClick={() => {
+                        if (tabsListRef.current) {
+                          tabsListRef.current.scrollLeft -= 200;
+                        }
+                      }}
+                    >
+                      <IconArrowLeft />
+                    </ActionIcon>
+                    <ActionIcon
+                      onClick={() => {
+                        if (tabsListRef.current) {
+                          tabsListRef.current.scrollLeft += 200;
+                        }
+                      }}
+                    >
+                      <IconArrowRight />
+                    </ActionIcon>
+                  </Group>
+                </Grid.Col>
+              )}
+            </Grid>
 
             {tabs.map((tab) => {
               return (

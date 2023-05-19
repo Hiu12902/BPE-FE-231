@@ -52,7 +52,6 @@ const ImportExportGroup = () => {
           tabsSliceActions.updateActiveTab({
             ...activeTab,
             value: canvas?.getRootElement()?.id,
-            label: fileName || activeTab?.label || 'diagram',
           })
         );
       } catch (err) {

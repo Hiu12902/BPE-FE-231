@@ -204,15 +204,13 @@ const DiagramGroup = () => {
     const newId = randomId();
     batch(() => {
       dispatch(
-        tabsSliceActions.setTabs([
-          {
-            label: currentElement.id,
-            value: currentElement.id + planeSuffix,
-            variant: TabVariant.SUB_PROCESS,
-            toolMode: TOOLBAR_MODE.DEFAULT,
-            id: newId,
-          },
-        ])
+        tabsSliceActions.setTabs({
+          label: currentElement.id,
+          value: currentElement.id + planeSuffix,
+          variant: TabVariant.SUB_PROCESS,
+          toolMode: TOOLBAR_MODE.DEFAULT,
+          id: newId,
+        })
       );
       dispatch(lintingActions.setIsLintingActive(false));
     });
@@ -236,15 +234,13 @@ const DiagramGroup = () => {
         batch(() => {
           dispatch(evaluatedResultActions.setEvaluatedResult({ result: result, id: newId }));
           dispatch(
-            tabsSliceActions.setTabs([
-              {
-                label: `Evaluated Result - ${currentModeler?.id.replace('mantine-', '')}`,
-                value: 'evaluateResult',
-                variant: TabVariant.RESULT,
-                toolMode: TOOLBAR_MODE.EVALUATING,
-                id: newId,
-              },
-            ])
+            tabsSliceActions.setTabs({
+              label: `Evaluated Result - ${currentModeler?.id.replace('mantine-', '')}`,
+              value: 'evaluateResult',
+              variant: TabVariant.RESULT,
+              toolMode: TOOLBAR_MODE.EVALUATING,
+              id: newId,
+            })
           );
           dispatch(toolSliceActions.setToolbarMode(TOOLBAR_MODE.EVALUATING));
         });
@@ -303,16 +299,14 @@ const DiagramGroup = () => {
           })
         );
         dispatch(
-          tabsSliceActions.setTabs([
-            {
-              label: `Comparing - ${currentModeler?.id.replace('mantine-', '')}`,
-              value: 'evaluateResult',
-              variant: TabVariant.RESULT,
-              toolMode: TOOLBAR_MODE.EVALUATING,
-              id: newId,
-              isCompare: true,
-            },
-          ])
+          tabsSliceActions.setTabs({
+            label: `Comparing - ${currentModeler?.id.replace('mantine-', '')}`,
+            value: 'evaluateResult',
+            variant: TabVariant.RESULT,
+            toolMode: TOOLBAR_MODE.EVALUATING,
+            id: newId,
+            isCompare: true,
+          })
         );
         dispatch(toolSliceActions.setToolbarMode(TOOLBAR_MODE.EVALUATING));
       });
