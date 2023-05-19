@@ -72,6 +72,10 @@ const Modeler = () => {
   };
 
   useEffect(() => {
+    if (!currentModeler) {
+      return;
+    }
+
     if (currentModeler?.modeler) {
       const propertiesPanel = currentModeler.modeler.get('propertiesPanel');
       propertiesPanel.detach();
@@ -90,20 +94,18 @@ const Modeler = () => {
             const canvas = currentModeler?.modeler?.get('canvas');
             canvas.zoom('fit-viewport', 'auto');
           } catch (err) {
-            console.log(err);
+            console.error(err);
           }
         })();
         batch(() => {
           dispatch(
-            tabsSliceActions.setTabs([
-              {
-                label: `${currentModeler?.projectName}_ver_${currentModeler?.id}`,
-                value: '',
-                variant: TabVariant.MODEL,
-                toolMode: TOOLBAR_MODE.DEFAULT,
-                id: currentModeler?.id,
-              },
-            ])
+            tabsSliceActions.setTabs({
+              label: `${currentModeler?.projectName}_ver_${currentModeler?.id}`,
+              value: currentModeler?.id,
+              variant: TabVariant.MODEL,
+              toolMode: TOOLBAR_MODE.DEFAULT,
+              id: currentModeler?.id,
+            })
           );
           dispatch(modelActions.updateCurrentModeler({ ...currentModeler, isNew: false }));
         });

@@ -37,8 +37,15 @@ const tabsSlice = createSlice({
   } as TabsProps,
 
   reducers: {
-    setTabs: (state, action: PayloadAction<tab[]>) => {
-      state.tabsRoot = [...state.tabsRoot, ...action.payload];
+    setTabs: (state, action: PayloadAction<tab>) => {
+      if (action.payload.id.length === 0) {
+        return;
+      }
+      const existingTab = find(state.tabsRoot, (tab) => tab.id === action.payload.id);
+      if (!!existingTab) {
+        return;
+      }
+      state.tabsRoot.push(action.payload);
       state.activeTab = state.tabsRoot[state.tabsRoot.length - 1];
     },
     setActiveTab: (state, action: PayloadAction<string>) => {
