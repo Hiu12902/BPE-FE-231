@@ -160,7 +160,7 @@ const DiagramGroup = () => {
     const elementRegistry = modeler.get('elementRegistry');
     const jsonObj = getElementForGraph(elementRegistry);
     clipboard.copy(JSON.stringify(jsonObj));
-    return JSON.stringify(jsonObj);
+    return jsonObj;
   };
 
   const lint = async () => {
@@ -287,7 +287,7 @@ const DiagramGroup = () => {
         exceptionHandling: result.exceptionHandling,
         quality: result.quality,
       }));
-      const res = await evaluatedResultApi.compare(JSON.stringify(buildComparePayload(payload)));
+      const res = await evaluatedResultApi.compare(buildComparePayload(payload));
       const newId = randomId();
       batch(() => {
         dispatch(evaluatedResultActions.setEvaluatedResult({ result: flattenResult, id: newId }));
