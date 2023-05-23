@@ -10,6 +10,8 @@ export const SECONDARY_COLOR = {
 
 export const TOOLBAR_HEIGHT = 90;
 
-export const PALETTE_WIDTH = 256;
+export const PALETTE_WIDTH = 200;
+
+export const APP_PALETTE_WIDTH = 250;
 
 export const PROPERTIES_PANEL_WIDTH = 250;

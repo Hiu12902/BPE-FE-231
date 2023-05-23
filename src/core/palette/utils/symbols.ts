@@ -2,27 +2,27 @@ export const gatewaySymbols = [
   {
     className: 'bpmn-icon-gateway-xor custom-entry',
     tagName: 'bpmn:ExclusiveGateway',
-    name: 'Exclusive Gateway'
+    name: 'Exclusive',
   },
   {
     className: 'bpmn-icon-gateway-or custom-entry',
     tagName: 'bpmn:InclusiveGateway',
-    name: 'Inclusive Gateway'
+    name: 'Inclusive',
   },
   {
     className: 'bpmn-icon-gateway-parallel custom-entry',
     tagName: 'bpmn:ParallelGateway',
-    name: 'Parallel Gateway'
+    name: 'Parallel',
   },
   {
     className: 'bpmn-icon-gateway-complex custom-entry',
     tagName: 'bpmn:ComplexGateway',
-    name: 'Complex Gateway'
+    name: 'Complex',
   },
   {
     className: 'bpmn-icon-gateway-eventbased custom-entry',
     tagName: 'bpmn:EventBasedGateway',
-    name: 'Event Based Gateway'
+    name: 'Event Based',
   },
 ];
 
@@ -35,70 +35,70 @@ export const taskSymbols = [
   {
     className: 'bpmn-icon-user-task custom-entry',
     tagName: 'bpmn:UserTask',
-    name: 'User Task'
+    name: 'User',
   },
   {
     className: 'bpmn-icon-business-rule-task custom-entry',
     tagName: 'bpmn:BusinessRuleTask',
-    name: 'Business Rule Task'
+    name: 'Business Rule',
   },
   {
     className: 'bpmn-icon-manual-task custom-entry',
     tagName: 'bpmn:ManualTask',
-    name: 'Manual Task'
+    name: 'Manual',
   },
   {
     className: 'bpmn-icon-receive-task custom-entry',
     tagName: 'bpmn:ReceiveTask',
-    name: 'Receive Task'
+    name: 'Receive',
   },
   {
     className: 'bpmn-icon-send-task custom-entry',
     tagName: 'bpmn:SendTask',
-    name: 'Send Task'
+    name: 'Send',
   },
   {
     className: 'bpmn-icon-script-task custom-entry',
     tagName: 'bpmn:ScriptTask',
-    name: 'Script Task'
+    name: 'Script',
   },
   {
     className: 'bpmn-icon-service-task custom-entry',
     tagName: 'bpmn:ServiceTask',
-    name: 'Service Task'
-  }
+    name: 'Service',
+  },
 ];
 
 export const eventSymbols = [
   {
     className: 'bpmn-icon-start-event-none custom-entry',
     tagName: 'bpmn:StartEvent',
-    name: 'Start Event'
+    name: 'Start',
   },
   {
     className: 'bpmn-icon-end-event-none custom-entry',
     tagName: 'bpmn:EndEvent',
-    name: 'End Event'
+    name: 'End',
   },
   {
     className: 'bpmn-icon-intermediate-event-none custom-entry',
     tagName: 'bpmn:IntermediateThrowEvent',
-    name: 'Intermediate Event'
-  }
+    name: 'Intermediate',
+  },
 ];
 
 export const dataSymbols = [
   {
     className: 'bpmn-icon-data-object custom-entry',
     tagName: 'bpmn:DataObjectReference',
-    name: 'Data Object'
+    name: 'Data Object',
   },
   {
     className: 'bpmn-icon-data-store custom-entry',
     tagName: 'bpmn:DataStoreReference',
-    name: 'Data Store'
-  }
-]
+    name: 'Data Store',
+  },
+];
 
 export const subProcessSymbols = [
   {
@@ -107,7 +107,7 @@ export const subProcessSymbols = [
     name: 'Sub Process (collapsed)',
     option: {
       isExpanded: false,
-    }
+    },
   },
   {
     className: 'bpmn-icon-subprocess-expanded custom-entry',
@@ -115,7 +115,7 @@ export const subProcessSymbols = [
     name: 'Sub Process (expanded)',
     option: {
       isExpanded: true,
-    }
+    },
   },
   {
     className: 'bpmn-icon-transaction custom-entry',
@@ -123,32 +123,32 @@ export const subProcessSymbols = [
     name: 'Transaction',
     option: {
       isExpanded: true,
-    }
-  }
+    },
+  },
 ];
 
 export const participantsSymbols = [
   {
     className: 'bpmn-icon-participant custom-entry',
     tagName: 'bpmn:Participant',
-    name: 'Pool'
+    name: 'Pool',
   },
   {
     className: 'bpmn-icon-lane custom-entry',
     tagName: 'bpmn:Lane',
-    name: 'Lane'
-  }
+    name: 'Lane',
+  },
 ];
 
 export const artifactSymbols = [
   {
     className: 'bpmn-icon-group custom-entry',
     tagName: 'bpmn:Group',
-    name: 'Group'
+    name: 'Group',
   },
   {
     className: 'bpmn-icon-text-annotation custom-entry',
     tagName: 'bpmn:TextAnnotation',
-    name: 'Text Annotation'
+    name: 'Text Annotation',
   },
-]
+];

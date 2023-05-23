@@ -201,7 +201,6 @@ const DiagramGroup = () => {
   };
 
   const onOpenNewTab = () => {
-    const newId = randomId();
     batch(() => {
       dispatch(
         tabsSliceActions.setTabs({
@@ -209,7 +208,9 @@ const DiagramGroup = () => {
           value: currentElement.id + planeSuffix,
           variant: TabVariant.SUB_PROCESS,
           toolMode: TOOLBAR_MODE.DEFAULT,
-          id: newId,
+          id: currentElement.id,
+          model: currentModeler?.id,
+          projectID: currentModeler?.projectId,
         })
       );
       dispatch(lintingActions.setIsLintingActive(false));
@@ -240,6 +241,8 @@ const DiagramGroup = () => {
               variant: TabVariant.RESULT,
               toolMode: TOOLBAR_MODE.EVALUATING,
               id: newId,
+              model: currentModeler?.id,
+              projectID: currentModeler?.projectId,
             })
           );
           dispatch(toolSliceActions.setToolbarMode(TOOLBAR_MODE.EVALUATING));
@@ -306,6 +309,7 @@ const DiagramGroup = () => {
             toolMode: TOOLBAR_MODE.EVALUATING,
             id: newId,
             isCompare: true,
+            projectID: currentModeler?.projectId,
           })
         );
         dispatch(toolSliceActions.setToolbarMode(TOOLBAR_MODE.EVALUATING));
@@ -343,6 +347,7 @@ const DiagramGroup = () => {
             size="large"
             onClick={handleSwitchToSimulation}
             hotkey={TOOLBAR_HOTKEYS.SIMULATE}
+            disabled={!currentModeler}
           />
           <ToolbarIcon
             icon={IconBpeEvaluate}
@@ -351,6 +356,7 @@ const DiagramGroup = () => {
             orientation="vertical"
             size="large"
             onClick={onEvaluateModel}
+            disabled={!currentModeler}
           />
           <ToolbarIcon
             icon={IconBpeCompare}

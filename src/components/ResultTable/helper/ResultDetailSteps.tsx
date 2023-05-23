@@ -1,7 +1,22 @@
-import { Anchor, Box, Grid, ScrollArea, Text, Timeline, createStyles } from '@mantine/core';
+import {
+  Anchor,
+  Box,
+  Grid,
+  ScrollArea,
+  Stepper,
+  Text,
+  Timeline,
+  createStyles,
+} from '@mantine/core';
 import { getActiveTab, getCurrentModeler, getEvaluatedResult } from '@/redux/selectors';
 import { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { batch, useSelector } from 'react-redux';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
+import { useAppDispatch } from '@/redux/store';
+import { tabsSliceActions, toolSliceActions } from '@/redux/slices';
+import { TOOLBAR_MODE } from '@/constants/toolbar';
+import { notifications } from '@mantine/notifications';
+import { PRIMARY_COLOR } from '@/constants/theme/themeConstants';
 
 const useStyles = createStyles(() => ({
   container: {
@@ -10,6 +25,26 @@ const useStyles = createStyles(() => ({
     },
     width: '100%',
     height: '100%',
+  },
+
+  seperator: {
+    width: '100px',
+    backgroundColor: PRIMARY_COLOR[1],
+    flex: 'unset',
+  },
+
+  stepIcon: {
+    backgroundColor: PRIMARY_COLOR[0],
+    color: 'white',
+    fontSize: 13,
+  },
+
+  stepDescription: {
+    width: 'max-content',
+  },
+
+  steps: {
+    paddingBottom: 10,
   },
 }));
 
@@ -80,24 +115,59 @@ const StepElement = ({ currentElement }: { currentElement?: string }) => {
 };
 
 const ResultDetailSteps = () => {
+  const { classes } = useStyles();
+  const dispatch = useAppDispatch();
   const activeTab = useSelector(getActiveTab);
   const evaluatedResult = useSelector(getEvaluatedResult)[activeTab?.id as string];
-  const [elementSelected, setElementSelected] = useState<string>();
+  const [elementRegistry] = useGetModelerModules(['elementRegistry']);
 
   return (
-    <Grid>
-      <Grid.Col span={6}>
-        <ScrollArea h="50vh">
-          {evaluatedResult.map((result) => (
-            <Timeline active={result.steps?.length} bulletSize={24} lineWidth={2}>
-              {result.steps?.map((step) => (
-                <Timeline.Item
-                  title={
-                    <Anchor onClick={() => setElementSelected(step.activity || step.gateWay)}>
-                      {step.label || step.event}
-                    </Anchor>
-                  }
+    <ScrollArea w="calc(100vw - var(--mantine-navbar-width)">
+      {evaluatedResult.map((result) => (
+        <Stepper
+          active={-1}
+          breakpoint="sm"
+          iconSize={30}
+          classNames={{
+            separator: classes.seperator,
+            stepIcon: classes.stepIcon,
+            stepDescription: classes.stepDescription,
+            steps: classes.steps,
+          }}
+        >
+          {result.steps?.map((step) => (
+            <Stepper.Step
+              label={
+                <Anchor
+                  onClick={() => {
+                    batch(() => {
+                      const element = elementRegistry?.get(step.activity || step.gateWay);
+                      if (element) {
+                        dispatch(
+                          toolSliceActions.setElementSelected({
+                            ...element,
+                            shouldFocused: true,
+                          })
+                        );
+                        if (!!activeTab?.model) {
+                          dispatch(tabsSliceActions.setActiveTab(activeTab?.model));
+                          dispatch(toolSliceActions.setToolbarMode(TOOLBAR_MODE.DEFAULT));
+                        }
+                      } else {
+                        notifications.show({
+                          title: 'Sorry :(',
+                          message: "We couldn't find any element that matched",
+                          color: 'red',
+                        });
+                      }
+                    });
+                  }}
                 >
+                  {step.label || step.event}
+                </Anchor>
+              }
+              description={
+                <>
                   {step.cost && (
                     <Text color="dimmed" size="sm">
                       Cost: {step.cost}
@@ -110,7 +180,16 @@ const ResultDetailSteps = () => {
                   )}
                   {step.branchingProbability && (
                     <Text color="dimmed" size="sm">
-                      Branching Probability: {step.branchingProbability}
+                      Branching Probability: [
+                      {step.branchingProbability?.map(
+                        (prob, index) =>
+                          prob.toString() +
+                          (step.branchingProbability?.length &&
+                          index !== step.branchingProbability?.length - 1
+                            ? ', '
+                            : '')
+                      )}
+                      ]
                     </Text>
                   )}
                   {step.rework && (
@@ -123,16 +202,13 @@ const ResultDetailSteps = () => {
                       Element: {step.activity || step.gateWay}
                     </Text>
                   )}
-                </Timeline.Item>
-              ))}
-            </Timeline>
+                </>
+              }
+            ></Stepper.Step>
           ))}
-        </ScrollArea>
-      </Grid.Col>
-      {/* <Grid.Col span={6}>
-        <StepElement currentElement={elementSelected} />
-      </Grid.Col> */}
-    </Grid>
+        </Stepper>
+      ))}
+    </ScrollArea>
   );
 };
 

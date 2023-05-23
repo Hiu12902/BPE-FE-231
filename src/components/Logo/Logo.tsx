@@ -1,5 +1,6 @@
 import { ReactComponent as AppLogo } from '@/assets/logo.svg';
 import { Anchor, Center, createStyles } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = createStyles((theme) => ({
   logo: {
@@ -11,14 +12,20 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const Logo = () => {
+const Logo = ({ height, fullReload }: { height?: number; fullReload?: boolean }) => {
   const { classes } = useStyles();
-  return (
+  const navigate = useNavigate();
+
+  return fullReload ? (
     <Anchor href="/">
       <Center>
-        <AppLogo height={40} className={classes.logo} />
+        <AppLogo height={height || 40} className={classes.logo} />
       </Center>
     </Anchor>
+  ) : (
+    <Center>
+      <AppLogo height={height || 40} className={classes.logo} onClick={() => navigate('/')} />
+    </Center>
   );
 };
 

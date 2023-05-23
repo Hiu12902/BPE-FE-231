@@ -1,18 +1,30 @@
 import { PRIMARY_COLOR } from '@/constants/theme/themeConstants';
-import { Accordion, ActionIcon, Flex, Grid, Group, Menu, Text, TextInput } from '@mantine/core';
+import {
+  Accordion,
+  ActionIcon,
+  Flex,
+  Grid,
+  Group,
+  Menu,
+  Text,
+  TextInput,
+  Tooltip,
+} from '@mantine/core';
 import { ReactComponent as IconUserShare } from '@tabler/icons/icons/user-plus.svg';
 import { ReactComponent as IconFolder } from '@tabler/icons/icons/folder.svg';
 import { ReactComponent as IconAbc } from '@tabler/icons/icons/abc.svg';
 import { ReactComponent as IconInfo } from '@tabler/icons/icons/info-circle-filled.svg';
 import { ReactComponent as IconTrash } from '@tabler/icons/icons/trash.svg';
 import { ReactComponent as IconDots } from '@tabler/icons/icons/dots.svg';
-import { MouseEvent, useRef, useState } from 'react';
+import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { IFile, IProject } from '@/interfaces/projects';
 import FileItem from '@/components/FileItem';
 import projectApi from '@/api/project';
 import { openConfirmModal } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import ShareModal from '@/components/ShareModal';
+import { useSelector } from 'react-redux';
+import { getModelers } from '@/redux/selectors';
 
 const ProjectItem = (props: IProject) => {
   const { name, id, createAt, onDeleteProject, shouldGetDocuments } = props;
@@ -21,6 +33,10 @@ const ProjectItem = (props: IProject) => {
   const [openShareModal, setOpenShareModal] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const bpmnFilesCount = files.filter((file) => file.xmlFileLink).length;
+  const [hoverOnDeleteBtn, setHoverOnDeleteBtn] = useState(false);
+  const modelers = useSelector(getModelers);
+  const isOpeningInEditor = !!modelers.find((modeler) => modeler.projectId === id);
+
   const getProjectFiles = async () => {
     try {
       if (files.length > 0) {
@@ -68,7 +84,7 @@ const ProjectItem = (props: IProject) => {
     openConfirmModal({
       title: 'Rename project',
       children: <TextInput placeholder="Project's name" ref={nameInputRef} value={name} />,
-      labels: { confirm: 'Delete', cancel: 'Cancel' },
+      labels: { confirm: 'Confirm', cancel: 'Cancel' },
       onConfirm: onRenameProject,
     });
   };
@@ -85,6 +101,9 @@ const ProjectItem = (props: IProject) => {
 
   const openDeleteModal = (e: MouseEvent) => {
     e.stopPropagation();
+    if (isOpeningInEditor) {
+      return;
+    }
     openConfirmModal({
       title: 'Delete this project',
       centered: true,
@@ -147,7 +166,7 @@ const ProjectItem = (props: IProject) => {
                 </ActionIcon>
               </Menu.Target>
 
-              <Menu.Dropdown>
+              <Menu.Dropdown onClick={(e) => e.stopPropagation()}>
                 <Menu.Item icon={<IconUserShare />} onClick={onOpenShareModal}>
                   Share
                 </Menu.Item>
@@ -157,9 +176,23 @@ const ProjectItem = (props: IProject) => {
                 <Menu.Item icon={<IconInfo />} onClick={(e) => e.stopPropagation()}>
                   Detail
                 </Menu.Item>
-                <Menu.Item color="red" icon={<IconTrash />} onClick={openDeleteModal}>
-                  Delete
-                </Menu.Item>
+                <Tooltip
+                  label="You are currently working on this project, make sure to close it before delete"
+                  multiline
+                  width={220}
+                  opened={isOpeningInEditor && hoverOnDeleteBtn}
+                  position="bottom"
+                >
+                  <Menu.Item
+                    color="red"
+                    icon={<IconTrash />}
+                    onClick={openDeleteModal}
+                    onMouseEnter={() => setHoverOnDeleteBtn(true)}
+                    onMouseLeave={() => setHoverOnDeleteBtn(false)}
+                  >
+                    Delete
+                  </Menu.Item>
+                </Tooltip>
               </Menu.Dropdown>
             </Menu>
           </Grid.Col>

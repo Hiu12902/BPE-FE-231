@@ -84,6 +84,9 @@ const Register = (props: PaperProps) => {
         fullWidth
         size="md"
         radius="md"
+        onClick={() =>
+          window.location.replace(import.meta.env.VITE_API_HOST + '/auth/login/google')
+        }
       >
         Sign up with Google
       </Button>

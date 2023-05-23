@@ -1,7 +1,6 @@
 import CommentSection from '@/components/CommentSection/CommentSection';
 import FilesListModal from '@/components/FilesListModal/FilesListModal';
 import { getCurrentModeler } from '@/redux/selectors';
-import { useAppDispatch } from '@/redux/store';
 import { Badge, Group, Menu, Modal, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -13,7 +12,6 @@ import { showNotification } from '@mantine/notifications';
 import Workspace from '@/components/Workspace';
 
 const MiscGroup = () => {
-  const dispatch = useAppDispatch();
   const [openCommentSection, setOpenCommentSection] = useState(false);
   const [openFilesList, setOpenFilesList] = useState(false);
   const [openFileMenu, setOpenFileMenu] = useState(false);
@@ -76,6 +74,7 @@ const MiscGroup = () => {
           onClick={() => setOpenCommentSection((o) => !o)}
           overflow
           active={openCommentSection}
+          disabled={!currentModeler}
         />
         <ToolbarIcon
           icon={IconBpeResult}
@@ -85,6 +84,7 @@ const MiscGroup = () => {
           size="large"
           onClick={() => setOpenFilesList((o) => !o)}
           overflow
+          disabled={!currentModeler}
         />
         <Menu shadow="md" opened={openFileMenu} onChange={setOpenFileMenu} position="right">
           <Menu.Target>

@@ -1,18 +1,19 @@
-import { ActionIcon, Badge, Box, Grid, Group, Menu, Modal, Stack, Text } from '@mantine/core';
+import { ActionIcon, Badge, Box, Grid, Group, Menu, Stack, Text } from '@mantine/core';
 import { ReactComponent as IconFileText } from '@tabler/icons/icons/file-text.svg';
 import { ReactComponent as IconFile3d } from '@tabler/icons/icons/file-3d.svg';
 import { ReactComponent as IconTrash } from '@tabler/icons/icons/trash.svg';
 import { ReactComponent as IconDots } from '@tabler/icons/icons/dots.svg';
 import { ReactComponent as IconFileSymlink } from '@tabler/icons/icons/file-symlink.svg';
+import { ReactComponent as IconCircleXFilled } from '@tabler/icons/icons/circle-x.svg';
 import { useFileCardStyle } from './FileItem.style';
 import { IFile } from '@/interfaces/projects';
 import { PRIMARY_COLOR } from '@/constants/theme/themeConstants';
 import { useAppDispatch } from '@/redux/store';
-import { modelActions } from '@/redux/slices';
+import { modelActions, tabsSliceActions } from '@/redux/slices';
 import { useNavigate } from 'react-router-dom';
 import projectApi from '@/api/project';
 import { openConfirmModal } from '@mantine/modals';
-import { useSelector } from 'react-redux';
+import { batch, useSelector } from 'react-redux';
 import { getModelers } from '@/redux/selectors';
 
 const FileItem = (props: IFile) => {
@@ -34,19 +35,21 @@ const FileItem = (props: IFile) => {
   const fileName = documentLink ? 'readme.md' : `${projectName}`;
   const { classes } = useFileCardStyle();
   const IconFile = documentLink ? IconFileText : IconFile3d;
-  const isOpeningInEditor = modelers.find((modeler) => modeler.id === version);
+  const isOpeningInEditor = !!modelers.find((modeler) => modeler.id === version);
 
   const onOpenBpmnFile = () => {
     if (xmlFileLink && version) {
-      dispatch(
-        modelActions.setModelers({
-          modeler: undefined,
-          id: version,
-          projectId: projectId,
-          projectName: projectName,
-        })
-      );
-      dispatch(modelActions.setCurrentModeler(version));
+      batch(() => {
+        dispatch(
+          modelActions.setModelers({
+            modeler: undefined,
+            id: version,
+            projectId: projectId,
+            projectName: projectName,
+          })
+        );
+        dispatch(modelActions.setCurrentModeler(version));
+      });
       navigate('/editor');
     }
   };
@@ -80,6 +83,15 @@ const FileItem = (props: IFile) => {
 
   const onOpenDocument = () =>
     window.open(`/document?project=${projectName}&p=${projectId}`, '_blank');
+
+  const onCloseFile = () => {
+    if (version) {
+      batch(() => {
+        dispatch(tabsSliceActions.closeTab(version));
+        dispatch(modelActions.deleteModeler(version));
+      });
+    }
+  };
 
   return (
     <Box
@@ -127,10 +139,17 @@ const FileItem = (props: IFile) => {
                   Open
                 </Menu.Item>
                 <Menu.Item
+                  icon={<IconCircleXFilled />}
+                  onClick={onCloseFile}
+                  disabled={!isOpeningInEditor}
+                >
+                  Close
+                </Menu.Item>
+                <Menu.Item
                   color="red"
                   icon={<IconTrash />}
                   onClick={openDeleteModal}
-                  disabled={!canDelete}
+                  disabled={!canDelete || isOpeningInEditor}
                 >
                   Delete
                 </Menu.Item>

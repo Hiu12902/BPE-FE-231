@@ -7,4 +7,12 @@ export const usePaletteNavbarStyles = createStyles((theme, _params) => ({
     [`&:hover .${getStylesRef('label')}`]: { color: 'black' },
     [`&:hover .${getStylesRef('chevron')}`]: { color: 'black' },
   },
+
+  unCollapseBtn: {
+    backgroundColor: 'white',
+    color: 'black',
+    position: 'absolute',
+    left: 8,
+    border: '1px solid #dee2e6',
+  },
 }));

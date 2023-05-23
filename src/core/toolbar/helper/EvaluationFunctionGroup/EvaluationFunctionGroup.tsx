@@ -2,10 +2,17 @@ import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import { IconBpeExportLarge, IconBpeSaveLarge } from '@/core/toolbar/utils/icons/Icons';
 import { Group, Stack } from '@mantine/core';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
+import { CSSProperties, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { getActiveTab, getEvaluatedResult } from '@/redux/selectors';
 
-const EvaluationFunctionGroup = () => {
+const EvaluationFunctionGroup = ({ style }: { style?: CSSProperties }) => {
+  const activeTab = useSelector(getActiveTab);
+  const evaluatedResult = useSelector(getEvaluatedResult)[activeTab?.id as string];
+  const [fileName, setFileName] = useState();
+
   return (
-    <Stack spacing={DEFAULT_SPACING}>
+    <Stack spacing={DEFAULT_SPACING} style={style}>
       <Group>
         <ToolbarIcon
           icon={IconBpeSaveLarge}

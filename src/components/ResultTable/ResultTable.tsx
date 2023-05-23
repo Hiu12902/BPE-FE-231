@@ -1,7 +1,7 @@
 import { EXCLUDED_FIELDS, ResultTableTitleMap } from '@/constants/result';
 import { EvaluatedResultRecord, EvaluationResult } from '@/interfaces/evaluatedResult';
 import * as selectors from '@/redux/selectors';
-import { Button, Group, Space, Stack, Title, createStyles } from '@mantine/core';
+import { Box, Button, Group, Space, Stack, Title, createStyles } from '@mantine/core';
 import { keysIn, remove, round, values } from 'lodash';
 import { DataTable } from 'mantine-datatable';
 import { useState } from 'react';
@@ -90,48 +90,40 @@ export default function ResultTable({
         />
       </Stack>
       <Space h={50} />
-      {!(openUnitCost || openTransparency) ? (
-        <>
-          <Title order={4}>Evaluated Result Detail</Title>
-          <Space h="sm" />
-          <ResultDetailSteps />
-        </>
-      ) : (
-        openUnitCost && (
-          <Stack>
-            <Title order={4}>Unit Cost</Title>
-            <DataTable
-              withBorder
-              borderRadius="sm"
-              withColumnBorders
-              striped
-              highlightOnHover
-              className={classes.table}
-              records={unitCost}
-              columns={[
-                {
-                  accessor: 'lane',
-                  title: 'Lane',
-                  textAlignment: 'left',
-                },
-                {
-                  accessor: 'cost',
-                  title: 'Unit Cost',
-                  textAlignment: 'center',
-                },
-              ]}
-            />
-            <Group position="right">
-              <Button
-                onClick={() => {
-                  setOpenUnitCost(false);
-                }}
-              >
-                Close
-              </Button>
-            </Group>
-          </Stack>
-        )
+      {openUnitCost && (
+        <Stack>
+          <Title order={4}>Unit Cost</Title>
+          <DataTable
+            withBorder
+            borderRadius="sm"
+            withColumnBorders
+            striped
+            highlightOnHover
+            className={classes.table}
+            records={unitCost}
+            columns={[
+              {
+                accessor: 'lane',
+                title: 'Lane',
+                textAlignment: 'left',
+              },
+              {
+                accessor: 'cost',
+                title: 'Unit Cost',
+                textAlignment: 'center',
+              },
+            ]}
+          />
+          <Group position="right">
+            <Button
+              onClick={() => {
+                setOpenUnitCost(false);
+              }}
+            >
+              Close
+            </Button>
+          </Group>
+        </Stack>
       )}
       {openTransparency && (
         <Stack>
@@ -173,6 +165,11 @@ export default function ResultTable({
           </Group>
         </Stack>
       )}
+      <Box>
+        <Title order={4}>Evaluated Result Detail</Title>
+        <Space h="sm" />
+        <ResultDetailSteps />
+      </Box>
     </>
   ) : (
     <CompareResultComponent />

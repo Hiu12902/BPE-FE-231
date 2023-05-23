@@ -16,6 +16,8 @@ export interface tab {
   toolMode: TOOLBAR_MODE;
   id: string;
   isCompare?: boolean;
+  model?: string;
+  projectID?: number;
 }
 
 interface TabsProps {
@@ -43,6 +45,7 @@ const tabsSlice = createSlice({
       }
       const existingTab = find(state.tabsRoot, (tab) => tab.id === action.payload.id);
       if (!!existingTab) {
+        state.activeTab = existingTab;
         return;
       }
       state.tabsRoot.push(action.payload);
@@ -57,7 +60,7 @@ const tabsSlice = createSlice({
         state.tabsRoot,
         find(state.tabsRoot, (tab) => tab.id === action.payload)
       );
-      remove(state.tabsRoot, (tab) => tab.id === action.payload);
+      remove(state.tabsRoot, (tab) => tab.id === action.payload || tab.model === action.payload);
       if (state.activeTab?.id === action.payload) {
         state.activeTab = state.tabsRoot[index > 0 ? index - 1 : 0];
       }
