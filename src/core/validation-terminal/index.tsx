@@ -2,50 +2,23 @@ import { Alert, Box, Group, ScrollArea, Space, Stack, Text } from '@mantine/core
 
 import { PALETTE_WIDTH, PROPERTIES_PANEL_WIDTH } from '@/constants/theme/themeConstants';
 import { IIssue } from '@/interfaces/linting';
-import { getCurrentModeler } from '@/redux/selectors';
-import { useSelector } from 'react-redux';
-import useGetModelerModules from '../hooks/useGetModelerModule';
+import useFocusElement from '../hooks/useFocusElement';
 
-const ValidationTerminal = ({ issues }: { issues: IIssue[] }) => {
-  const modeler = useSelector(getCurrentModeler)?.modeler;
-  const [canvas, selection, elementRegistry] = useGetModelerModules([
-    'canvas',
-    'selection',
-    'elementRegistry',
-  ]);
-
-  const centerElement = (elementId: string) => {
-    //@ts-ignore
-    var bbox = elementRegistry?.get(elementId);
-
-    //@ts-ignore
-    var currentViewbox = canvas.viewbox();
-
-    var elementMid = {
-      x: bbox.x + bbox.width / 2,
-      y: bbox.y + bbox.height / 2,
-    };
-
-    //@ts-ignore
-    canvas.viewbox({
-      x: elementMid.x - currentViewbox.width / 2,
-      y: elementMid.y - currentViewbox.height / 2,
-      width: currentViewbox.width,
-      height: currentViewbox.height,
-    });
-  };
-
-  const onFocusElement = (id: string) => {
-    //@ts-ignore
-    const element = elementRegistry?.get(id);
-    //@ts-ignore
-    selection?.select(element);
-    centerElement(id);
-  };
+const ValidationTerminal = ({
+  issues,
+  isNavbarCollapsed,
+}: {
+  issues: IIssue[];
+  isNavbarCollapsed: boolean;
+}) => {
+  const focusElement = useFocusElement();
 
   return (
     <Box
-      style={{ marginLeft: PALETTE_WIDTH + 10, marginRight: PROPERTIES_PANEL_WIDTH + 10 }}
+      style={{
+        marginLeft: (isNavbarCollapsed ? 30 : PALETTE_WIDTH) + 10,
+        marginRight: PROPERTIES_PANEL_WIDTH + 10,
+      }}
       pt={10}
     >
       {issues.length > 0 ? (
@@ -68,7 +41,7 @@ const ValidationTerminal = ({ issues }: { issues: IIssue[] }) => {
                   <Text
                     style={{ cursor: 'pointer' }}
                     underline
-                    onClick={() => onFocusElement(issue.id)}
+                    onClick={() => focusElement(issue.id)}
                   >{`${issue.id}:`}</Text>
                 }
                 color={issue.category === 'error' ? 'red' : 'yellow'}

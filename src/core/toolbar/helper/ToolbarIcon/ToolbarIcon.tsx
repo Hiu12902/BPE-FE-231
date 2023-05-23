@@ -49,7 +49,7 @@ const ToolbarIcon = React.forwardRef<HTMLButtonElement, IToolbarIcon>(
     );
 
     return (
-      <Tooltip label={<TooltipLabel />} zIndex={101} position="bottom">
+      <Tooltip label={<TooltipLabel />} zIndex={99999} position="bottom">
         <UnstyledButton
           className={cx(classes.button, {
             [classes.buttonDisabled]: disabled,

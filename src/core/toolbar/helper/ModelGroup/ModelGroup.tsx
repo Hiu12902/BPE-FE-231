@@ -92,6 +92,7 @@ const ModelGroup = () => {
         size="small"
         hotkey={TOOLBAR_HOTKEYS.SAVE}
         onClick={() => onSaveModel(false)}
+        disabled={!currentModeler}
       />
       <ToolbarIcon
         icon={IconBpeValidate}
@@ -105,6 +106,7 @@ const ModelGroup = () => {
         }
         active={lintingActive}
         hotkey={TOOLBAR_HOTKEYS.VALIDATE}
+        disabled={!currentModeler}
       />
       <ToolbarIcon
         icon={IconBpeHistory}

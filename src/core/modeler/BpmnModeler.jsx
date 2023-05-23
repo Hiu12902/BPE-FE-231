@@ -23,21 +23,29 @@ import { useAppDispatch } from '@/redux/store';
 import {
   ActionIcon,
   AppShell,
+  Button,
   Container,
   Footer,
   Grid,
   Group,
   Tabs,
+  Text,
   createStyles,
+  Image,
+  Flex,
+  Space,
+  Badge,
+  Modal,
 } from '@mantine/core';
 import { find } from 'lodash';
 import { IconBpeCancel } from '../toolbar/utils/icons/Icons';
 import Modeler from './components/Modeler';
-import { useNavigate } from 'react-router-dom';
 import { useDocumentTitle } from '@mantine/hooks';
 import { ReactComponent as IconArrowLeft } from '@tabler/icons/icons/square-rounded-chevron-left-filled.svg';
 import { ReactComponent as IconArrowRight } from '@tabler/icons/icons/square-rounded-chevron-right-filled.svg';
 import { useBeforeUnload } from 'react-router-dom';
+import emptyEditor from '@/assets/empty-editor.png';
+import Workspace from '@/components/Workspace';
 
 const useStyles = createStyles((theme) => ({
   main: {
@@ -45,7 +53,7 @@ const useStyles = createStyles((theme) => ({
     paddingBottom: 'var(--mantine-footer-height, 0px) !important',
     paddingLeft: 'var(--mantine-navbar-width, 0px) !important',
     paddingRight: 'var(--mantine-aside-width, 0px) !important',
-    overflowY: 'hidden',
+    overflow: 'hidden',
     '.bjs-drilldown': {
       display: 'none',
     },
@@ -104,12 +112,24 @@ const useStyles = createStyles((theme) => ({
   tabsWrapper: {
     paddingRight: 0,
   },
+
+  tab: {
+    '&[data-active]': {
+      backgroundColor: theme.colors.blue[0],
+      color: PRIMARY_COLOR[1],
+    },
+  },
+
+  closeIcon: {
+    '&:hover': {
+      boxShadow: 'rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;',
+    },
+  },
 }));
 
 const BpeBpmnModeler = () => {
   useDocumentTitle('Editor - BPSky');
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const currentModeler = useSelector(selectors.getCurrentModeler);
   const modelers = useSelector(selectors.getModelers);
   const lintingActive = useSelector(selectors.getLintingState);
@@ -121,6 +141,11 @@ const BpeBpmnModeler = () => {
   const { classes, cx } = useStyles();
   const [scrollBtnsVisibility, setScrollBtnsVisibility] = useState(false);
   const tabsListRef = useRef();
+  const [noModeler, setNoModeler] = useState(false);
+  const [openModels, setOpenModels] = useState(false);
+  const [isNavbarCollapsed, setIsNavbarCollapsed] = useState(
+    localStorage.elementNavbarToggle === 'true'
+  );
 
   const detaching = () => {
     currentModeler?.modeler?.detach();
@@ -129,33 +154,37 @@ const BpeBpmnModeler = () => {
 
   useEffect(() => {
     if (modelers.length === 0) {
-      const cachedModelers = JSON.parse(localStorage.modelers);
-      if (cachedModelers.length > 0) {
-        cachedModelers.map((modeler, index) => {
-          batch(() => {
-            dispatch(modelActions.setModelers(modeler));
-            dispatch(
-              tabsSliceActions.setTabs({
-                label: `${modeler?.projectName}_ver_${modeler?.id}`,
-                value: modeler?.id,
-                variant: TabVariant.MODEL,
-                toolMode: TOOLBAR_MODE.DEFAULT,
-                id: modeler?.id,
-              })
-            );
+      if (!!localStorage.modelers && !!localStorage.currentOpenedModeler) {
+        const cachedModelers = JSON.parse(localStorage.modelers);
+        if (cachedModelers.length > 0) {
+          cachedModelers.map((modeler, index) => {
+            batch(() => {
+              dispatch(modelActions.setModelers(modeler));
+              dispatch(
+                tabsSliceActions.setTabs({
+                  label: `${modeler?.projectName}_ver_${modeler?.id}`,
+                  value: modeler?.id,
+                  variant: TabVariant.MODEL,
+                  toolMode: TOOLBAR_MODE.DEFAULT,
+                  id: modeler?.id,
+                  projectID: modeler?.projectId,
+                })
+              );
+            });
           });
-        });
 
-        localStorage.currentOpenedModeler &&
           batch(() => {
             dispatch(modelActions.setCurrentModeler(localStorage.currentOpenedModeler));
             dispatch(tabsSliceActions.setActiveTab(localStorage.currentOpenedModeler));
           });
+        }
       } else {
-        navigate('/');
+        setNoModeler(true);
       }
+    } else {
+      setNoModeler(false);
     }
-  }, []);
+  }, [modelers]);
 
   useEffect(() => {
     if (currentModeler?.modeler) {
@@ -171,7 +200,7 @@ const BpeBpmnModeler = () => {
   }, [currentModeler]);
 
   useEffect(() => {
-    if (activeTab.variant === TabVariant.RESULT) {
+    if (activeTab?.variant === TabVariant.RESULT) {
       detaching();
       dispatch(lintingActions.setIsLintingActive(false));
     }
@@ -196,11 +225,49 @@ const BpeBpmnModeler = () => {
     }, [modelers, currentModeler?.id])
   );
 
+  useEffect(() => {
+    if (toolbarMode !== TOOLBAR_MODE.DEFAULT) {
+      setIsNavbarCollapsed(true);
+    }
+  }, [toolbarMode]);
+
+  const renderModelsModal = () => {
+    return (
+      <Modal
+        opened={openModels}
+        onClose={() => setOpenModels(false)}
+        title={<Badge size="lg">Open models from your workspace</Badge>}
+        size="xl"
+      >
+        <Workspace name="Personal" isOpenFromEditor />
+      </Modal>
+    );
+  };
+
+  const renderNoModelers = () => {
+    return (
+      <Flex align="center" justify="center" direction="column">
+        <Image src={emptyEditor} width={250} height={250} />
+        <Text color="dimmed" align="center" w="45%" size="md">
+          It seems like you haven't opened any model yet! You can use the <b>Files</b> button on
+          toolbar to open a new model or
+        </Text>
+        <Space h="md" />
+        <Button onClick={() => setOpenModels(true)}>Open New Model</Button>
+      </Flex>
+    );
+  };
+
   return (
     <ModelerContext.Provider value={currentModeler?.modeler}>
       <AppShell
-        navbar={<PaletteNavbar />}
-        header={<BpeToolbar />}
+        navbar={
+          <PaletteNavbar
+            isNavbarCollapsed={isNavbarCollapsed}
+            setIsNavbarCollapsed={setIsNavbarCollapsed}
+          />
+        }
+        header={<BpeToolbar isNavbarCollapsed={isNavbarCollapsed} />}
         classNames={{
           main: cx(classes.main, {
             [classes.mainSimulation]: toolbarMode === TOOLBAR_MODE.SIMULATING,
@@ -209,17 +276,18 @@ const BpeBpmnModeler = () => {
         footer={
           lintingActive ? (
             <Footer height={140} fixed={false} style={{ bottom: 0, zIndex: 0 }}>
-              <ValidationTerminal issues={lintingIssues} />
+              <ValidationTerminal issues={lintingIssues} isNavbarCollapsed={isNavbarCollapsed} />
             </Footer>
           ) : null
         }
         styles={{ main: { padding: 0 } }}
       >
+        {renderModelsModal()}
         {tabs.length > 1 ? (
           <Tabs
-            value={activeTab.id}
+            value={activeTab?.id}
             onTabChange={(tab) => {
-              if (tab === activeTab.id) {
+              if (tab === activeTab?.id) {
                 return;
               }
               const nextTab = find(tabs, (e) => e.id === tab);
@@ -243,27 +311,35 @@ const BpeBpmnModeler = () => {
                     return (
                       <Tabs.Tab
                         disabled={
-                          toolbarMode === TOOLBAR_MODE.SIMULATING && tab.id !== activeTab.id
+                          toolbarMode === TOOLBAR_MODE.SIMULATING && tab.id !== activeTab?.id
                         }
                         value={tab.id}
                         rightSection={
                           !(tab.variant === TabVariant.MODEL && modelers.length < 2) && (
-                            <ActionIcon>
+                            <ActionIcon
+                              disabled={toolbarMode === TOOLBAR_MODE.SIMULATING}
+                              variant="subtle"
+                              radius={50}
+                              className={classes.closeIcon}
+                              p={0}
+                            >
                               <IconBpeCancel
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   dispatch(tabsSliceActions.closeTab(tab.id));
-                                  if (activeTab.id === tab.id) {
+                                  if (activeTab?.id === tab.id) {
                                     detaching();
                                   }
                                   if (tab.variant === TabVariant.MODEL) {
                                     dispatch(modelActions.deleteModeler(tab.id));
                                   }
                                 }}
+                                opacity={toolbarMode === TOOLBAR_MODE.SIMULATING ? 0.5 : 1}
                               />
                             </ActionIcon>
                           )
                         }
+                        className={classes.tab}
                       >
                         {tab.label}
                       </Tabs.Tab>
@@ -311,7 +387,11 @@ const BpeBpmnModeler = () => {
             })}
           </Tabs>
         ) : null}
-        <Modeler />
+        {(modelers.length > 0 || !!localStorage.modelers) && !noModeler ? (
+          <Modeler />
+        ) : (
+          renderNoModelers()
+        )}
       </AppShell>
     </ModelerContext.Provider>
   );

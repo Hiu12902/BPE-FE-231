@@ -1,4 +1,4 @@
-import { Divider, Group, Header, Stack, Text } from '@mantine/core';
+import { Divider, Group, Header, Stack, Text, Transition } from '@mantine/core';
 
 import * as selectors from '@/redux/selectors';
 import { useSelector } from 'react-redux';
@@ -27,6 +27,7 @@ import {
   IconBpeTextSize,
   IconBpeUnderline,
 } from './utils/icons/Icons';
+import { CSSProperties } from 'react';
 
 const DEFAULT_SPACING = 5;
 
@@ -74,9 +75,9 @@ const FormattingGroup = () => {
   );
 };
 
-const DefaultToolbar = () => {
+const DefaultToolbar = ({ style }: { style?: CSSProperties }) => {
   return (
-    <>
+    <Group style={style}>
       <ClipBoardGroup />
       <Divider size="xs" orientation="vertical" />
       <ModelGroup />
@@ -92,13 +93,13 @@ const DefaultToolbar = () => {
       <UtilsGroup />
       <Divider size="xs" orientation="vertical" />
       <MiscGroup />
-    </>
+    </Group>
   );
 };
 
-const SimulationToolbar = () => {
+const SimulationToolbar = ({ style }: { style?: CSSProperties }) => {
   return (
-    <>
+    <Group style={style}>
       {/* <SimulationDiagramGroup />
       <Divider size="xs" orientation="vertical" /> */}
       <SimulationModesGroup />
@@ -110,23 +111,40 @@ const SimulationToolbar = () => {
       <SimulationMiscGroup />
       <Divider size="xs" orientation="vertical" />
       <SimulationActionGroup />
-    </>
+    </Group>
   );
 };
 
-const BpeToolbar = () => {
+const BpeToolbar = ({ isNavbarCollapsed }: { isNavbarCollapsed: boolean }) => {
   const toolbarMode = useSelector(selectors.selectToolbarMode);
 
   return (
     <Header height={TOOLBAR_HEIGHT} p={0} fixed={false}>
-      <Group ml={PALETTE_WIDTH + 10} spacing="sm">
-        {toolbarMode === TOOLBAR_MODE.DEFAULT ? (
-          <DefaultToolbar />
-        ) : toolbarMode === TOOLBAR_MODE.SIMULATING ? (
-          <SimulationToolbar />
-        ) : (
-          <EvaluationFunctionGroup />
-        )}
+      <Group ml={(isNavbarCollapsed ? 30 : PALETTE_WIDTH) + 10} spacing="sm">
+        <Transition
+          mounted={toolbarMode === TOOLBAR_MODE.DEFAULT}
+          transition="pop"
+          duration={100}
+          timingFunction="ease"
+        >
+          {(styles) => <DefaultToolbar style={styles} />}
+        </Transition>
+        <Transition
+          mounted={toolbarMode === TOOLBAR_MODE.SIMULATING}
+          transition="pop"
+          duration={100}
+          timingFunction="ease"
+        >
+          {(styles) => <SimulationToolbar style={styles} />}
+        </Transition>
+        <Transition
+          mounted={toolbarMode === TOOLBAR_MODE.EVALUATING}
+          transition="pop"
+          duration={100}
+          timingFunction="ease"
+        >
+          {(styles) => <EvaluationFunctionGroup style={styles} />}
+        </Transition>
       </Group>
     </Header>
   );

@@ -1,6 +1,6 @@
-import { PALETTE_WIDTH } from '@/constants/theme/themeConstants';
-import { AppShell, Box, Header, Navbar, Title } from '@mantine/core';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { APP_PALETTE_WIDTH } from '@/constants/theme/themeConstants';
+import { AppShell, Box, Header, Navbar } from '@mantine/core';
+import { Outlet } from 'react-router-dom';
 import AppHeader from './components/AppHeader';
 import AppNavbar from './components/AppNavbar';
 import { useEffect } from 'react';
@@ -12,7 +12,6 @@ import { userActions } from '@/redux/slices';
 import Logo from '@/components/Logo';
 
 const AppLayout = () => {
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const currentUser = useSelector(getCurrentUser);
 
@@ -38,7 +37,7 @@ const AppLayout = () => {
       navbar={
         <Navbar
           height="100vh"
-          width={{ base: PALETTE_WIDTH }}
+          width={{ base: APP_PALETTE_WIDTH }}
           p="sm"
           sx={(theme) => ({
             backgroundColor: theme.fn.variant({ variant: 'filled', color: theme.primaryColor })
@@ -57,7 +56,7 @@ const AppLayout = () => {
       }
       styles={{ main: { padding: 0 } }}
     >
-      <Box style={{ marginLeft: PALETTE_WIDTH + 10, marginTop: 70 }}>
+      <Box style={{ marginLeft: APP_PALETTE_WIDTH + 10, marginTop: 70 }}>
         <Outlet />
       </Box>
     </AppShell>

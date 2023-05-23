@@ -19,14 +19,11 @@ import projectApi from '@/api/project';
 import CreateProjectButton from '@/components/CreateProjectButton';
 import noProjects from '@/assets/no-projects.svg';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { getModelers } from '@/redux/selectors';
 
 const Workspace = (workspace: IWorkspace) => {
   const { name, isOpenFromEditor } = workspace;
   const [projects, setProjects] = useState<IProject[]>([]);
   const [loading, setLoading] = useState(true);
-  const modelers = useSelector(getModelers);
   const navigate = useNavigate();
 
   const getAllProjects = async () => {
@@ -81,11 +78,7 @@ const Workspace = (workspace: IWorkspace) => {
         <Title order={3}>{name} Workspace</Title>
         {!isOpenFromEditor && (
           <Group>
-            <Button
-              variant="outline"
-              onClick={() => navigate('/editor')}
-              disabled={modelers.length < 1}
-            >
+            <Button variant="outline" onClick={() => navigate('/editor')}>
               Open Editor
             </Button>
             <CreateProjectButton onCreateProject={onCreateNewProject} />

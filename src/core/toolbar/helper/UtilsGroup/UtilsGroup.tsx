@@ -11,7 +11,7 @@ import { IconBpeConnector, IconBpeHand, IconBpeLasso, IconBpeSpace } from '../..
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const UtilsGroup = () => {
-  const modeler = useSelector(getCurrentModeler)?.modeler;
+  const currentModeler = useSelector(getCurrentModeler);
   const [handTool, lassoTool, spaceTool, globalConnect, eventBus] = useGetModelerModules([
     'handTool',
     'lassoTool',
@@ -70,6 +70,7 @@ const UtilsGroup = () => {
             active={currentActiveTool === 'handTool'}
             hotkey={TOOLBAR_HOTKEYS.HAND_TOOL}
             overflow
+            disabled={!currentModeler}
           />
           <ToolbarIcon
             icon={IconBpeLasso}
@@ -82,6 +83,7 @@ const UtilsGroup = () => {
             active={currentActiveTool === 'lassoTool'}
             hotkey={TOOLBAR_HOTKEYS.LASSO_TOOL}
             overflow
+            disabled={!currentModeler}
           />
         </Stack>
         <Stack>
@@ -96,6 +98,7 @@ const UtilsGroup = () => {
             active={currentActiveTool === 'spaceTool'}
             hotkey={TOOLBAR_HOTKEYS.SPACE_TOOL}
             overflow
+            disabled={!currentModeler}
           />
           <ToolbarIcon
             icon={IconBpeConnector}
@@ -108,6 +111,7 @@ const UtilsGroup = () => {
             active={currentActiveTool === 'globalConnect'}
             hotkey={TOOLBAR_HOTKEYS.GLOBAL_CONNECT}
             overflow
+            disabled={!currentModeler}
           />
         </Stack>
       </Group>

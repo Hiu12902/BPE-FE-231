@@ -22,10 +22,10 @@ import generateImage from './utils/exportImages';
 
 const ImportExportGroup = () => {
   const dispatch = useAppDispatch();
-  const modeler = useSelector(selectors.getCurrentModeler)?.modeler;
 
   const activeTab = useSelector(selectors.getActiveTab);
   const currentModeler = useSelector(selectors.getCurrentModeler);
+  const modeler = currentModeler?.modeler;
   const [elementRegistry] = useGetModelerModules(['elementRegistry']);
   const clipboard = useClipboard();
   const uploadLinkRef = createRef<HTMLInputElement>();
@@ -111,7 +111,7 @@ const ImportExportGroup = () => {
           title="Import File"
           orientation="horizontal"
           size="small"
-          disabled={!modeler}
+          disabled={!currentModeler}
           onClick={() => uploadLinkRef.current?.click()}
           hotkey={TOOLBAR_HOTKEYS.IMPORT}
         />
@@ -124,6 +124,7 @@ const ImportExportGroup = () => {
               orientation="horizontal"
               size="small"
               hotkey={TOOLBAR_HOTKEYS.EXPORT}
+              disabled={!currentModeler}
             />
           </Menu.Target>
 

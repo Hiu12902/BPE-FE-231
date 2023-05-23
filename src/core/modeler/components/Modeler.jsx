@@ -28,15 +28,19 @@ import { useAppDispatch } from '@/redux/store';
 import { Aside, Box } from '@mantine/core';
 import linterConfig from '../../../../packed-config';
 import projectApi from '@/api/project';
+import useFocusElement from '@/core/hooks/useFocusElement';
 
 const Modeler = () => {
   const dispatch = useAppDispatch();
   const currentModeler = useSelector(selectors.getCurrentModeler);
   const [canvas, setCanvas] = useState();
+  const [rootProcess, setRootProcess] = useState();
   const toolbarMode = useSelector(selectors.selectToolbarMode);
   const canvasRef = useRef(null);
   const propertiesPanelRef = useRef(null);
   const activeTab = useSelector(selectors.getActiveTab);
+  const selectedElement = useSelector(selectors.selectElementSelected);
+  const focusElement = useFocusElement();
 
   const createNewModeler = () => {
     const modeler = new BpmnModeler({
@@ -105,6 +109,7 @@ const Modeler = () => {
               variant: TabVariant.MODEL,
               toolMode: TOOLBAR_MODE.DEFAULT,
               id: currentModeler?.id,
+              projectID: currentModeler?.projectId,
             })
           );
           dispatch(modelActions.updateCurrentModeler({ ...currentModeler, isNew: false }));
@@ -117,14 +122,19 @@ const Modeler = () => {
   }, [currentModeler]);
 
   useEffect(() => {
-    if (activeTab.variant === TabVariant.MODEL) {
+    if (activeTab?.variant === TabVariant.MODEL) {
       const modeler = currentModeler?.modeler;
       modeler?.attachTo(canvasRef.current);
       modeler?.get('propertiesPanel')?.attachTo(propertiesPanelRef.current);
+      if (rootProcess) {
+        canvas?.setRootElement(canvas?.findRoot(rootProcess));
+        setRootProcess(undefined);
+      }
     }
 
-    if (activeTab.variant !== TabVariant.RESULT) {
+    if (activeTab?.variant === TabVariant.SUB_PROCESS) {
       if (canvas?.findRoot(activeTab.value)) {
+        setRootProcess(canvas?.getRootElements(activeTab.value)?.[0]?.id);
         canvas?.setRootElement(canvas?.findRoot(activeTab.value));
       }
       if (toolbarMode === TOOLBAR_MODE.EVALUATING) {
@@ -132,6 +142,13 @@ const Modeler = () => {
       }
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    if (!selectedElement || (selectedElement && !selectedElement.shouldFocused)) {
+      return;
+    }
+    focusElement(selectedElement?.id);
+  }, [selectedElement]);
 
   return (
     <>
