@@ -16,7 +16,7 @@ import { ReactComponent as IconAbc } from '@tabler/icons/icons/abc.svg';
 import { ReactComponent as IconInfo } from '@tabler/icons/icons/info-circle-filled.svg';
 import { ReactComponent as IconTrash } from '@tabler/icons/icons/trash.svg';
 import { ReactComponent as IconDots } from '@tabler/icons/icons/dots.svg';
-import { MouseEvent, useEffect, useRef, useState } from 'react';
+import { MouseEvent, useRef, useState } from 'react';
 import { IFile, IProject } from '@/interfaces/projects';
 import FileItem from '@/components/FileItem';
 import projectApi from '@/api/project';
@@ -25,8 +25,11 @@ import { showNotification } from '@mantine/notifications';
 import ShareModal from '@/components/ShareModal';
 import { useSelector } from 'react-redux';
 import { getModelers } from '@/redux/selectors';
+import { useAppDispatch } from '@/redux/store';
+import { projectActions } from '@/redux/slices';
 
 const ProjectItem = (props: IProject) => {
+  const dispatch = useAppDispatch();
   const { name, id, createAt, onDeleteProject, shouldGetDocuments } = props;
   const [files, setFiles] = useState<IFile[]>([]);
   const [projectNameRender, setProjectNameRender] = useState<string | undefined>(name);
@@ -48,6 +51,12 @@ const ProjectItem = (props: IProject) => {
           projectApi.getProjectDocument(id),
         ]);
         setFiles(response.flat());
+        dispatch(
+          projectActions.setVersionsCount({
+            projectId: id,
+            versionCount: response.flat().length - 1,
+          })
+        );
       } else {
         const response = await projectApi.getBpmnFilesOfProject(id);
         setFiles(response);
@@ -151,7 +160,9 @@ const ProjectItem = (props: IProject) => {
           <Grid.Col span={6}>
             <Flex align="center" h="100%">
               <Text color="dimmed" size="sm">
-                Last updated:{' '}
+                <Text span underline>
+                  Date Modified:
+                </Text>{' '}
                 {createAt
                   ? new Date(createAt)?.toLocaleString()
                   : new Date(Date.now()).toLocaleString()}

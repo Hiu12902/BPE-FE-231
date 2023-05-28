@@ -25,7 +25,7 @@ export enum TOOLBAR_HOTKEYS {
 export const HOTKEY_MAP: Record<TOOLBAR_HOTKEYS, { macOs: string; windows: string }> = {
   'mod+1': {
     macOs: '⌘ + 1',
-    windows: 'Ctrl + 2',
+    windows: 'Ctrl + 1',
   },
   'mod+2': {
     macOs: '⌘ + 2',

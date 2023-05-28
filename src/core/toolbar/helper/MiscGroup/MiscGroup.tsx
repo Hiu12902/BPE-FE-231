@@ -1,6 +1,6 @@
 import CommentSection from '@/components/CommentSection/CommentSection';
-import FilesListModal from '@/components/FilesListModal/FilesListModal';
-import { getCurrentModeler } from '@/redux/selectors';
+import ResultFilesModal from '@/components/ResultFilesModal';
+import { getCurrentModeler, getProject } from '@/redux/selectors';
 import { Badge, Group, Menu, Modal, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -17,6 +17,8 @@ const MiscGroup = () => {
   const [openFileMenu, setOpenFileMenu] = useState(false);
   const [openModels, setOpenModels] = useState(false);
   const currentModeler = useSelector(getCurrentModeler);
+  const projects = useSelector(getProject);
+  const currentProject = projects[currentModeler?.projectId!];
 
   const onCreateNewVersion = async (): Promise<void> => {
     try {
@@ -64,7 +66,7 @@ const MiscGroup = () => {
           opened={openCommentSection}
           onClose={() => setOpenCommentSection(() => false)}
         />
-        <FilesListModal opened={openFilesList} onClose={() => setOpenFilesList(false)} />
+        <ResultFilesModal opened={openFilesList} onClose={() => setOpenFilesList(false)} />
         <ToolbarIcon
           icon={IconBpeComment}
           label="Comment"
@@ -100,7 +102,9 @@ const MiscGroup = () => {
           </Menu.Target>
 
           <Menu.Dropdown>
-            <Menu.Item onClick={onCreateNewVersion}>Create New Version</Menu.Item>
+            <Menu.Item onClick={onCreateNewVersion} disabled={currentProject?.versionsCount! > 4}>
+              Create New Version
+            </Menu.Item>
             <Menu.Item onClick={() => setOpenModels(true)}>Open Models</Menu.Item>
           </Menu.Dropdown>
         </Menu>

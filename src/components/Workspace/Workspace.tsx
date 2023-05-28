@@ -19,10 +19,18 @@ import projectApi from '@/api/project';
 import CreateProjectButton from '@/components/CreateProjectButton';
 import noProjects from '@/assets/no-projects.svg';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '@/redux/store';
+import { projectActions } from '@/redux/slices';
+import { batch, useSelector } from 'react-redux';
+import { getProject } from '@/redux/selectors';
 
 const Workspace = (workspace: IWorkspace) => {
+  const dispatch = useAppDispatch();
+  const projects = useSelector(getProject);
+  const projectsMap = Object.keys(projects).map(function (key) {
+    return projects[key];
+  });
   const { name, isOpenFromEditor } = workspace;
-  const [projects, setProjects] = useState<IProject[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -30,7 +38,9 @@ const Workspace = (workspace: IWorkspace) => {
     try {
       const projects = await projectApi.getAllProjects();
       if (projects) {
-        setProjects(projects);
+        batch(() => {
+          projects.map((project: IProject) => dispatch(projectActions.setProject(project)));
+        });
       }
     } catch (err) {
       console.error(err);
@@ -40,7 +50,7 @@ const Workspace = (workspace: IWorkspace) => {
   };
 
   const onCreateNewProject = (project: IProject) => {
-    setProjects((prjs) => [project, ...prjs]);
+    dispatch(projectActions.setProject(project));
   };
 
   const renderNoProjects = () => {
@@ -68,8 +78,7 @@ const Workspace = (workspace: IWorkspace) => {
   }, []);
 
   const onDeleteProject = (projectId: number) => {
-    const newProjects = projects.filter((p) => p.id !== projectId);
-    setProjects(() => newProjects);
+    dispatch(projectActions.deleteProject(projectId));
   };
 
   return (
@@ -88,7 +97,7 @@ const Workspace = (workspace: IWorkspace) => {
       <Divider my="md" />
       {loading ? (
         renderProjectsSkeleton()
-      ) : projects.length > 0 ? (
+      ) : projectsMap.length > 0 ? (
         <Accordion
           chevron={<IconChevronRight color="#868e96" />}
           styles={{
@@ -99,7 +108,7 @@ const Workspace = (workspace: IWorkspace) => {
             },
           }}
         >
-          {projects.map((project) => (
+          {projectsMap.map((project) => (
             <ProjectItem
               {...project}
               key={project.id}

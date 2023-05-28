@@ -134,8 +134,11 @@ const Login = (props: PaperProps) => {
       <form onSubmit={form.onSubmit(onUserSignIn)}>
         <Stack>
           <TextInput
-            required
-            label="Email"
+            label={
+              <Badge mb={8} radius={5}>
+                Email
+              </Badge>
+            }
             placeholder="hello@gmail.com"
             value={form.values.email}
             onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
@@ -144,8 +147,11 @@ const Login = (props: PaperProps) => {
           />
 
           <PasswordInput
-            required
-            label="Password"
+            label={
+              <Badge mb={8} radius={5}>
+                Password
+              </Badge>
+            }
             placeholder="Your password"
             value={form.values.password}
             onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}

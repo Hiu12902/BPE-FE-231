@@ -12,6 +12,9 @@ export interface IFile {
   projectName?: string;
   onDeleteFile?: (link?: string) => void;
   canDelete?: boolean;
+  result?: any;
+  description?: string;
+  createAt?: string;
 }
 
 export interface IProject {
@@ -25,6 +28,7 @@ export interface IProject {
   files?: IFile[];
   onDeleteProject?: (projectId: number) => void;
   shouldGetDocuments?: boolean;
+  versionsCount?: number;
 }
 
 export interface IWorkspace {
@@ -36,7 +40,13 @@ export interface IComment {
   id: number;
   createAt: string;
   content?: string;
-  userId: number;
   xmlFileLink?: string;
   projectId?: number;
+  author?: {
+    avatar?: string;
+    email?: string;
+    id?: number;
+  };
+  canDelete?: boolean;
+  onDeleteComment?: (commentId: number) => void;
 }

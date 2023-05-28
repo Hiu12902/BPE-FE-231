@@ -1,22 +1,22 @@
 function getAugmentedNamespace(n) {
   var f = n.default;
-	if (typeof f == "function") {
-		var a = function () {
-			return f.apply(this, arguments);
-		};
-		a.prototype = f.prototype;
+  if (typeof f == "function") {
+    var a = function () {
+      return f.apply(this, arguments);
+    };
+    a.prototype = f.prototype;
   } else a = {};
-  Object.defineProperty(a, '__esModule', {value: true});
-	Object.keys(n).forEach(function (k) {
-		var d = Object.getOwnPropertyDescriptor(n, k);
-		Object.defineProperty(a, k, d.get ? d : {
-			enumerable: true,
-			get: function () {
-				return n[k];
-			}
-		});
-	});
-	return a;
+  Object.defineProperty(a, '__esModule', { value: true });
+  Object.keys(n).forEach(function (k) {
+    var d = Object.getOwnPropertyDescriptor(n, k);
+    Object.defineProperty(a, k, d.get ? d : {
+      enumerable: true,
+      get: function () {
+        return n[k];
+      }
+    });
+  });
+  return a;
 }
 
 /**
@@ -25,7 +25,7 @@ function getAugmentedNamespace(n) {
  * either default flows _or_ have a condition attached
  */
 
-var conditionalFlows = function() {
+var conditionalFlows = function () {
 
   function check(node, reporter) {
 
@@ -42,7 +42,7 @@ var conditionalFlows = function() {
       );
 
       if (missingCondition) {
-        reporter.report(flow.id, 'Sequence flow is missing condition', [ 'conditionExpression' ]);
+        reporter.report(flow.id, 'Sequence flow is missing condition', ['conditionExpression']);
       }
     });
   }
@@ -102,15 +102,15 @@ function is$f(node, type) {
  * @return {Boolean}
  */
 function isAny$6(node, types) {
-  return types.some(function(type) {
+  return types.some(function (type) {
     return is$f(node, type);
   });
 }
 
 var index_esm$1 = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	is: is$f,
-	isAny: isAny$6
+  __proto__: null,
+  is: is$f,
+  isAny: isAny$6
 });
 
 var require$$0 = /*@__PURE__*/getAugmentedNamespace(index_esm$1);
@@ -124,7 +124,7 @@ const {
 /**
  * A rule that checks the presence of an end event per scope.
  */
-var endEventRequired = function() {
+var endEventRequired = function () {
 
   function hasEndEvent(node) {
     const flowElements = node.flowElements || [];
@@ -161,7 +161,7 @@ const {
  * A rule that checks that start events inside an event sub-process
  * are typed.
  */
-var eventSubProcessTypedStartEvent = function() {
+var eventSubProcessTypedStartEvent = function () {
 
   function check(node, reporter) {
 
@@ -171,7 +171,7 @@ var eventSubProcessTypedStartEvent = function() {
 
     const flowElements = node.flowElements || [];
 
-    flowElements.forEach(function(flowElement) {
+    flowElements.forEach(function (flowElement) {
 
       if (!is$d(flowElement, 'bpmn:StartEvent')) {
         return false;
@@ -180,7 +180,7 @@ var eventSubProcessTypedStartEvent = function() {
       const eventDefinitions = flowElement.eventDefinitions || [];
 
       if (eventDefinitions.length === 0) {
-        reporter.report(flowElement.id, 'Start event is missing event definition', [ 'eventDefinitions' ]);
+        reporter.report(flowElement.id, 'Start event is missing event definition', ['eventDefinitions']);
       }
     });
   }
@@ -202,7 +202,7 @@ const {
  * Users should model a parallel joining gateway
  * to achieve the desired behavior.
  */
-var fakeJoin = function() {
+var fakeJoin = function () {
 
   function check(node, reporter) {
 
@@ -235,7 +235,7 @@ const {
 /**
  * A rule that checks the presence of a label.
  */
-var labelRequired = function() {
+var labelRequired = function () {
 
   function check(node, reporter) {
 
@@ -278,7 +278,7 @@ var labelRequired = function() {
       const name = (node.name || '').trim();
 
       if (name.length === 0) {
-        reporter.report(node.id, 'Element is missing label/name', [ 'name' ]);
+        reporter.report(node.id, 'Element is missing label/name', ['name']);
       }
     }
   }
@@ -993,44 +993,44 @@ function merge(target) {
 }
 
 var index_esm = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	assign: assign,
-	bind: bind,
-	debounce: debounce,
-	ensureArray: ensureArray,
-	every: every,
-	filter: filter,
-	find: find,
-	findIndex: findIndex,
-	flatten: flatten$1,
-	forEach: forEach,
-	get: get,
-	groupBy: groupBy,
-	has: has,
-	isArray: isArray,
-	isDefined: isDefined,
-	isFunction: isFunction,
-	isNil: isNil,
-	isNumber: isNumber,
-	isObject: isObject,
-	isString: isString,
-	isUndefined: isUndefined,
-	keys: keys,
-	map: map,
-	matchPattern: matchPattern,
-	merge: merge,
-	omit: omit,
-	pick: pick,
-	reduce: reduce,
-	set: set,
-	size: size,
-	some: some,
-	sortBy: sortBy,
-	throttle: throttle,
-	unionBy: unionBy,
-	uniqueBy: uniqueBy,
-	values: values,
-	without: without
+  __proto__: null,
+  assign: assign,
+  bind: bind,
+  debounce: debounce,
+  ensureArray: ensureArray,
+  every: every,
+  filter: filter,
+  find: find,
+  findIndex: findIndex,
+  flatten: flatten$1,
+  forEach: forEach,
+  get: get,
+  groupBy: groupBy,
+  has: has,
+  isArray: isArray,
+  isDefined: isDefined,
+  isFunction: isFunction,
+  isNil: isNil,
+  isNumber: isNumber,
+  isObject: isObject,
+  isString: isString,
+  isUndefined: isUndefined,
+  keys: keys,
+  map: map,
+  matchPattern: matchPattern,
+  merge: merge,
+  omit: omit,
+  pick: pick,
+  reduce: reduce,
+  set: set,
+  size: size,
+  some: some,
+  sortBy: sortBy,
+  throttle: throttle,
+  unionBy: unionBy,
+  uniqueBy: uniqueBy,
+  values: values,
+  without: without
 });
 
 var require$$1 = /*@__PURE__*/getAugmentedNamespace(index_esm);
@@ -1047,7 +1047,7 @@ const {
  * A rule that checks that there is no BPMNDI information missing for elements,
  * which require BPMNDI.
  */
-var noBpmndi = function() {
+var noBpmndi = function () {
 
   function check(node, reporter) {
 
@@ -1153,7 +1153,7 @@ function getAllDiBpmnReferences(definitionsNode) {
 }
 
 function hasVisualRepresentation(element) {
-  const noVisRepresentation = [ 'bpmn:DataObject' ];
+  const noVisRepresentation = ['bpmn:DataObject'];
 
   return noVisRepresentation.includes(element.$type) ? false : true;
 }
@@ -1181,7 +1181,7 @@ const {
  */
 function disallowNodeType$2(type) {
 
-  return function() {
+  return function () {
 
     function check(node, reporter) {
 
@@ -1215,7 +1215,7 @@ const {
  * flow elements, i.e. elements without incoming
  * _or_ outgoing sequence flows
  */
-var noDisconnected = function() {
+var noDisconnected = function () {
 
   function check(node, reporter) {
 
@@ -1287,7 +1287,7 @@ const {
  * flow elements, i.e. elements without incoming
  * _or_ outgoing sequence flows
  */
-var noDuplicateSequenceFlows = function() {
+var noDuplicateSequenceFlows = function () {
 
   const keyed = {};
 
@@ -1352,7 +1352,7 @@ const {
  * A rule that checks, whether a gateway forks and joins
  * at the same time.
  */
-var noGatewayJoinFork = function() {
+var noGatewayJoinFork = function () {
 
   function check(node, reporter) {
 
@@ -1386,7 +1386,7 @@ const {
  * users should model the parallel splitting gateway
  * explicitly instead.
  */
-var noImplicitSplit = function() {
+var noImplicitSplit = function () {
 
   function check(node, reporter) {
 
@@ -1437,7 +1437,7 @@ const {
  * A rule that checks whether not more than one blank start event
  * exists per scope.
  */
-var singleBlankStartEvent = function() {
+var singleBlankStartEvent = function () {
 
   function check(node, reporter) {
 
@@ -1447,7 +1447,7 @@ var singleBlankStartEvent = function() {
 
     const flowElements = node.flowElements || [];
 
-    const blankStartEvents = flowElements.filter(function(flowElement) {
+    const blankStartEvents = flowElements.filter(function (flowElement) {
 
       if (!is$6(flowElement, 'bpmn:StartEvent')) {
         return false;
@@ -1479,7 +1479,7 @@ const {
 /**
  * A rule that verifies that an event contains maximum one event definition.
  */
-var singleEventDefinition = function() {
+var singleEventDefinition = function () {
 
   function check(node, reporter) {
 
@@ -1490,7 +1490,7 @@ var singleEventDefinition = function() {
     const eventDefinitions = node.eventDefinitions || [];
 
     if (eventDefinitions.length > 1) {
-      reporter.report(node.id, 'Event has multiple event definitions', [ 'eventDefinitions' ]);
+      reporter.report(node.id, 'Event has multiple event definitions', ['eventDefinitions']);
     }
   }
 
@@ -1509,7 +1509,7 @@ const {
  * A rule that checks that start events inside a normal sub-processes
  * are blank (do not have an event definition).
  */
-var subProcessBlankStartEvent = function() {
+var subProcessBlankStartEvent = function () {
 
   function check(node, reporter) {
 
@@ -1519,7 +1519,7 @@ var subProcessBlankStartEvent = function() {
 
     const flowElements = node.flowElements || [];
 
-    flowElements.forEach(function(flowElement) {
+    flowElements.forEach(function (flowElement) {
 
       if (!is$4(flowElement, 'bpmn:StartEvent')) {
         return false;
@@ -1528,7 +1528,7 @@ var subProcessBlankStartEvent = function() {
       const eventDefinitions = flowElement.eventDefinitions || [];
 
       if (eventDefinitions.length > 0) {
-        reporter.report(flowElement.id, 'Start event must be blank', [ 'eventDefinitions' ]);
+        reporter.report(flowElement.id, 'Start event must be blank', ['eventDefinitions']);
       }
     });
   }
@@ -1670,7 +1670,6 @@ const { hasEventDefinition } = utils;
 var noLinkCodeLinkEvent = function () {
 
   function check(node, reporter) {
-    console.log(hasEventDefinition(node, 'bpmn:LinkEventDefinition'));
     if (hasEventDefinition(node, 'bpmn:LinkEventDefinition')) {
 
       const linkCode = node.linkCode;
@@ -1692,9 +1691,9 @@ const cache = {};
  *
  * @param {Object} cache
  */
-function Resolver() {}
+function Resolver() { }
 
-Resolver.prototype.resolveRule = function(pkg, ruleName) {
+Resolver.prototype.resolveRule = function (pkg, ruleName) {
 
   const rule = cache[pkg + '/' + ruleName];
 
@@ -1705,9 +1704,9 @@ Resolver.prototype.resolveRule = function(pkg, ruleName) {
   return rule;
 };
 
-Resolver.prototype.resolveConfig = function(pkg, configName) {
+Resolver.prototype.resolveConfig = function (pkg, configName) {
   throw new Error(
-    'cannot resolve config <' + configName + '> in <' + pkg +'>'
+    'cannot resolve config <' + configName + '> in <' + pkg + '>'
   );
 };
 
