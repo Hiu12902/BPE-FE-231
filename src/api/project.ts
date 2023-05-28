@@ -80,6 +80,32 @@ class ProjectApi {
   public comment(body: { projectID: string; xmlFileLink: string; content: string }): Promise<any> {
     return Client.post(`/bpmnfile/comment/add`, body);
   }
+
+  public saveResult(body: {
+    projectID: number;
+    xmlFileLink: string;
+    name?: string;
+    result: any;
+  }): Promise<any> {
+    const { projectID } = body;
+    return Client.post(`/result/${projectID}/save`, body);
+  }
+
+  public deleteComment(body: { projectID: number; xmlFileLink: string; id: number }): Promise<any> {
+    return Client.delete(`/bpmnfile/comment/delete`, { data: { ...body } });
+  }
+
+  public renameFile(
+    body: { name: string },
+    query: { projectId: number; version: string }
+  ): Promise<any> {
+    const { projectId, version } = query;
+    return Client.put(`/bpmnfile/${projectId}/${version}/name`, body);
+  }
+
+  public getResults(body: { projectID: number; xmlFileLink: string }): Promise<any> {
+    return Client.post(`/result/all`, body);
+  }
 }
 
 export default ProjectApi.instance;

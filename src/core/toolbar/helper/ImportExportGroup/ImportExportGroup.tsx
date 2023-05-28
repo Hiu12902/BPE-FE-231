@@ -5,9 +5,9 @@ import { tabsSliceActions } from '@/redux/slices';
 import { useAppDispatch } from '@/redux/store';
 import { useClipboard, useHotkeys } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
-import { ChangeEvent, createRef, useState } from 'react';
+import { ChangeEvent, createRef } from 'react';
 import { useSelector } from 'react-redux';
-import useGetModelerModules from '../../../hooks/useGetModelerModule';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
 import { TOOLBAR_HOTKEYS } from '../../constants/hotkeys';
 import { DEFAULT_SPACING } from '../../constants/size';
 import {
@@ -31,6 +31,7 @@ const ImportExportGroup = () => {
   const uploadLinkRef = createRef<HTMLInputElement>();
   const downloadLinkRef = createRef<HTMLAnchorElement>();
   const pngDownloadLinkRef = createRef<HTMLAnchorElement>();
+
   const handleImportDiagram = (event: ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader();
     const input = event.target;
@@ -71,7 +72,7 @@ const ImportExportGroup = () => {
   const saveBpmn = () => {
     //@ts-ignore
     modeler?.saveXML({ format: true }).then((xml, err) => {
-      setEncoded(downloadLinkRef.current, 'diagram.bpmn', err ? null : xml);
+      setEncoded(downloadLinkRef.current, `${currentModeler?.name}.bpmn`, err ? null : xml);
     });
   };
 
@@ -88,7 +89,7 @@ const ImportExportGroup = () => {
     const { svg } = await currentModeler?.modeler.saveSVG();
     const dataUrl = await generateImage('png', svg);
     pngDownloadLinkRef.current?.setAttribute('href', dataUrl);
-    pngDownloadLinkRef.current?.setAttribute('download', 'diagram.png');
+    pngDownloadLinkRef.current?.setAttribute('download', `${currentModeler?.name}.png`);
   };
 
   useHotkeys([

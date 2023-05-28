@@ -58,27 +58,25 @@ const UtilsGroup = () => {
 
   return (
     <Stack spacing={DEFAULT_SPACING + 10}>
-      <Group>
+      <Group spacing={5}>
         <Stack>
           <ToolbarIcon
             icon={IconBpeHand}
-            label="Hand Tool"
+            label="Hand"
             title="Activate Hand Tool"
             orientation="horizontal"
             size="small"
             onClick={() => toggleTool(handTool, 'handTool')}
             active={currentActiveTool === 'handTool'}
             hotkey={TOOLBAR_HOTKEYS.HAND_TOOL}
-            overflow
             disabled={!currentModeler}
           />
           <ToolbarIcon
             icon={IconBpeLasso}
-            label="Lasso Tool"
+            label="Lasso"
             title="Activate Lasso Tool"
             orientation="horizontal"
             size="small"
-            //@ts-ignore
             onClick={() => toggleTool(lassoTool, 'lassoTool')}
             active={currentActiveTool === 'lassoTool'}
             hotkey={TOOLBAR_HOTKEYS.LASSO_TOOL}
@@ -89,28 +87,24 @@ const UtilsGroup = () => {
         <Stack>
           <ToolbarIcon
             icon={IconBpeSpace}
-            label="Space Tool"
+            label="Space"
             title="Activate Space Tool"
             orientation="horizontal"
             size="small"
-            //@ts-ignore
             onClick={() => toggleTool(spaceTool, 'spaceTool')}
             active={currentActiveTool === 'spaceTool'}
             hotkey={TOOLBAR_HOTKEYS.SPACE_TOOL}
-            overflow
             disabled={!currentModeler}
           />
           <ToolbarIcon
             icon={IconBpeConnector}
-            label="Global Connector"
+            label="Connector"
             title="Activate Global Connector"
             orientation="horizontal"
             size="small"
-            //@ts-ignore
             onClick={() => toggleTool(globalConnect, 'globalConnect')}
             active={currentActiveTool === 'globalConnect'}
             hotkey={TOOLBAR_HOTKEYS.GLOBAL_CONNECT}
-            overflow
             disabled={!currentModeler}
           />
         </Stack>

@@ -8,6 +8,7 @@ interface Modeler {
   id: string;
   projectId?: number;
   projectName?: string;
+  name?: string;
 }
 
 interface ModelProps {

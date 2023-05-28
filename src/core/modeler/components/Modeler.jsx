@@ -104,7 +104,7 @@ const Modeler = () => {
         batch(() => {
           dispatch(
             tabsSliceActions.setTabs({
-              label: `${currentModeler?.projectName}_ver_${currentModeler?.id}`,
+              label: `${currentModeler?.name}`,
               value: currentModeler?.id,
               variant: TabVariant.MODEL,
               toolMode: TOOLBAR_MODE.DEFAULT,

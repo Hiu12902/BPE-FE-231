@@ -204,7 +204,7 @@ const DiagramGroup = () => {
     batch(() => {
       dispatch(
         tabsSliceActions.setTabs({
-          label: currentElement.id,
+          label: `${currentElement.id}_${currentModeler?.name}`,
           value: currentElement.id + planeSuffix,
           variant: TabVariant.SUB_PROCESS,
           toolMode: TOOLBAR_MODE.DEFAULT,
@@ -236,7 +236,7 @@ const DiagramGroup = () => {
           dispatch(evaluatedResultActions.setEvaluatedResult({ result: result, id: newId }));
           dispatch(
             tabsSliceActions.setTabs({
-              label: `Evaluated Result - ${currentModeler?.id.replace('mantine-', '')}`,
+              label: `Evaluated Result - ${currentModeler?.name}`,
               value: 'evaluateResult',
               variant: TabVariant.RESULT,
               toolMode: TOOLBAR_MODE.EVALUATING,
@@ -303,7 +303,7 @@ const DiagramGroup = () => {
         );
         dispatch(
           tabsSliceActions.setTabs({
-            label: `Comparing - ${currentModeler?.id.replace('mantine-', '')}`,
+            label: `Comparing - ${currentModeler?.name}`,
             value: 'evaluateResult',
             variant: TabVariant.RESULT,
             toolMode: TOOLBAR_MODE.EVALUATING,
@@ -330,8 +330,8 @@ const DiagramGroup = () => {
 
   useHotkeys([
     [TOOLBAR_HOTKEYS.SIMULATE, handleSwitchToSimulation],
-    [TOOLBAR_HOTKEYS.EVALUATE, () => console.log('reserve for evaluation')],
-    [TOOLBAR_HOTKEYS.COMPARE, () => console.log('reserve for comparison')],
+    [TOOLBAR_HOTKEYS.EVALUATE, onEvaluateModel],
+    [TOOLBAR_HOTKEYS.COMPARE, batchEvaluate],
   ]);
 
   return (
@@ -356,6 +356,7 @@ const DiagramGroup = () => {
             orientation="vertical"
             size="large"
             onClick={onEvaluateModel}
+            hotkey={TOOLBAR_HOTKEYS.EVALUATE}
             disabled={!currentModeler}
           />
           <ToolbarIcon
@@ -365,6 +366,7 @@ const DiagramGroup = () => {
             orientation="vertical"
             size="large"
             disabled={modelers.length < 2}
+            hotkey={TOOLBAR_HOTKEYS.COMPARE}
             onClick={() => setOpenInputModal(true)}
           />
         </Group>

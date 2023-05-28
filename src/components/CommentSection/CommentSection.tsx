@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Badge,
   Button,
@@ -27,9 +27,13 @@ const CommentSection = (props: DialogProps) => {
   const currentModeler = useSelector(getCurrentModeler);
   const xmlFileLink = `static/${currentModeler?.projectId}/${currentModeler?.id}.bpmn`;
   const currentUser = useSelector(getCurrentUser);
+  const endOfCommentsRef = useRef<HTMLDivElement>(null);
 
   const getModelComments = async () => {
     try {
+      if (!currentModeler?.projectId) {
+        return;
+      }
       const comments = await projectApi.getModelsComments({
         projectID: currentModeler?.projectId?.toString() as string,
         xmlFileLink: xmlFileLink,
@@ -46,6 +50,12 @@ const CommentSection = (props: DialogProps) => {
     getModelComments();
   }, [currentModeler?.id]);
 
+  useEffect(() => {
+    if (endOfCommentsRef.current) {
+      endOfCommentsRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [endOfCommentsRef.current, comments]);
+
   const handleComment = async () => {
     try {
       const res = await projectApi.comment({
@@ -53,15 +63,18 @@ const CommentSection = (props: DialogProps) => {
         xmlFileLink: xmlFileLink,
         content: comment,
       });
-      //TODO: fix this
       if (res) {
         setComments((comments) => [
           ...comments,
           {
-            id: comments[comments.length - 1].id + 1,
+            id: (comments[comments.length - 1]?.id || -1) + 1,
             content: comment,
             createAt: new Date().toISOString(),
-            userId: parseInt(currentUser.id!),
+            author: {
+              id: currentUser.id,
+              avatar: currentUser.avatar,
+              email: currentUser.email,
+            },
           },
         ]);
         setComment('');
@@ -69,6 +82,11 @@ const CommentSection = (props: DialogProps) => {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const onDeleteComment = (commentId: number) => {
+    const tempComments = comments.filter((comment) => comment.id !== commentId);
+    setComments(tempComments);
   };
 
   const renderNoComments = () => {
@@ -94,12 +112,19 @@ const CommentSection = (props: DialogProps) => {
     >
       <ScrollArea style={{ height: `62vh` }} mx="-sm" px="sm">
         {comments.length > 0 ? (
-          comments.map((comment) => <CommentCard {...comment} />)
+          comments.map((comment) => (
+            <CommentCard
+              {...comment}
+              canDelete={currentUser?.email === comment.author?.email}
+              onDeleteComment={onDeleteComment}
+            />
+          ))
         ) : (
           <Flex h="62vh" w="100%" align="center" justify="center">
             {renderNoComments()}
           </Flex>
         )}
+        <div ref={endOfCommentsRef}></div>
       </ScrollArea>
       <Stack>
         <Textarea

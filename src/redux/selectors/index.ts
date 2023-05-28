@@ -5,3 +5,4 @@ export * from './modelSelector';
 export * from './tabsSelector';
 export * from './toolSelectors';
 export * from './userSelectors';
+export * from './projectSelector';

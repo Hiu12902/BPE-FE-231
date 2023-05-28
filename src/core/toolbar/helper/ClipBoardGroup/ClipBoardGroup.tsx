@@ -1,5 +1,5 @@
 import { Divider, Group, Stack, Text } from '@mantine/core';
-import { useLocalStorage, useSetState } from '@mantine/hooks';
+import { useHotkeys, useLocalStorage, useSetState } from '@mantine/hooks';
 import { useEffect } from 'react';
 
 import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
@@ -45,23 +45,22 @@ const ClipBoardGroup = () => {
     }
   };
 
+  const handleSetToClipboard = () => {
+    const copiedElements = clipboard.get();
+    setBpmnClipboard(() => copiedElements);
+  };
+
   useEffect(() => {
-    //@ts-ignore
     eventBus?.on('selection.changed', onSelectElement);
     return () => {
-      //@ts-ignore
       eventBus?.off('selection.changed', onSelectElement);
     };
   }, [eventBus]);
 
   const handleCopy = () => {
     const selectedElements = getSelectedElements();
-    //@ts-ignore
     copyPaste.copy(selectedElements);
-    //@ts-ignore
-    const copiedElements = clipboard.get();
-
-    setBpmnClipboard(() => copiedElements);
+    handleSetToClipboard();
   };
 
   const handleCut = () => {
@@ -82,6 +81,12 @@ const ClipBoardGroup = () => {
   window.onbeforeunload = () => {
     removeBpmnClipboard();
   };
+
+  useHotkeys([
+    [TOOLBAR_HOTKEYS.PASTE, handlePasteElement],
+    [TOOLBAR_HOTKEYS.CUT, handleCut],
+    [TOOLBAR_HOTKEYS.COPY, handleCopy],
+  ]);
 
   return (
     <Stack spacing={DEFAULT_SPACING}>
@@ -121,7 +126,7 @@ const ClipBoardGroup = () => {
         </Stack>
       </Group>
       <Text size="xs" align="center" weight="bold">
-        Clip board
+        Clipboard
       </Text>
     </Stack>
   );

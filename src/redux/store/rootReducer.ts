@@ -4,6 +4,7 @@ import {
   evaluatedResultSlice,
   lintingSlice,
   modelSlice,
+  projectSlice,
   toolSlice,
   userSlice,
 } from '../slices';
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   [modelSlice.name]: modelSlice.reducer,
   [comparingSlice.name]: comparingSlice.reducer,
   [userSlice.name]: userSlice.reducer,
+  [projectSlice.name]: projectSlice.reducer,
 });
 
 export default rootReducer;

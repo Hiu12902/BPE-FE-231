@@ -27,10 +27,10 @@ const AppLayout = () => {
   };
 
   useEffect(() => {
-    if (!currentUser.id) {
+    if (!currentUser.email) {
       getUser();
     }
-  }, []);
+  }, [currentUser]);
 
   return (
     <AppShell

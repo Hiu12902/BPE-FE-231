@@ -17,7 +17,13 @@ import { PaletteNavbar } from '@/core/palette/PaletteNavbar';
 import BpeToolbar from '@/core/toolbar/Toolbar';
 import ValidationTerminal from '@/core/validation-terminal';
 import * as selectors from '@/redux/selectors';
-import { lintingActions, modelActions, tabsSliceActions, toolSliceActions } from '@/redux/slices';
+import {
+  lintingActions,
+  modelActions,
+  tabsSliceActions,
+  toolSliceActions,
+  userActions,
+} from '@/redux/slices';
 import { TabVariant } from '@/redux/slices/tabs';
 import { useAppDispatch } from '@/redux/store';
 import {
@@ -46,6 +52,8 @@ import { ReactComponent as IconArrowRight } from '@tabler/icons/icons/square-rou
 import { useBeforeUnload } from 'react-router-dom';
 import emptyEditor from '@/assets/empty-editor.png';
 import Workspace from '@/components/Workspace';
+import useDetachModel from '../hooks/useDetachModel';
+import userApi from '@/api/user';
 
 const useStyles = createStyles((theme) => ({
   main: {
@@ -146,11 +154,25 @@ const BpeBpmnModeler = () => {
   const [isNavbarCollapsed, setIsNavbarCollapsed] = useState(
     localStorage.elementNavbarToggle === 'true'
   );
+  const detach = useDetachModel();
+  const currentUser = useSelector(selectors.getCurrentUser);
 
-  const detaching = () => {
-    currentModeler?.modeler?.detach();
-    currentModeler?.modeler?.get('propertiesPanel').detach();
+  const getUser = async () => {
+    try {
+      const res = await userApi.getMe();
+      if (res) {
+        dispatch(userActions.setUser(res));
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
+
+  useEffect(() => {
+    if (!currentUser.email) {
+      getUser();
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     if (modelers.length === 0) {
@@ -162,7 +184,7 @@ const BpeBpmnModeler = () => {
               dispatch(modelActions.setModelers(modeler));
               dispatch(
                 tabsSliceActions.setTabs({
-                  label: `${modeler?.projectName}_ver_${modeler?.id}`,
+                  label: `${modeler?.name}`,
                   value: modeler?.id,
                   variant: TabVariant.MODEL,
                   toolMode: TOOLBAR_MODE.DEFAULT,
@@ -201,9 +223,10 @@ const BpeBpmnModeler = () => {
 
   useEffect(() => {
     if (activeTab?.variant === TabVariant.RESULT) {
-      detaching();
+      detach();
       dispatch(lintingActions.setIsLintingActive(false));
     }
+    dispatch(toolSliceActions.setToolbarMode(activeTab?.toolMode));
   }, [activeTab]);
 
   useEffect(() => {
@@ -219,17 +242,12 @@ const BpeBpmnModeler = () => {
           id: modeler.id,
           projectId: modeler.projectId,
           projectName: modeler.projectName,
+          name: modeler.name,
         }))
       );
       localStorage.currentOpenedModeler = currentModeler?.id;
     }, [modelers, currentModeler?.id])
   );
-
-  useEffect(() => {
-    if (toolbarMode !== TOOLBAR_MODE.DEFAULT) {
-      setIsNavbarCollapsed(true);
-    }
-  }, [toolbarMode]);
 
   const renderModelsModal = () => {
     return (
@@ -297,7 +315,7 @@ const BpeBpmnModeler = () => {
               });
               if (nextTab.variant === TabVariant.MODEL) {
                 // Change this and the tool is doomed
-                detaching();
+                detach();
                 dispatch(modelActions.setCurrentModeler(tab));
               }
             }}
@@ -328,7 +346,7 @@ const BpeBpmnModeler = () => {
                                   e.stopPropagation();
                                   dispatch(tabsSliceActions.closeTab(tab.id));
                                   if (activeTab?.id === tab.id) {
-                                    detaching();
+                                    detach();
                                   }
                                   if (tab.variant === TabVariant.MODEL) {
                                     dispatch(modelActions.deleteModeler(tab.id));

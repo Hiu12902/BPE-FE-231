@@ -179,7 +179,7 @@ export function PaletteNavbar({
 
             <Navbar.Section grow component={ScrollArea} mx="-xs" px="xs" mt={20}>
               {(!modeler || toolbarMode !== TOOLBAR_MODE.DEFAULT) && (
-                <Overlay color="#000" opacity={0.25} mr={2} radius={10} />
+                <Overlay color="#000" opacity={0.25} mr={2} />
               )}
 
               <Accordion

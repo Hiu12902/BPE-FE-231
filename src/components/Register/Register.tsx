@@ -96,7 +96,6 @@ const Register = (props: PaperProps) => {
       <form onSubmit={form.onSubmit(onSignUp)}>
         <Stack>
           <TextInput
-            required
             label="Email"
             placeholder="hello@gmail.com"
             value={form.values.email}
@@ -106,7 +105,6 @@ const Register = (props: PaperProps) => {
           />
 
           <TextInput
-            required
             label="Name"
             placeholder="John Doe"
             value={form.values.name}
@@ -116,7 +114,6 @@ const Register = (props: PaperProps) => {
           />
 
           <PasswordInput
-            required
             label="Password"
             placeholder="Your password"
             value={form.values.password}
@@ -126,7 +123,6 @@ const Register = (props: PaperProps) => {
           />
 
           <PasswordInput
-            required
             label="Confirm Password"
             placeholder="Your password"
             value={form.values.confirmPassword}

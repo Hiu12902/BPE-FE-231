@@ -1,7 +1,7 @@
 import { MouseEventHandler } from 'react';
 
 export interface IUser {
-  id: string;
+  id: number;
   email: string;
   name: string;
   avatar?: string;

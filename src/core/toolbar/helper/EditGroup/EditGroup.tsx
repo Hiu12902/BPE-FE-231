@@ -45,12 +45,10 @@ const EditingGroup = () => {
   };
 
   useHotkeys([
-    //@ts-ignore
     [TOOLBAR_HOTKEYS.ZOOMIN, () => zoomScroll.stepZoom(1)],
-    //@ts-ignore
     [TOOLBAR_HOTKEYS.ZOOMOUT, () => zoomScroll.stepZoom(-1)],
-    //@ts-ignore
     [TOOLBAR_HOTKEYS.RESET_ZOOM, () => canvas.zoom('fit-viewport', 'auto')],
+    [TOOLBAR_HOTKEYS.DELETE, handleDelete],
   ]);
 
   return (

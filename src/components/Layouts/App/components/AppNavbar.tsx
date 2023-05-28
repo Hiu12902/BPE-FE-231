@@ -2,9 +2,9 @@ import BackButton from '@/components/BackButton';
 import { Accordion, AccordionProps, Button, Space, createStyles } from '@mantine/core';
 import { ReactComponent as IconFolder } from '@tabler/icons/icons/folder.svg';
 import { useLocation, useNavigate } from 'react-router-dom';
-import projectApi from '@/api/project';
-import { useEffect, useState } from 'react';
 import { IProject } from '@/interfaces/projects';
+import { useSelector } from 'react-redux';
+import { getProject } from '@/redux/selectors';
 
 interface IProps extends Partial<AccordionProps> {}
 
@@ -38,7 +38,10 @@ const useStyles = createStyles((theme) => ({
 
   buttonLabel: {
     fontSize: 14,
-    marginRight: 40,
+  },
+
+  buttonInner: {
+    justifyContent: 'flex-start',
   },
 }));
 
@@ -46,22 +49,10 @@ const AppNavbar = (props: IProps) => {
   const { classes } = useStyles();
   const location = useLocation();
   const navigate = useNavigate();
-  const [projects, setProjects] = useState<IProject[]>([]);
-
-  const getAllProjects = async () => {
-    try {
-      const projects = await projectApi.getAllProjects();
-      if (projects) {
-        setProjects(projects);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    getAllProjects();
-  }, []);
+  const projects = useSelector(getProject);
+  const projectsMap = Object.keys(projects).map(function (key) {
+    return projects[key];
+  });
 
   const onOpenProject = (project: IProject) => {
     navigate(`/${project.name}/${project.id}`);
@@ -90,13 +81,18 @@ const AppNavbar = (props: IProps) => {
             Personal
           </Accordion.Control>
           <Accordion.Panel>
-            {projects.map((project) => (
+            {projectsMap.map((project) => (
               <Button
                 key={project.id}
                 variant="subtle"
                 fullWidth
-                classNames={{ root: classes.project, label: classes.buttonLabel }}
+                classNames={{
+                  root: classes.project,
+                  label: classes.buttonLabel,
+                  inner: classes.buttonInner,
+                }}
                 onClick={() => onOpenProject(project)}
+                pl={40}
               >
                 Project {project.name}
               </Button>
