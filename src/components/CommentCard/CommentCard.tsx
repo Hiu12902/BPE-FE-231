@@ -16,7 +16,7 @@ const CommentCard = (props: IComment) => {
       }
       const res = await projectApi.deleteComment({
         projectID: currentModeler.projectId,
-        xmlFileLink: `static/${currentModeler?.projectId}/${currentModeler?.id}.bpmn`,
+        version: currentModeler?.id,
         id: id,
       });
 

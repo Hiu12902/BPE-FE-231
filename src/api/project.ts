@@ -1,4 +1,5 @@
 import Client from '@/api/client';
+import queryString from 'query-string';
 
 class ProjectApi {
   public static classInstance: ProjectApi;
@@ -73,17 +74,17 @@ class ProjectApi {
     return Client.get(`/project/${projectId}/user`);
   }
 
-  public getModelsComments(body: { projectID: string; xmlFileLink: string }): Promise<any> {
-    return Client.post(`/bpmnfile/comment`, body);
+  public getModelsComments(query: { projectID: string; version: string }): Promise<any> {
+    return Client.get(`/bpmnfile/comment?${queryString.stringify(query)}`);
   }
 
-  public comment(body: { projectID: string; xmlFileLink: string; content: string }): Promise<any> {
+  public comment(body: { projectID: string; version: string; content: string }): Promise<any> {
     return Client.post(`/bpmnfile/comment/add`, body);
   }
 
   public saveResult(body: {
     projectID: number;
-    xmlFileLink: string;
+    version: string;
     name?: string;
     result: any;
   }): Promise<any> {
@@ -91,7 +92,7 @@ class ProjectApi {
     return Client.post(`/result/${projectID}/save`, body);
   }
 
-  public deleteComment(body: { projectID: number; xmlFileLink: string; id: number }): Promise<any> {
+  public deleteComment(body: { projectID: number; version: string; id: number }): Promise<any> {
     return Client.delete(`/bpmnfile/comment/delete`, { data: { ...body } });
   }
 
@@ -103,8 +104,8 @@ class ProjectApi {
     return Client.put(`/bpmnfile/${projectId}/${version}/name`, body);
   }
 
-  public getResults(body: { projectID: number; xmlFileLink: string }): Promise<any> {
-    return Client.post(`/result/all`, body);
+  public getResults(query: { projectID: number; version: string }): Promise<any> {
+    return Client.get(`/result/all?${queryString.stringify(query)}`);
   }
 }
 
