@@ -21,13 +21,13 @@ import { useNavigate } from 'react-router-dom';
 import projectApi from '@/api/project';
 import { openConfirmModal } from '@mantine/modals';
 import { batch, useSelector } from 'react-redux';
-import { getCurrentModeler, getModelers } from '@/redux/selectors';
+import { getActiveTab, getCurrentModeler, getModelers } from '@/redux/selectors';
 import useDetachModel from '@/core/hooks/useDetachModel';
 import { useState, useRef } from 'react';
-import { showNotification } from '@mantine/notifications';
 import { TabVariant } from '@/redux/slices/tabs';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
 import { randomId } from '@mantine/hooks';
+import useNotification from '@/hooks/useNotification';
 
 const FileItem = (props: IFile) => {
   const dispatch = useAppDispatch();
@@ -48,6 +48,7 @@ const FileItem = (props: IFile) => {
   } = props;
   const modelers = useSelector(getModelers);
   const currentModeler = useSelector(getCurrentModeler);
+  const activeTab = useSelector(getActiveTab);
   const version = xmlFileLink?.split('/')[xmlFileLink?.split('/').length - 1].replace('.bpmn', '');
   const { classes } = useFileCardStyle();
   const IconFile = documentLink ? IconFileText : result ? IconFileSpreadsheet : IconFile3d;
@@ -55,6 +56,7 @@ const FileItem = (props: IFile) => {
   const [fileNameRendered, setFileNameRendered] = useState<string | undefined>(name);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const detach = useDetachModel();
+  const notify = useNotification();
 
   const onOpenBpmnFile = () => {
     if (xmlFileLink && version) {
@@ -70,6 +72,9 @@ const FileItem = (props: IFile) => {
         );
         detach();
         dispatch(modelActions.setCurrentModeler(version));
+        if (activeTab?.id !== version) {
+          dispatch(tabsSliceActions.setActiveTab(version));
+        }
       });
       navigate('/editor');
     }
@@ -133,10 +138,10 @@ const FileItem = (props: IFile) => {
         );
         if (res) {
           setFileNameRendered(nameInputRef.current.value);
-          showNotification({
+          notify({
             title: 'Success!',
             message: 'Rename file successfully!',
-            color: 'green',
+            type: 'success',
           });
         }
       }

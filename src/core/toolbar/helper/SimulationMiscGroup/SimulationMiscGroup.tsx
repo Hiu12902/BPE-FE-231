@@ -3,10 +3,10 @@ import { toolSliceActions } from '@/redux/slices';
 import { useAppDispatch } from '@/redux/store';
 import { Group, Stack, Text } from '@mantine/core';
 import { useSelector } from 'react-redux';
-import { TOOLBAR_MODE } from '../../../../constants/toolbar';
-import useGetModelerModules from '../../../hooks/useGetModelerModule';
-import { DEFAULT_SPACING } from '../../constants/size';
-import { IconBpeCancel, IconBpeSimulationLog } from '../../utils/icons/Icons';
+import { TOOLBAR_MODE } from '@/constants/toolbar';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
+import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
+import { IconBpeCancel, IconBpeSimulationLog } from '@/core/toolbar/utils/icons/Icons';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const SimulationMiscGroup = () => {

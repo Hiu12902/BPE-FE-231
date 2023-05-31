@@ -1,8 +1,8 @@
 import React from 'react';
 import { Group, Stack, Text } from '@mantine/core';
-import { DEFAULT_SPACING } from '../../constants/size';
+import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
-import { IconBpeEvaluate, IconBpeRecord } from '../../utils/icons/Icons';
+import { IconBpeEvaluate, IconBpeRecord } from '@/core/toolbar/utils/icons/Icons';
 
 const SimulationDiagramGroup = () => {
   return (

@@ -4,12 +4,13 @@ import { getCurrentModeler, getProject } from '@/redux/selectors';
 import { Badge, Group, Menu, Modal, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { DEFAULT_SPACING } from '../../constants/size';
-import { IconBpeComment, IconBpeFiles, IconBpeResult } from '../../utils/icons/Icons';
+import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
+import { IconBpeComment, IconBpeFiles, IconBpeResult } from '@/core/toolbar/utils/icons/Icons';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import projectApi from '@/api/project';
 import { showNotification } from '@mantine/notifications';
 import Workspace from '@/components/Workspace';
+import useNotification from '@/hooks/useNotification';
 
 const MiscGroup = () => {
   const [openCommentSection, setOpenCommentSection] = useState(false);
@@ -19,6 +20,7 @@ const MiscGroup = () => {
   const currentModeler = useSelector(getCurrentModeler);
   const projects = useSelector(getProject);
   const currentProject = projects[currentModeler?.projectId!];
+  const notify = useNotification();
 
   const onCreateNewVersion = async (): Promise<void> => {
     try {
@@ -34,10 +36,10 @@ const MiscGroup = () => {
           data
         );
         if (res) {
-          showNotification({
+          notify({
             title: 'Success!',
             message: 'Create new version for model successfully!',
-            color: 'green',
+            type: 'success',
           });
         }
       }

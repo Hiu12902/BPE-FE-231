@@ -4,10 +4,15 @@ import { useEffect, useState } from 'react';
 import { getCurrentModeler } from '@/redux/selectors';
 import { useHotkeys } from '@mantine/hooks';
 import { useSelector } from 'react-redux';
-import useGetModelerModules from '../../../hooks/useGetModelerModule';
-import { TOOLBAR_HOTKEYS } from '../../constants/hotkeys';
-import { DEFAULT_SPACING } from '../../constants/size';
-import { IconBpeConnector, IconBpeHand, IconBpeLasso, IconBpeSpace } from '../../utils/icons/Icons';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
+import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
+import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
+import {
+  IconBpeConnector,
+  IconBpeHand,
+  IconBpeLasso,
+  IconBpeSpace,
+} from '@/core/toolbar/utils/icons/Icons';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const UtilsGroup = () => {

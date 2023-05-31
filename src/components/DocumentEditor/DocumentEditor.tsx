@@ -10,12 +10,12 @@ import {
   createStyles,
 } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
-import { showNotification } from '@mantine/notifications';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ReactComponent as IconSave } from '@tabler/icons/icons/device-floppy.svg';
+import useNotification from '@/hooks/useNotification';
 
 const initialContent = `
 # Document
@@ -38,6 +38,7 @@ const DocumentEditor = () => {
   const [value, setValue] = useState<string | undefined>(initialContent);
   const [activeTab, setActiveTab] = useState<string | null>('preview');
   useDocumentTitle(`Document - ${projectName} - BPSky`);
+  const notify = useNotification();
 
   const getDocumentContent = async () => {
     try {
@@ -65,10 +66,10 @@ const DocumentEditor = () => {
 
         const res = await projectApi.saveDocument({ projectId: parseInt(projectId) }, data);
         if (res) {
-          showNotification({
+          notify({
             title: 'Success!',
             message: 'Saved document successfully!',
-            color: 'green',
+            type: 'success',
           });
         }
       }

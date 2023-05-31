@@ -3,9 +3,9 @@ import { Divider, Group, Stack, Text } from '@mantine/core';
 import { useHotkeys } from '@mantine/hooks';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import useGetModelerModules from '../../../hooks/useGetModelerModule';
-import { TOOLBAR_HOTKEYS } from '../../constants/hotkeys';
-import { DEFAULT_SPACING } from '../../constants/size';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
+import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
+import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import {
   IconBpeDelete,
   IconBpeRedo,
@@ -13,7 +13,7 @@ import {
   IconBpeZoomIn,
   IconBpeZoomOut,
   IconBpeZoomReset,
-} from '../../utils/icons/Icons';
+} from '@/core/toolbar/utils/icons/Icons';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const EditingGroup = () => {
