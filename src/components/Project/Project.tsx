@@ -17,6 +17,7 @@ import { IFile } from '@/interfaces/projects';
 import projectApi from '@/api/project';
 import { fade } from '@mantine/core/lib/Skeleton/Skeleton.styles';
 import { useDocumentTitle } from '@mantine/hooks';
+import { unstable_batchedUpdates } from 'react-dom';
 
 const Project = () => {
   const { projectName, projectId } = useParams();
@@ -24,17 +25,15 @@ const Project = () => {
   const [openDocument, setOpenDocument] = useState(false);
   const [bpmmnVerions, setBpmnVerions] = useState<IFile[]>([]);
   const [document, setDocument] = useState<IFile>();
+  const [currentExpands, setCurrentExpands] = useState<string[]>([]);
 
   useDocumentTitle(`Project ${projectName} - BPSky`);
 
   const getBpmnVerions = async () => {
     try {
-      if (bpmmnVerions.length > 0) {
-        return;
-      }
       if (projectId) {
         const response = await projectApi.getBpmnFilesOfProject(parseInt(projectId));
-        setBpmnVerions(response);
+        setBpmnVerions(() => response);
       }
     } catch (err) {
       console.error(err);
@@ -43,9 +42,6 @@ const Project = () => {
 
   const getDocument = async () => {
     try {
-      if (bpmmnVerions.length > 0) {
-        return;
-      }
       if (projectId) {
         const response = await projectApi.getProjectDocument(parseInt(projectId));
         setDocument(response);
@@ -56,8 +52,14 @@ const Project = () => {
   };
 
   useEffect(() => {
+    unstable_batchedUpdates(() => {
+      setOpenBpmnVersions(false);
+      setOpenDocument(false);
+      setCurrentExpands([]);
+    });
+
     Promise.all([getBpmnVerions(), getDocument()]);
-  }, []);
+  }, [projectId]);
 
   return (
     <Container size="90%">
@@ -71,7 +73,13 @@ const Project = () => {
         </ActionIcon>
       </Group>
       <Divider my="lg" />
-      <Accordion variant="contained" chevronPosition="left" multiple>
+      <Accordion
+        variant="contained"
+        chevronPosition="left"
+        multiple
+        value={currentExpands}
+        onChange={setCurrentExpands}
+      >
         <Accordion.Item value="bpmnVersions">
           <Accordion.Control onClick={() => setOpenBpmnVersions((o) => !o)}>
             BPMN Versions

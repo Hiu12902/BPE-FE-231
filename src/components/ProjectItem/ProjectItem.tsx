@@ -160,7 +160,11 @@ const ProjectItem = (props: IProject) => {
     <Accordion.Item value={id.toString()}>
       <Accordion.Control onClick={getProjectFiles} onDoubleClick={onOpenProject}>
         <Grid>
-          <ShareModal opened={openShareModal} onClose={() => setOpenShareModal(false)} />
+          <ShareModal
+            opened={openShareModal}
+            onClose={() => setOpenShareModal(false)}
+            projectId={id}
+          />
           <Grid.Col span={5}>
             <Group>
               <IconFolder width={30} height={30} color={PRIMARY_COLOR[0]} fill={PRIMARY_COLOR[0]} />
@@ -200,9 +204,9 @@ const ProjectItem = (props: IProject) => {
                 <Menu.Item icon={<IconAbc />} onClick={openRenameModal}>
                   Rename
                 </Menu.Item>
-                <Menu.Item icon={<IconInfo />} onClick={(e) => e.stopPropagation()}>
+                {/* <Menu.Item icon={<IconInfo />} onClick={(e) => e.stopPropagation()}>
                   Detail
-                </Menu.Item>
+                </Menu.Item> */}
                 <Tooltip
                   label="You are currently working on this project, make sure to close it before delete"
                   multiline

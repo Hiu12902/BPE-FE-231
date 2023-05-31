@@ -179,7 +179,7 @@ const FileItem = (props: IFile) => {
       onDoubleClick={xmlFileLink ? onOpenBpmnFile : result ? onOpenResultFile : onOpenDocument}
     >
       <Grid>
-        <Grid.Col span={5}>
+        <Grid.Col span={activeTab ? 4 : 5}>
           <Group spacing={10}>
             <IconFile height={30} width={30} strokeWidth="0.8" color={PRIMARY_COLOR[0]} />
             <Text size="sm">
@@ -196,7 +196,7 @@ const FileItem = (props: IFile) => {
             {size} MB
           </Text>
         )} */}
-        <Grid.Col span={result ? 7 : 3}>
+        <Grid.Col span={result ? 7 : activeTab ? 4 : 3}>
           <Text color="dimmed" size="sm" ml={77}>
             {result && 'Evaluated At: '}
             {new Date(lastSaved || createAt || '')?.toLocaleString()}
