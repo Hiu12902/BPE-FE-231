@@ -25,7 +25,6 @@ const CommentSection = (props: DialogProps) => {
   const [comment, setComment] = useState<string>('');
   const [comments, setComments] = useState<IComment[]>([]);
   const currentModeler = useSelector(getCurrentModeler);
-  const xmlFileLink = `static/${currentModeler?.projectId}/${currentModeler?.id}.bpmn`;
   const currentUser = useSelector(getCurrentUser);
   const endOfCommentsRef = useRef<HTMLDivElement>(null);
 
@@ -36,7 +35,7 @@ const CommentSection = (props: DialogProps) => {
       }
       const comments = await projectApi.getModelsComments({
         projectID: currentModeler?.projectId?.toString() as string,
-        xmlFileLink: xmlFileLink,
+        version: currentModeler?.id,
       });
       if (comments) {
         setComments(comments);
@@ -58,26 +57,28 @@ const CommentSection = (props: DialogProps) => {
 
   const handleComment = async () => {
     try {
-      const res = await projectApi.comment({
-        projectID: currentModeler?.projectId?.toString() as string,
-        xmlFileLink: xmlFileLink,
-        content: comment,
-      });
-      if (res) {
-        setComments((comments) => [
-          ...comments,
-          {
-            id: (comments[comments.length - 1]?.id || -1) + 1,
-            content: comment,
-            createAt: new Date().toISOString(),
-            author: {
-              id: currentUser.id,
-              avatar: currentUser.avatar,
-              email: currentUser.email,
+      if (currentModeler) {
+        const res = await projectApi.comment({
+          projectID: currentModeler?.projectId?.toString() as string,
+          version: currentModeler?.id,
+          content: comment,
+        });
+        if (res) {
+          setComments((comments) => [
+            ...comments,
+            {
+              id: (comments[comments.length - 1]?.id || -1) + 1,
+              content: comment,
+              createAt: new Date().toISOString(),
+              author: {
+                id: currentUser.id,
+                avatar: currentUser.avatar,
+                email: currentUser.email,
+              },
             },
-          },
-        ]);
-        setComment('');
+          ]);
+          setComment('');
+        }
       }
     } catch (err) {
       console.error(err);

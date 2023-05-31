@@ -280,15 +280,6 @@ const DiagramGroup = () => {
   };
 
   const handleSwitchToSimulation = async () => {
-    const errors = await lint();
-    if (errors.length > 0) {
-      notify({
-        title: 'Oops',
-        message: 'Your model has some errors, please resolve them and try again!',
-        type: 'error',
-      });
-      return;
-    }
     dispatch(toolSliceActions.setToolbarMode(TOOLBAR_MODE.SIMULATING));
     //@ts-ignore
     toggleMode.toggleMode(true);

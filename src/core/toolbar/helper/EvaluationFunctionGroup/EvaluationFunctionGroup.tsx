@@ -17,10 +17,10 @@ const EvaluationFunctionGroup = ({ style }: { style?: CSSProperties }) => {
 
   const handleSaveResult = async () => {
     try {
-      if (!!evaluatedResult && activeTab && activeTab.projectID) {
+      if (!!evaluatedResult && activeTab && activeTab.projectID && activeTab.model) {
         const res = await projectApi.saveResult({
           projectID: activeTab?.projectID,
-          xmlFileLink: `static/${activeTab?.projectID}/${activeTab?.model}.bpmn`,
+          version: activeTab?.model,
           name: fileName,
           result: evaluatedResult,
         });

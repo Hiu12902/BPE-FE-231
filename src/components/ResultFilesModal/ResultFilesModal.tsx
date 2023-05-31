@@ -25,7 +25,7 @@ const ResultFilesModal = (props: ModalProps) => {
     try {
       const res = await projectApi.getResults({
         projectID: currentModeler.projectId,
-        xmlFileLink: `static/${currentModeler?.projectId}/${currentModeler?.id}.bpmn`,
+        version: currentModeler?.id,
       });
       if (res) {
         setFiles(res);
