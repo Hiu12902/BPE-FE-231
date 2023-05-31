@@ -8,14 +8,14 @@ import { showNotification } from '@mantine/notifications';
 import { ChangeEvent, createRef } from 'react';
 import { useSelector } from 'react-redux';
 import useGetModelerModules from '@/core/hooks/useGetModelerModule';
-import { TOOLBAR_HOTKEYS } from '../../constants/hotkeys';
-import { DEFAULT_SPACING } from '../../constants/size';
+import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
+import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import {
   IconBpeExport,
   IconBpeExportBpmn,
   IconBpeExportPng,
   IconBpeImport,
-} from '../../utils/icons/Icons';
+} from '@/core/toolbar/utils/icons/Icons';
 import { getElementForGraph } from '../DiagramGroup/helper/getElementJson';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import generateImage from './utils/exportImages';

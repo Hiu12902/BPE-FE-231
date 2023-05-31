@@ -1,8 +1,8 @@
 import projectApi from '@/api/project';
 import { IProject } from '@/interfaces/projects';
 import { Button, Divider, Group, Modal, TextInput } from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
 import { useState } from 'react';
+import useNotification from '@/hooks/useNotification';
 
 const CreateProjectButton = ({
   onCreateProject,
@@ -11,6 +11,7 @@ const CreateProjectButton = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [projectName, setProjectName] = useState<string>();
+  const notify = useNotification();
 
   const onClear = () => {
     setOpen(false);
@@ -23,10 +24,10 @@ const CreateProjectButton = ({
         const res = await projectApi.createNewProject(projectName);
         if (res) {
           onClear();
-          showNotification({
+          notify({
             title: 'Success!',
             message: 'You have successfully created a new project!',
-            color: 'green',
+            type: 'success',
           });
           onCreateProject(res);
         }

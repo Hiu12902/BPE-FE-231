@@ -1,11 +1,18 @@
 import {
   Affix,
+  Alert,
+  Badge,
   Button,
+  Card,
+  Checkbox,
   Container,
+  Divider,
   Group,
   Modal,
   NumberInput,
+  SimpleGrid,
   Stack,
+  Stepper,
   Text,
   Transition,
 } from '@mantine/core';
@@ -31,11 +38,13 @@ import { TabVariant } from '@/redux/slices/tabs';
 import { useAppDispatch } from '@/redux/store';
 import { useForm } from '@mantine/form';
 import { randomId, useClipboard, useHotkeys } from '@mantine/hooks';
-import { notifications } from '@mantine/notifications';
 import { filter, findIndex, flatten, keys, map, values } from 'lodash';
-import { TOOLBAR_HOTKEYS } from '../../constants/hotkeys';
+import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import { getElementForGraph } from './helper/getElementJson';
+import { IModeler } from '@/redux/slices/model';
+import { PRIMARY_COLOR } from '@/constants/theme/themeConstants';
+import useNotification from '@/hooks/useNotification';
 
 const planeSuffix = '_plane';
 
@@ -67,22 +76,48 @@ const UserInputFormLableMap: Record<keyof UserInputProps, string> = {
   exceptionHandling: 'Exception Handling',
 };
 
+interface IItemProps extends IModeler {
+  checked?: boolean;
+  onSelect?: (modelerId: string) => void;
+}
+
+const ModelItem = (props: IItemProps) => {
+  const { id, name, projectName, checked, onSelect } = props;
+
+  return (
+    <Card
+      shadow="xs"
+      style={{ cursor: 'pointer', border: checked ? `1px solid ${PRIMARY_COLOR[2]}` : undefined }}
+      onClick={() => onSelect?.(id)}
+    >
+      <Group>
+        <Checkbox checked={checked} />
+        <Text color={PRIMARY_COLOR[1]}>{name}</Text>
+        <Badge radius={0}>project: {projectName}</Badge>
+      </Group>
+    </Card>
+  );
+};
+
 const DiagramGroup = () => {
   const dispatch = useAppDispatch();
   const currentElement = useSelector(selectors.selectElementSelected);
-  const tabs = useSelector(selectors.getTabs);
   const clipboard = useClipboard();
   const modeler = useSelector(selectors.getCurrentModeler)?.modeler;
   const currentModeler = useSelector(selectors.getCurrentModeler);
   const modelers = useSelector(selectors.getModelers);
   const [showAffix, setShowAffix] = useState(false);
-  const [toggleMode, canvas, eventBus, elementRegistry, linting] = useGetModelerModules([
+  const [activeStep, setActiveStep] = useState(0);
+  const [compareModels, setCompareModels] = useState<IModeler[]>([]);
+  const [warningDifferentProject, setWarningDifferentProject] = useState(false);
+  const nextStep = () => setActiveStep((current) => (current < 2 ? current + 1 : current));
+  const prevStep = () => setActiveStep((current) => (current > 0 ? current - 1 : current));
+  const [toggleMode, eventBus, linting] = useGetModelerModules([
     'toggleMode',
-    'canvas',
     'eventBus',
-    'elementRegistry',
     'linting',
   ]);
+  const notify = useNotification();
 
   const userInputForm = useForm<UserInputForm>({
     initialValues: {
@@ -120,6 +155,14 @@ const DiagramGroup = () => {
     setIsInputValid(() => !checkUserInput());
   }, [userInputForm.values]);
 
+  useEffect(() => {
+    if (compareModels.length > 1 && compareModels[0].projectId !== compareModels[1].projectId) {
+      setWarningDifferentProject(true);
+    } else {
+      setWarningDifferentProject(false);
+    }
+  }, [compareModels]);
+
   const renderInputModal = () => {
     return (
       <Modal
@@ -128,30 +171,96 @@ const DiagramGroup = () => {
         title="Please Input Your Expected values"
         size="lg"
       >
-        <Container>
-          <Stack>
-            <Group position="apart">
-              {keys(userInputForm.values).map((key) => (
-                <Stack>
-                  {keys(userInputForm.values[key as keyof UserInputForm]).map((subkey) => (
-                    <NumberInput
-                      label={`${UserInputFormTitleMap[key as keyof UserInputForm]} ${
-                        UserInputFormLableMap[subkey as keyof UserInputProps]
-                      }`}
-                      {...userInputForm.getInputProps(`${key}.${subkey}`)}
-                    />
-                  ))}
-                </Stack>
+        <Stepper
+          active={activeStep}
+          onStepClick={setActiveStep}
+          breakpoint="sm"
+          allowNextStepsSelect={false}
+          size="sm"
+        >
+          <Stepper.Step label="Select models" description="Select 2 exact models">
+            <Alert style={{ borderLeft: `5px solid ${PRIMARY_COLOR[0]}` }}>
+              Hint: only models opened in editor are shown here
+            </Alert>
+            <Divider my="sm" />
+            <SimpleGrid cols={1}>
+              {modelers.map((modeler) => (
+                <ModelItem
+                  {...modeler}
+                  checked={!!compareModels.find((md) => md.id === modeler.id)}
+                  onSelect={(modelerId) => {
+                    if (!!compareModels.find((md) => md.id === modeler.id)) {
+                      const tempCompareModels = compareModels.filter(
+                        (modeler) => modeler.id !== modelerId
+                      );
+                      setCompareModels(() => tempCompareModels);
+                    } else {
+                      if (compareModels.length > 1) {
+                        notify({
+                          title: 'Sorry',
+                          message:
+                            'We only support comparing 2 models currently, please unselect another model and try again.',
+                          type: 'warning',
+                        });
+                        return;
+                      }
+                      const modeler = modelers.find((modeler) => modeler.id === modelerId);
+                      if (modeler) {
+                        setCompareModels((modelers) => [...modelers, modeler]);
+                      }
+                    }
+                  }}
+                />
               ))}
-            </Group>
+              <Transition transition="fade" mounted={warningDifferentProject}>
+                {(transitionStyles) => (
+                  <Alert
+                    style={{ ...transitionStyles, borderLeft: `5px solid yellow` }}
+                    color="yellow"
+                  >
+                    Warning: We don't recommend selecting models from different projects since the
+                    compare results may not be accurate!
+                  </Alert>
+                )}
+              </Transition>
+            </SimpleGrid>
+          </Stepper.Step>
+          <Stepper.Step label="Input performance level" description="Input your desired values">
+            <Container>
+              <Stack>
+                <Group position="apart">
+                  {keys(userInputForm.values).map((key) => (
+                    <Stack>
+                      {keys(userInputForm.values[key as keyof UserInputForm]).map((subkey) => (
+                        <NumberInput
+                          label={`${UserInputFormTitleMap[key as keyof UserInputForm]} ${
+                            UserInputFormLableMap[subkey as keyof UserInputProps]
+                          }`}
+                          {...userInputForm.getInputProps(`${key}.${subkey}`)}
+                        />
+                      ))}
+                    </Stack>
+                  ))}
+                </Group>
+              </Stack>
+            </Container>
+          </Stepper.Step>
+        </Stepper>
 
-            <Group position="right">
-              <Button onClick={batchEvaluate} disabled={isInputValid}>
-                Compare
-              </Button>
-            </Group>
-          </Stack>
-        </Container>
+        <Group position="right" mt="xl">
+          <Button
+            variant="default"
+            onClick={activeStep > 0 ? prevStep : () => setOpenInputModal(false)}
+          >
+            {activeStep > 0 ? 'Back' : 'Cancel'}
+          </Button>
+          <Button
+            onClick={activeStep > 0 ? batchEvaluate : nextStep}
+            disabled={activeStep === 0 && compareModels.length < 2}
+          >
+            {activeStep > 0 ? 'Compare' : 'Next step'}
+          </Button>
+        </Group>
       </Modal>
     );
   };
@@ -173,10 +282,10 @@ const DiagramGroup = () => {
   const handleSwitchToSimulation = async () => {
     const errors = await lint();
     if (errors.length > 0) {
-      notifications.show({
+      notify({
         title: 'Oops',
         message: 'Your model has some errors, please resolve them and try again!',
-        color: 'red',
+        type: 'error',
       });
       return;
     }
@@ -220,10 +329,10 @@ const DiagramGroup = () => {
   const onEvaluateModel = async () => {
     const errors = await lint();
     if (errors.length > 0) {
-      notifications.show({
+      notify({
         title: 'Oops',
         message: 'Your model has some errors, please try validating it!',
-        color: 'red',
+        type: 'error',
       });
       return;
     }
@@ -249,11 +358,11 @@ const DiagramGroup = () => {
         });
       }
     } catch (error) {
-      notifications.show({
+      notify({
         title: 'Oops',
         message:
           'An error has occurred while evaluating your model, please check your model and try again.',
-        color: 'red',
+        type: 'error',
       });
       console.error(error);
     }
@@ -277,7 +386,7 @@ const DiagramGroup = () => {
   const batchEvaluate = async () => {
     try {
       const results = await Promise.all(
-        modelers.map(async (modeler) => {
+        compareModels.map(async (modeler) => {
           return await evaluatedResultApi.evaluate(getJsonFromModel(modeler.modeler));
         })
       );
@@ -316,6 +425,11 @@ const DiagramGroup = () => {
       });
     } catch (err) {
       console.error(err);
+      notify({
+        title: 'Oops',
+        message: 'Your models has some errors, please check them and try again!',
+        type: 'error',
+      });
     }
   };
 

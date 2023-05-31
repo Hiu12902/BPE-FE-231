@@ -2,7 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 import { find, indexOf, remove } from 'lodash';
 
-interface Modeler {
+export interface IModeler {
   modeler: any;
   isNew?: boolean;
   id: string;
@@ -12,8 +12,8 @@ interface Modeler {
 }
 
 interface ModelProps {
-  modelers: Modeler[];
-  currentModeler?: Modeler;
+  modelers: IModeler[];
+  currentModeler?: IModeler;
 }
 
 const modelSlice = createSlice({
@@ -24,7 +24,7 @@ const modelSlice = createSlice({
   } as ModelProps,
 
   reducers: {
-    setModelers: (state, action: PayloadAction<Modeler>) => {
+    setModelers: (state, action: PayloadAction<IModeler>) => {
       const index = indexOf(
         state.modelers,
         find(state.modelers, (modeler) => modeler.id === action.payload.id)
@@ -37,7 +37,7 @@ const modelSlice = createSlice({
       const modeler = find(state.modelers, (modeler) => modeler.id === action.payload);
       state.currentModeler = modeler;
     },
-    updateCurrentModeler: (state, action: PayloadAction<Modeler>) => {
+    updateCurrentModeler: (state, action: PayloadAction<IModeler>) => {
       state.modelers = state.modelers.map((modeler) =>
         modeler.id === action.payload.id ? { ...action.payload } : modeler
       );

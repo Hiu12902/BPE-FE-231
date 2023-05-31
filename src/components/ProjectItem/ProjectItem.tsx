@@ -21,12 +21,12 @@ import { IFile, IProject } from '@/interfaces/projects';
 import FileItem from '@/components/FileItem';
 import projectApi from '@/api/project';
 import { openConfirmModal } from '@mantine/modals';
-import { showNotification } from '@mantine/notifications';
 import ShareModal from '@/components/ShareModal';
 import { useSelector } from 'react-redux';
 import { getModelers } from '@/redux/selectors';
 import { useAppDispatch } from '@/redux/store';
 import { projectActions } from '@/redux/slices';
+import useNotification from '@/hooks/useNotification';
 
 const ProjectItem = (props: IProject) => {
   const dispatch = useAppDispatch();
@@ -39,6 +39,7 @@ const ProjectItem = (props: IProject) => {
   const [hoverOnDeleteBtn, setHoverOnDeleteBtn] = useState(false);
   const modelers = useSelector(getModelers);
   const isOpeningInEditor = !!modelers.find((modeler) => modeler.projectId === id);
+  const notify = useNotification();
 
   const getProjectFiles = async () => {
     try {
@@ -71,20 +72,25 @@ const ProjectItem = (props: IProject) => {
       if (nameInputRef.current) {
         const res = await projectApi.renameProject(
           { projectId: id },
-          { name: nameInputRef.current.value }
+          { name: nameInputRef.current?.value }
         );
         if (res) {
-          setProjectNameRender(nameInputRef.current.value);
+          setProjectNameRender(nameInputRef.current?.value);
           nameInputRef.current.value = '';
-          showNotification({
+          notify({
             title: 'Success!',
             message: 'Rename project successfully!',
-            color: 'green',
+            type: 'success',
           });
         }
       }
     } catch (err) {
       console.error(err);
+      notify({
+        title: 'Oops!',
+        message: 'An error has occurred while trying to rename project. Please try again',
+        type: 'error',
+      });
     }
   };
 
@@ -92,7 +98,9 @@ const ProjectItem = (props: IProject) => {
     e.stopPropagation();
     openConfirmModal({
       title: 'Rename project',
-      children: <TextInput placeholder="Project's name" ref={nameInputRef} value={name} />,
+      children: (
+        <TextInput placeholder="Project's name" ref={nameInputRef} value={projectNameRender} />
+      ),
       labels: { confirm: 'Confirm', cancel: 'Cancel' },
       onConfirm: onRenameProject,
     });
@@ -114,11 +122,14 @@ const ProjectItem = (props: IProject) => {
       return;
     }
     openConfirmModal({
-      title: 'Delete this project',
+      title: <Text size="lg">Delete this project</Text>,
       centered: true,
       children: (
-        <Text size="sm">
-          Are you sure you want to delete this project? Your action will not be able to undo.
+        <Text>
+          Are you sure you want to delete this project?{' '}
+          <Text span weight={600}>
+            Your action will not be able to undo.
+          </Text>
         </Text>
       ),
       labels: { confirm: 'Delete', cancel: 'Cancel' },
@@ -137,6 +148,11 @@ const ProjectItem = (props: IProject) => {
       }
     } catch (err) {
       console.error(err);
+      notify({
+        title: 'Oops!',
+        message: 'An error has occurred while trying to delete project. Please try again',
+        type: 'error',
+      });
     }
   };
 

@@ -5,9 +5,9 @@ import { useEffect } from 'react';
 import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
 import { getCurrentModeler } from '@/redux/selectors';
 import { useSelector } from 'react-redux';
-import useGetModelerModules from '../../../hooks/useGetModelerModule';
-import { DEFAULT_SPACING } from '../../constants/size';
-import { IconBpeCopy, IconBpeCut, IconBpePaste } from '../../utils/icons/Icons';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
+import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
+import { IconBpeCopy, IconBpeCut, IconBpePaste } from '@/core/toolbar/utils/icons/Icons';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import { createReviver } from './helper/createReviver';
 

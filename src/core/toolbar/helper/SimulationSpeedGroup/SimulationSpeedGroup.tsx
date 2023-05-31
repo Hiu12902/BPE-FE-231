@@ -2,9 +2,13 @@ import { getCurrentModeler } from '@/redux/selectors';
 import { Stack, Text } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import useGetModelerModules from '../../../hooks/useGetModelerModule';
-import { DEFAULT_SPACING } from '../../constants/size';
-import { IconBpeSpeedFast, IconBpeSpeedNormal, IconBpeSpeedSlow } from '../../utils/icons/Icons';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
+import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
+import {
+  IconBpeSpeedFast,
+  IconBpeSpeedNormal,
+  IconBpeSpeedSlow,
+} from '@/core/toolbar/utils/icons/Icons';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 enum AnimationSpeed {

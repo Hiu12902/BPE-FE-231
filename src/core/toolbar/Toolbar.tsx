@@ -2,8 +2,8 @@ import { Divider, Group, Header, Stack, Text, Transition } from '@mantine/core';
 
 import * as selectors from '@/redux/selectors';
 import { useSelector } from 'react-redux';
-import { PALETTE_WIDTH, TOOLBAR_HEIGHT } from '../../constants/theme/themeConstants';
-import { TOOLBAR_MODE } from '../../constants/toolbar';
+import { PALETTE_WIDTH, TOOLBAR_HEIGHT } from '@/constants/theme/themeConstants';
+import { TOOLBAR_MODE } from '@/constants/toolbar';
 import ClipBoardGroup from './helper/ClipBoardGroup/ClipBoardGroup';
 import DiagramGroup from './helper/DiagramGroup/DiagramGroup';
 import EditingGroup from './helper/EditGroup/EditGroup';

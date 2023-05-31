@@ -20,7 +20,7 @@ import { hasEventDefinition } from 'bpmn-js/lib/util/DiUtil';
 import { getCurrentModeler, selectToolbarMode } from '@/redux/selectors';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { PALETTE_WIDTH } from '../../constants/theme/themeConstants';
+import { PALETTE_WIDTH } from '@/constants/theme/themeConstants';
 import { usePaletteNavbarStyles } from './PaletteNavbar.style';
 import {
   artifactSymbols,

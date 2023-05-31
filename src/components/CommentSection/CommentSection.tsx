@@ -12,7 +12,7 @@ import {
   Text,
   Textarea,
 } from '@mantine/core';
-import { PROPERTIES_PANEL_WIDTH, TOOLBAR_HEIGHT } from '../../constants/theme/themeConstants';
+import { PROPERTIES_PANEL_WIDTH, TOOLBAR_HEIGHT } from '@/constants/theme/themeConstants';
 import CommentCard from '../CommentCard/CommentCard';
 import { useSelector } from 'react-redux';
 import { getCurrentModeler, getCurrentUser } from '@/redux/selectors';

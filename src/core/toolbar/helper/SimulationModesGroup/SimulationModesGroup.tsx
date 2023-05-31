@@ -16,9 +16,9 @@ import {
 import * as selectors from '@/redux/selectors';
 import { toolSliceActions } from '@/redux/slices';
 import { useAppDispatch } from '@/redux/store';
-import useGetModelerModules from '../../../hooks/useGetModelerModule';
-import { SIMULATION_CASE_MODE } from '../../constants/simulation';
-import { DEFAULT_SPACING } from '../../constants/size';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
+import { SIMULATION_CASE_MODE } from '@/core/toolbar/constants/simulation';
+import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 
 const SimulationModesGroup = () => {
