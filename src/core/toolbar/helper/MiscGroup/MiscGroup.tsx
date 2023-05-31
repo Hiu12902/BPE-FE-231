@@ -8,7 +8,6 @@ import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import { IconBpeComment, IconBpeFiles, IconBpeResult } from '@/core/toolbar/utils/icons/Icons';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import projectApi from '@/api/project';
-import { showNotification } from '@mantine/notifications';
 import Workspace from '@/components/Workspace';
 import useNotification from '@/hooks/useNotification';
 

@@ -17,6 +17,7 @@ import { tabsSliceActions, toolSliceActions } from '@/redux/slices';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
 import { notifications } from '@mantine/notifications';
 import { PRIMARY_COLOR } from '@/constants/theme/themeConstants';
+import useNotification from '@/hooks/useNotification';
 
 const useStyles = createStyles(() => ({
   container: {
@@ -120,6 +121,7 @@ const ResultDetailSteps = () => {
   const activeTab = useSelector(getActiveTab);
   const evaluatedResult = useSelector(getEvaluatedResult)[activeTab?.id as string];
   const [elementRegistry] = useGetModelerModules(['elementRegistry']);
+  const notify = useNotification();
 
   return (
     <ScrollArea w="calc(100vw - var(--mantine-navbar-width)">
@@ -154,10 +156,10 @@ const ResultDetailSteps = () => {
                           dispatch(toolSliceActions.setToolbarMode(TOOLBAR_MODE.DEFAULT));
                         }
                       } else {
-                        notifications.show({
+                        notify({
                           title: 'Sorry :(',
                           message: "We couldn't find any element that matched",
-                          color: 'red',
+                          type: 'error',
                         });
                       }
                     });

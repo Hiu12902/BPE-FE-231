@@ -7,7 +7,7 @@ export const ResultTableTitleMap: Record<keyof EvaluationResult, string> = {
   numberOfHandledExceptions: 'Handled Exceptions',
   numberOfUnhandledExceptions: 'Unhandled Exceptions',
   numberOfOptionalTasks: 'Optional Tasks',
-  name: 'Name',
+  name: 'Start From Process',
   totalCycleTimeAllLoops: 'Cycle Time Of All Loops',
   totalLoop: 'Total Loop',
   totalLoopProbability: 'Total Loop Probability',
