@@ -7,13 +7,14 @@ import { useSelector } from 'react-redux';
 import { getActiveTab, getEvaluatedResult } from '@/redux/selectors';
 import { openConfirmModal } from '@mantine/modals';
 import projectApi from '@/api/project';
-import { showNotification } from '@mantine/notifications';
+import useNotification from '@/hooks/useNotification';
 
 const EvaluationFunctionGroup = ({ style }: { style?: CSSProperties }) => {
   const activeTab = useSelector(getActiveTab);
   const evaluatedResult = useSelector(getEvaluatedResult)[activeTab?.id as string];
   const [fileName, setFileName] = useState(activeTab?.model);
   const downloadLinkRef = useRef<HTMLAnchorElement>(null);
+  const notify = useNotification();
 
   const handleSaveResult = async () => {
     try {
@@ -25,10 +26,10 @@ const EvaluationFunctionGroup = ({ style }: { style?: CSSProperties }) => {
           result: evaluatedResult,
         });
         if (res) {
-          showNotification({
+          notify({
             title: 'Success!',
             message: 'Save evaluated result for model successfully!',
-            color: 'green',
+            type: 'error',
           });
         }
       }
