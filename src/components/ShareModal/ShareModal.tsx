@@ -22,14 +22,22 @@ import { PRIMARY_COLOR } from '@/constants/theme/themeConstants';
 import userGroup from '@/assets/user-group.png';
 import { useSelector } from 'react-redux';
 import { getCurrentUser } from '@/redux/selectors';
+import { UserRole } from '@/constants/project';
+import projectApi from '@/api/project';
+import useNotification from '@/hooks/useNotification';
 
-const ShareModal = (props: ModalProps) => {
-  const { opened, onClose } = props;
+interface IShareModalProps extends ModalProps {
+  projectId: number;
+}
+
+const ShareModal = (props: IShareModalProps) => {
+  const { opened, onClose, projectId } = props;
   const [value, setValue] = useDebouncedState('', 500);
   const [popoverOpened, setPopoverOpened] = useState(false);
   const [searchResult, setSearchResult] = useState<IUser[]>([]);
   const [teammates, setTeammates] = useState<IUser[]>([]);
   const currentUser = useSelector(getCurrentUser);
+  const notify = useNotification();
 
   const searchUsers = async () => {
     try {
@@ -59,6 +67,29 @@ const ShareModal = (props: ModalProps) => {
       setTeammates((team) => [...team, user]);
     }
     setPopoverOpened(false);
+  };
+
+  const handleShare = async () => {
+    try {
+      const payload = teammates
+        .slice(1, teammates.length - 1)
+        .map((user) => ({ user_id: user.id, role: UserRole.CAN_VIEW }));
+      const res = await projectApi.shareProject(payload, projectId);
+      if (res) {
+        notify({
+          title: 'Success!',
+          message: 'Share project successfully!',
+          type: 'success',
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      notify({
+        title: 'Error!',
+        message: 'Share project failed!',
+        type: 'error',
+      });
+    }
   };
 
   const renderNoSharedUsers = () => {
@@ -145,7 +176,7 @@ const ShareModal = (props: ModalProps) => {
         <Button variant="outline" onClick={handleCancel}>
           Cancel
         </Button>
-        <Button>Save</Button>
+        <Button onClick={handleShare}>Save</Button>
       </Group>
     </Modal>
   );

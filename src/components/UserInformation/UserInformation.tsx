@@ -59,13 +59,13 @@ const UserInformation = forwardRef<HTMLDivElement, IUserInfoProps>((props: IUser
               <Select
                 data={[
                   //@ts-ignore
-                  { value: UserRole.CAN_EDIT, label: 'Editor' },
+                  // { value: UserRole.CAN_EDIT, label: 'Editor' },
                   //@ts-ignore
-                  { value: UserRole.CAN_SHARE, label: 'Sharer' },
+                  // { value: UserRole.CAN_SHARE, label: 'Sharer' },
                   //@ts-ignore
                   { value: UserRole.CAN_VIEW, label: 'Viewer' },
                   //@ts-ignore
-                  { value: UserRole.OWNER, label: 'Owner' },
+                  // { value: UserRole.OWNER, label: 'Owner' },
                 ]}
                 variant="filled"
                 size="xs"

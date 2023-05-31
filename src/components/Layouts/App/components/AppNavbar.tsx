@@ -3,8 +3,12 @@ import { Accordion, AccordionProps, Button, Space, createStyles } from '@mantine
 import { ReactComponent as IconFolder } from '@tabler/icons/icons/folder.svg';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { IProject } from '@/interfaces/projects';
-import { useSelector } from 'react-redux';
+import { batch, useSelector } from 'react-redux';
 import { getProject } from '@/redux/selectors';
+import projectApi from '@/api/project';
+import { useAppDispatch } from '@/redux/store';
+import { projectActions } from '@/redux/slices';
+import { useEffect } from 'react';
 
 interface IProps extends Partial<AccordionProps> {}
 
@@ -46,6 +50,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const AppNavbar = (props: IProps) => {
+  const dispatch = useAppDispatch();
   const { classes } = useStyles();
   const location = useLocation();
   const navigate = useNavigate();
@@ -57,6 +62,25 @@ const AppNavbar = (props: IProps) => {
   const onOpenProject = (project: IProject) => {
     navigate(`/${project.name}/${project.id}`);
   };
+
+  const getAllProjects = async () => {
+    try {
+      const projects = await projectApi.getAllProjects();
+      if (projects) {
+        batch(() => {
+          projects.map((project: IProject) => dispatch(projectActions.setProject(project)));
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (projectsMap.length === 0) {
+      getAllProjects();
+    }
+  }, []);
 
   return (
     <>

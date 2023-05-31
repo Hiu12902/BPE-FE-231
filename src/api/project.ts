@@ -1,4 +1,5 @@
 import Client from '@/api/client';
+import { UserRole } from '@/constants/project';
 import queryString from 'query-string';
 
 class ProjectApi {
@@ -106,6 +107,10 @@ class ProjectApi {
 
   public getResults(query: { projectID: number; version: string }): Promise<any> {
     return Client.get(`/result/all?${queryString.stringify(query)}`);
+  }
+
+  public shareProject(body: { user_id: number; role: UserRole }[], projectId: number) {
+    return Client.post(`/project/${projectId}/user/grant`, body);
   }
 }
 
