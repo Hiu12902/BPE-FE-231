@@ -13,10 +13,9 @@ import {
 import { ReactComponent as IconUserShare } from '@tabler/icons/icons/user-plus.svg';
 import { ReactComponent as IconFolder } from '@tabler/icons/icons/folder.svg';
 import { ReactComponent as IconAbc } from '@tabler/icons/icons/abc.svg';
-import { ReactComponent as IconInfo } from '@tabler/icons/icons/info-circle-filled.svg';
 import { ReactComponent as IconTrash } from '@tabler/icons/icons/trash.svg';
 import { ReactComponent as IconDots } from '@tabler/icons/icons/dots.svg';
-import { MouseEvent, useRef, useState } from 'react';
+import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { IFile, IProject } from '@/interfaces/projects';
 import FileItem from '@/components/FileItem';
 import projectApi from '@/api/project';
@@ -76,6 +75,7 @@ const ProjectItem = (props: IProject) => {
         );
         if (res) {
           setProjectNameRender(nameInputRef.current?.value);
+          dispatch(projectActions.updateProject({ ...props, name: nameInputRef.current?.value }));
           nameInputRef.current.value = '';
           notify({
             title: 'Success!',

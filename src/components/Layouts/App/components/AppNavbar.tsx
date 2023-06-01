@@ -56,7 +56,7 @@ const AppNavbar = (props: IProps) => {
   const navigate = useNavigate();
   const projects = useSelector(getProject);
   const projectsMap = Object.keys(projects).map(function (key) {
-    return projects[key];
+    return projects[parseInt(key)];
   });
 
   const onOpenProject = (project: IProject) => {

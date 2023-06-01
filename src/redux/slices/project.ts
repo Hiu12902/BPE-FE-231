@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 interface IInitialState {
-  [id: string]: IProject;
+  [id: number]: IProject;
 }
 
 const projectSlice = createSlice({
@@ -30,6 +30,9 @@ const projectSlice = createSlice({
     ) => {
       const { projectId, versionCount } = action.payload;
       state[projectId].versionsCount = versionCount;
+    },
+    updateProject: (state, action: PayloadAction<IProject>) => {
+      return { ...state, [action.payload.id]: action.payload };
     },
   },
 });

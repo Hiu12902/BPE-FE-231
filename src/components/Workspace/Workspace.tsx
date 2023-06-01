@@ -28,7 +28,7 @@ const Workspace = (workspace: IWorkspace) => {
   const dispatch = useAppDispatch();
   const projects = useSelector(getProject);
   const projectsMap = Object.keys(projects).map(function (key) {
-    return projects[key];
+    return projects[parseInt(key)];
   });
   const { name, isOpenFromEditor } = workspace;
   const [loading, setLoading] = useState(true);
