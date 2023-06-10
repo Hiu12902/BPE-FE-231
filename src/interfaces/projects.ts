@@ -8,13 +8,17 @@ export interface IFile {
   version?: string;
   documentLink?: string;
   xmlFileLink?: string;
-  projectId?: number;
+  projectId: number;
   projectName?: string;
-  onDeleteFile?: (link?: string) => void;
+  onDeleteFile?: (link?: string | number) => void;
   canDelete?: boolean;
   result?: any;
   description?: string;
   createAt?: string;
+  id?: number;
+  processId?: number;
+  num?: number;
+  processName?: string;
 }
 
 export interface IProject {
@@ -28,7 +32,7 @@ export interface IProject {
   files?: IFile[];
   onDeleteProject?: (projectId: number) => void;
   shouldGetDocuments?: boolean;
-  versionsCount?: number;
+  processesCount?: number;
 }
 
 export interface IWorkspace {

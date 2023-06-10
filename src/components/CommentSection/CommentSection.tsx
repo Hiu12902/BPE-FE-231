@@ -30,12 +30,13 @@ const CommentSection = (props: DialogProps) => {
 
   const getModelComments = async () => {
     try {
-      if (!currentModeler?.projectId) {
+      if (!currentModeler?.projectId || !currentModeler.processId) {
         return;
       }
       const comments = await projectApi.getModelsComments({
         projectID: currentModeler?.projectId?.toString() as string,
         version: currentModeler?.id,
+        processID: currentModeler?.processId,
       });
       if (comments) {
         setComments(comments);
@@ -57,11 +58,12 @@ const CommentSection = (props: DialogProps) => {
 
   const handleComment = async () => {
     try {
-      if (currentModeler) {
+      if (currentModeler && currentModeler?.processId) {
         const res = await projectApi.comment({
           projectID: currentModeler?.projectId?.toString() as string,
           version: currentModeler?.id,
           content: comment,
+          processID: currentModeler?.processId,
         });
         if (res) {
           setComments((comments) => [

@@ -1,4 +1,5 @@
 import { ACCESS_TOKEN } from '@/constants/localStorageKeys';
+import useAutoSaveModels from '@/core/hooks/useAutoSaveModels';
 import { useEffect } from 'react';
 import { Navigate, Outlet, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -7,6 +8,7 @@ const ProtectedRoute = () => {
   const [searchParam] = useSearchParams();
   const token = searchParam.get('token');
   const navigate = useNavigate();
+  useAutoSaveModels();
 
   useEffect(() => {
     if (token) {

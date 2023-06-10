@@ -3,47 +3,46 @@ import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import { IconBpeHistory, IconBpeSave, IconBpeValidate } from '@/core/toolbar/utils/icons/Icons';
 import * as selectors from '@/redux/selectors';
 import { Stack, Text } from '@mantine/core';
-import { useDebouncedState, useFavicon, useHotkeys } from '@mantine/hooks';
-import { useSelector } from 'react-redux';
+import { useHotkeys } from '@mantine/hooks';
+import { batch, useDispatch, useSelector } from 'react-redux';
 import { TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import projectApi from '@/api/project';
-import { useCallback, useEffect, useState } from 'react';
-import favIcon from '@/assets/favicon.svg';
-import favIconIndicated from '@/assets/favicon-indicated.svg';
 import useNotification from '@/hooks/useNotification';
+import { modelActions, tabsSliceActions } from '@/redux/slices';
+import { useState } from 'react';
+import HistoryImagesModal from '@/components/HistoryImagesModal';
+import generateImage from '../ImportExportGroup/utils/exportImages';
+import { dataURLtoFile } from '@/core/utils/image';
 
 const ModelGroup = () => {
+  const dispatch = useDispatch();
   const currentModeler = useSelector(selectors.getCurrentModeler);
-  const modeler = currentModeler?.modeler;
-  const xmlFileLink = `static/${currentModeler?.projectId}/${currentModeler?.id}.bpmn`;
-  const [eventBus] = useGetModelerModules(['eventBus']);
-  const [modelEditState, setModelEditState] = useState<{ [id: string]: boolean }>({});
-  const [isEditDebounced, setIsEditDebounced] = useDebouncedState(false, 10000);
-  const [isEdit, setIsEdit] = useState(false);
-  const [favicon, setFavicon] = useState(favIcon);
-  useFavicon(favicon);
   const [linting] = useGetModelerModules(['linting']);
   const lintingActive = useSelector(selectors.getLintingState);
   const notify = useNotification();
+  const [openHistoryModal, setOpenHistoryModal] = useState(false);
 
   const handleLinting = () => {
     //@ts-ignore
     linting?.toggle();
   };
 
-  const onSaveModel = useCallback(async (): Promise<void> => {
+  const onSaveModel = async () => {
     try {
-      const { xml } = await modeler?.saveXML({ format: true });
+      const formData = new FormData();
+      const { xml } = await currentModeler?.modeler?.saveXML({ format: true });
       const blob = new Blob([xml], { type: 'text/xml' });
-      const file = new File([blob], `${currentModeler?.id}.bpmn`);
-      const data = new FormData();
-      data.append('file', file);
-      data.append('xmlFileLink', xmlFileLink);
-      if (currentModeler?.projectId && currentModeler?.id) {
+      const file = new File([blob], `${currentModeler?.name}.bpmn`);
+      formData.append('file', file);
+      if (currentModeler?.projectId && currentModeler?.id && currentModeler?.processId) {
         const res = await projectApi.saveBpmnFile(
-          { projectId: currentModeler?.projectId, version: currentModeler?.id },
-          data
+          {
+            processId: currentModeler?.processId,
+            projectId: currentModeler?.projectId,
+            version: currentModeler?.id,
+          },
+          formData
         );
         if (res) {
           notify({
@@ -51,50 +50,57 @@ const ModelGroup = () => {
             message: 'Saved model successfully!',
             type: 'success',
           });
+          batch(() => {
+            dispatch(
+              tabsSliceActions.updateModelEditState({ tabId: currentModeler.id, isEdited: false })
+            );
+            dispatch(
+              modelActions.updateModelEditState({
+                modelId: currentModeler.id,
+                isEdited: false,
+              })
+            );
+          });
         }
       }
     } catch (err) {
       console.error(err);
     }
-  }, [modeler]);
+  };
 
-  // const onEditModel = useCallback(() => {
-  //   if (currentModeler) {
-  //     setModelEditState((prevState) => ({ ...prevState, [currentModeler.id]: true }));
-  //     setIsEditDebounced(true);
-  //   }
-  // }, [currentModeler]);
+  const saveImage = async () => {
+    try {
+      if (!currentModeler?.projectId || !currentModeler?.processId || !currentModeler.id) {
+        return;
+      }
+      const formData = new FormData();
+      const { svg } = await currentModeler?.modeler?.saveSVG();
+      const imageSrc = await generateImage('png', svg);
+      const imgFile = dataURLtoFile(imageSrc, `${currentModeler?.name}.png`);
+      formData.append('file', imgFile);
+      formData.append('projectID', currentModeler?.projectId.toString());
+      formData.append('version', currentModeler?.id);
+      formData.append('processID', currentModeler?.processId.toString());
 
-  // useEffect(() => {
-  //   if (isEditDebounced && currentModeler) {
-  //     // onSaveModel();
-  //     console.log(modelEditState);
-  //     setFavicon(favIconIndicated);
-  //     setModelEditState((prevState) => ({ ...prevState, [currentModeler.id]: false }));
-  //     setIsEditDebounced(false);
-  //   } else {
-  //     setFavicon(favIcon);
-  //   }
-  // }, [isEditDebounced]);
+      await projectApi.saveImage(formData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  // useEffect(() => {
-  //   if (currentModeler) {
-  //     eventBus?.on('element.changed', onEditModel);
-
-  //     return () => {
-  //       eventBus?.off('element.changed', onEditModel);
-  //     };
-  //   }
-  // }, [currentModeler]);
+  const saveModel = async () => {
+    await Promise.all([onSaveModel(), saveImage()]);
+  };
 
   useHotkeys([
     [TOOLBAR_HOTKEYS.VALIDATE, handleLinting],
-    [TOOLBAR_HOTKEYS.SAVE, () => onSaveModel()],
+    [TOOLBAR_HOTKEYS.SAVE, saveModel],
     [TOOLBAR_HOTKEYS.HISTORY, () => console.log('reserve for history')],
   ]);
 
   return (
     <Stack spacing={DEFAULT_SPACING - 2}>
+      <HistoryImagesModal opened={openHistoryModal} onClose={() => setOpenHistoryModal(false)} />
       <ToolbarIcon
         icon={IconBpeSave}
         label="Save"
@@ -102,7 +108,7 @@ const ModelGroup = () => {
         orientation="horizontal"
         size="small"
         hotkey={TOOLBAR_HOTKEYS.SAVE}
-        onClick={() => onSaveModel()}
+        onClick={saveModel}
         disabled={!currentModeler}
       />
       <ToolbarIcon
@@ -126,7 +132,8 @@ const ModelGroup = () => {
         orientation="horizontal"
         size="small"
         hotkey={TOOLBAR_HOTKEYS.HISTORY}
-        disabled
+        onClick={() => setOpenHistoryModal(true)}
+        disabled={!currentModeler}
       />
       <Text size="xs" align="center" weight="bold">
         Model

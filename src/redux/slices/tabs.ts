@@ -18,6 +18,8 @@ export interface tab {
   isCompare?: boolean;
   model?: string;
   projectID?: number;
+  processId?: number;
+  isModelEdited?: boolean;
 }
 
 interface TabsProps {
@@ -70,6 +72,14 @@ const tabsSlice = createSlice({
         tab.id === action.payload.id ? { ...action.payload } : tab
       );
       state.activeTab = action.payload;
+    },
+    updateModelEditState: (state, action: PayloadAction<{ tabId: string; isEdited: boolean }>) => {
+      const { tabId, isEdited } = action.payload;
+      const index = indexOf(
+        state.tabsRoot,
+        find(state.tabsRoot, (tab) => tab.id === tabId)
+      );
+      state.tabsRoot[index].isModelEdited = isEdited;
     },
   },
 });

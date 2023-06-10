@@ -2,6 +2,7 @@ export const PRIMARY_COLOR = {
   0: '#228BE6',
   1: '#1976D2',
   2: '#A5D8FF',
+  3: '#d0ebff',
 };
 
 export const SECONDARY_COLOR = {

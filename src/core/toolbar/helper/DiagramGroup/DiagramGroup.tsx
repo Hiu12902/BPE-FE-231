@@ -311,6 +311,7 @@ const DiagramGroup = () => {
           id: currentElement.id,
           model: currentModeler?.id,
           projectID: currentModeler?.projectId,
+          processId: currentModeler?.processId,
         })
       );
       dispatch(lintingActions.setIsLintingActive(false));
@@ -343,6 +344,7 @@ const DiagramGroup = () => {
               id: newId,
               model: currentModeler?.id,
               projectID: currentModeler?.projectId,
+              processId: currentModeler?.processId,
             })
           );
           dispatch(toolSliceActions.setToolbarMode(TOOLBAR_MODE.EVALUATING));
@@ -410,6 +412,7 @@ const DiagramGroup = () => {
             id: newId,
             isCompare: true,
             projectID: currentModeler?.projectId,
+            processId: currentModeler?.processId,
           })
         );
         dispatch(toolSliceActions.setToolbarMode(TOOLBAR_MODE.EVALUATING));

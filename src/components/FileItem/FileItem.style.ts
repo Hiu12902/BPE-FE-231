@@ -12,4 +12,14 @@ export const useFileCardStyle = createStyles((theme) => ({
       borderBottom: 'unset',
     },
   },
+
+  menu: {
+    position: 'absolute',
+    right: '8.5%',
+  },
+
+  date: {
+    position: 'absolute',
+    right: '34%',
+  },
 }));

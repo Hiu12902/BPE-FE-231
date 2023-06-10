@@ -147,15 +147,7 @@ const SimulationModesGroup = () => {
         }}
         active={stepperMode === SIMULATION_CASE_MODE.ONE_CASE}
       />
-      <ToolbarIcon
-        icon={IconBpeMultipleCase}
-        label="Multiple Cases"
-        title="Switch to Multiple Case mode"
-        orientation="horizontal"
-        size="small"
-        disabled
-      />
-      <Text size="xs" align="center" weight="bold">
+      <Text size="xs" align="center" weight="bold" mt={25}>
         Modes
       </Text>
     </Stack>

@@ -32,7 +32,7 @@ const Project = () => {
   const getBpmnVerions = async () => {
     try {
       if (projectId) {
-        const response = await projectApi.getBpmnFilesOfProject(parseInt(projectId));
+        const response = await projectApi.getProcessesByProject(parseInt(projectId));
         setBpmnVerions(() => response);
       }
     } catch (err) {
@@ -82,7 +82,7 @@ const Project = () => {
       >
         <Accordion.Item value="bpmnVersions">
           <Accordion.Control onClick={() => setOpenBpmnVersions((o) => !o)}>
-            BPMN Versions
+            Processes
           </Accordion.Control>
         </Accordion.Item>
         {openBpmnVersions && (

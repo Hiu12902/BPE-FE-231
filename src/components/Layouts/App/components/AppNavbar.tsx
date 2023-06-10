@@ -1,5 +1,5 @@
 import BackButton from '@/components/BackButton';
-import { Accordion, AccordionProps, Button, Space, createStyles } from '@mantine/core';
+import { Accordion, AccordionProps, Button, Space, Tooltip, createStyles } from '@mantine/core';
 import { ReactComponent as IconFolder } from '@tabler/icons/icons/folder.svg';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { IProject } from '@/interfaces/projects';
@@ -42,6 +42,9 @@ const useStyles = createStyles((theme) => ({
 
   buttonLabel: {
     fontSize: 14,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
 
   buttonInner: {
@@ -106,20 +109,22 @@ const AppNavbar = (props: IProps) => {
           </Accordion.Control>
           <Accordion.Panel>
             {projectsMap.map((project) => (
-              <Button
-                key={project.id}
-                variant="subtle"
-                fullWidth
-                classNames={{
-                  root: classes.project,
-                  label: classes.buttonLabel,
-                  inner: classes.buttonInner,
-                }}
-                onClick={() => onOpenProject(project)}
-                pl={40}
-              >
-                Project {project.name}
-              </Button>
+              <Tooltip label={`Project ${project.name}`} position="bottom">
+                <Button
+                  key={project.id}
+                  variant="subtle"
+                  fullWidth
+                  classNames={{
+                    root: classes.project,
+                    label: classes.buttonLabel,
+                    inner: classes.buttonInner,
+                  }}
+                  onClick={() => onOpenProject(project)}
+                  pl={40}
+                >
+                  Project {project.name}
+                </Button>
+              </Tooltip>
             ))}
           </Accordion.Panel>
         </Accordion.Item>

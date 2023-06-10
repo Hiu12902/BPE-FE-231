@@ -2,6 +2,7 @@ import { PRIMARY_COLOR } from '@/constants/theme/themeConstants';
 import {
   Accordion,
   ActionIcon,
+  Badge,
   Flex,
   Grid,
   Group,
@@ -15,7 +16,9 @@ import { ReactComponent as IconFolder } from '@tabler/icons/icons/folder.svg';
 import { ReactComponent as IconAbc } from '@tabler/icons/icons/abc.svg';
 import { ReactComponent as IconTrash } from '@tabler/icons/icons/trash.svg';
 import { ReactComponent as IconDots } from '@tabler/icons/icons/dots.svg';
-import { MouseEvent, useEffect, useRef, useState } from 'react';
+import { ReactComponent as IconChevronRight } from '@tabler/icons/icons/chevron-right.svg';
+import { ReactComponent as IconFilePlus } from '@tabler/icons/icons/file-plus.svg';
+import { MouseEvent, useRef, useState } from 'react';
 import { IFile, IProject } from '@/interfaces/projects';
 import FileItem from '@/components/FileItem';
 import projectApi from '@/api/project';
@@ -34,6 +37,7 @@ const ProjectItem = (props: IProject) => {
   const [projectNameRender, setProjectNameRender] = useState<string | undefined>(name);
   const [openShareModal, setOpenShareModal] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const processNameInputRef = useRef<HTMLInputElement>(null);
   const bpmnFilesCount = files.filter((file) => file.xmlFileLink).length;
   const [hoverOnDeleteBtn, setHoverOnDeleteBtn] = useState(false);
   const modelers = useSelector(getModelers);
@@ -47,18 +51,18 @@ const ProjectItem = (props: IProject) => {
       }
       if (shouldGetDocuments) {
         const response = await Promise.all([
-          projectApi.getBpmnFilesOfProject(id),
+          projectApi.getProcessesByProject(id),
           projectApi.getProjectDocument(id),
         ]);
         setFiles(response.flat());
         dispatch(
-          projectActions.setVersionsCount({
+          projectActions.setProcessesCount({
             projectId: id,
             versionCount: response.flat().length - 1,
           })
         );
       } else {
-        const response = await projectApi.getBpmnFilesOfProject(id);
+        const response = await projectApi.getProcessesByProject(id);
         setFiles(response);
       }
     } catch (err) {
@@ -138,6 +142,32 @@ const ProjectItem = (props: IProject) => {
     });
   };
 
+  const onOpenCreateNewProcessModal = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    openConfirmModal({
+      title: <Badge>New Process</Badge>,
+      children: <TextInput label="New Process name" ref={processNameInputRef} />,
+      labels: { confirm: 'Confirm', cancel: 'Cancel' },
+      onConfirm: handleCreateNewProcess,
+    });
+  };
+
+  const handleCreateNewProcess = async () => {
+    try {
+      if (processNameInputRef.current) {
+        const res = await projectApi.createNewProcess(
+          { projectId: id },
+          { name: processNameInputRef.current.value }
+        );
+        if (res) {
+          console.log(res);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleDeleteProject = async () => {
     try {
       if (id) {
@@ -184,8 +214,8 @@ const ProjectItem = (props: IProject) => {
                   Date Modified:
                 </Text>{' '}
                 {createAt
-                  ? new Date(createAt)?.toLocaleString()
-                  : new Date(Date.now()).toLocaleString()}
+                  ? new Date(createAt)?.toLocaleString('it-IT')
+                  : new Date(Date.now()).toLocaleString('it-IT')}
               </Text>
             </Flex>
           </Grid.Col>
@@ -204,9 +234,9 @@ const ProjectItem = (props: IProject) => {
                 <Menu.Item icon={<IconAbc />} onClick={openRenameModal}>
                   Rename
                 </Menu.Item>
-                {/* <Menu.Item icon={<IconInfo />} onClick={(e) => e.stopPropagation()}>
-                  Detail
-                </Menu.Item> */}
+                <Menu.Item icon={<IconFilePlus />} onClick={onOpenCreateNewProcessModal}>
+                  New Process
+                </Menu.Item>
                 <Tooltip
                   label="You are currently working on this project, make sure to close it before delete"
                   multiline
@@ -230,18 +260,35 @@ const ProjectItem = (props: IProject) => {
         </Grid>
       </Accordion.Control>
       <Accordion.Panel>
-        {files?.map((file) => (
-          <FileItem
-            {...file}
-            projectName={projectNameRender}
-            projectId={id}
-            canDelete={bpmnFilesCount > 1}
-            onDeleteFile={(fileLink) => {
-              const tempFiles = files.filter((file) => file.xmlFileLink !== fileLink);
-              setFiles(tempFiles);
-            }}
-          />
-        ))}
+        <Accordion
+          chevron={<IconChevronRight color="#868e96" />}
+          styles={{
+            chevron: {
+              '&[data-rotate]': {
+                transform: 'rotate(90deg)',
+              },
+            },
+            label: {
+              padding: 0,
+            },
+            control: {
+              padding: 0,
+            },
+          }}
+        >
+          {files?.map((file) => (
+            <FileItem
+              {...file}
+              projectName={projectNameRender}
+              projectId={id}
+              canDelete={bpmnFilesCount > 1}
+              onDeleteFile={(id) => {
+                const tempFiles = files.filter((file) => file.id !== id);
+                setFiles(tempFiles);
+              }}
+            />
+          ))}
+        </Accordion>
       </Accordion.Panel>
     </Accordion.Item>
   );

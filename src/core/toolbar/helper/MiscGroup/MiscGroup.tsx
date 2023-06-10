@@ -29,9 +29,9 @@ const MiscGroup = () => {
       const data = new FormData();
       data.append('file', file);
 
-      if (currentModeler?.projectId) {
+      if (currentModeler?.projectId && currentModeler?.processId) {
         const res = await projectApi.createNewVersion(
-          { projectId: currentModeler?.projectId },
+          { projectId: currentModeler?.projectId, processId: currentModeler?.processId },
           data
         );
         if (res) {
@@ -103,7 +103,7 @@ const MiscGroup = () => {
           </Menu.Target>
 
           <Menu.Dropdown>
-            <Menu.Item onClick={onCreateNewVersion} disabled={currentProject?.versionsCount! > 4}>
+            <Menu.Item onClick={onCreateNewVersion} disabled={!currentModeler}>
               Create New Version
             </Menu.Item>
             <Menu.Item onClick={() => setOpenModels(true)}>Open Models</Menu.Item>

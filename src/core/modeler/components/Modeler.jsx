@@ -1,6 +1,6 @@
 import 'bpmn-font/dist/css/bpmn-embedded.css';
 import 'bpmn-js/dist/assets/diagram-js.css';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { batch, useSelector } from 'react-redux';
 import '../BpmnModeler.css';
 
@@ -19,20 +19,23 @@ import SimulationSupportModule from 'bpmn-js-token-simulation/lib/simulation-sup
 import SimulationBehaviorModule from 'bpmn-js-token-simulation/lib/simulator/behaviors';
 
 import { baseXml } from '@/assets/baseXml';
-import { PROPERTIES_PANEL_WIDTH } from '@/constants/theme/themeConstants';
+import { PRIMARY_COLOR, PROPERTIES_PANEL_WIDTH } from '@/constants/theme/themeConstants';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
 import * as selectors from '@/redux/selectors';
 import { modelActions, tabsSliceActions, toolSliceActions } from '@/redux/slices';
 import { TabVariant } from '@/redux/slices/tabs';
 import { useAppDispatch } from '@/redux/store';
-import { Aside, Box } from '@mantine/core';
+import { Aside, Box, Loader, Text } from '@mantine/core';
 import linterConfig from '../../../../packed-config';
 import projectApi from '@/api/project';
 import useFocusElement from '@/core/hooks/useFocusElement';
+import { debounce } from 'lodash';
+import useGetModelerModules from '@/core/hooks/useGetModelerModule';
 
 const Modeler = () => {
   const dispatch = useAppDispatch();
   const currentModeler = useSelector(selectors.getCurrentModeler);
+  const modelers = useSelector(selectors.getModelers);
   const [canvas, setCanvas] = useState();
   const [rootProcess, setRootProcess] = useState();
   const toolbarMode = useSelector(selectors.selectToolbarMode);
@@ -41,6 +44,14 @@ const Modeler = () => {
   const activeTab = useSelector(selectors.getActiveTab);
   const selectedElement = useSelector(selectors.selectElementSelected);
   const focusElement = useFocusElement();
+  const allModelsNotEdited = !modelers.find((modeler) => modeler.isEdited);
+  const [showSavingText, setShowSavingText] = useState(false);
+  const [eventBus] = useGetModelerModules(['eventBus']);
+
+  const hideSavingText = useCallback(
+    debounce(() => setShowSavingText(false), 15000),
+    []
+  );
 
   const createNewModeler = () => {
     const modeler = new BpmnModeler({
@@ -75,6 +86,18 @@ const Modeler = () => {
     return modeler;
   };
 
+  const handleShowSavingText = () => {
+    setShowSavingText(true);
+    hideSavingText.cancel();
+    hideSavingText();
+  };
+
+  useEffect(() => {
+    if (!allModelsNotEdited) {
+      handleShowSavingText();
+    }
+  }, [allModelsNotEdited]);
+
   useEffect(() => {
     if (!currentModeler) {
       return;
@@ -93,6 +116,7 @@ const Modeler = () => {
             const xml = await projectApi.getBpmnFileContent({
               projectId: currentModeler?.projectId,
               version: currentModeler?.id,
+              processId: currentModeler?.processId,
             });
             await currentModeler?.modeler?.importXML(xml || baseXml);
             const canvas = currentModeler?.modeler?.get('canvas');
@@ -110,6 +134,7 @@ const Modeler = () => {
               toolMode: TOOLBAR_MODE.DEFAULT,
               id: currentModeler?.id,
               projectID: currentModeler?.projectId,
+              processId: currentModeler?.processId,
             })
           );
           dispatch(modelActions.updateCurrentModeler({ ...currentModeler, isNew: false }));
@@ -120,6 +145,13 @@ const Modeler = () => {
       dispatch(modelActions.updateCurrentModeler({ ...currentModeler, modeler: modeler }));
     }
   }, [currentModeler]);
+
+  useEffect(() => {
+    eventBus?.on('element.changed', handleShowSavingText);
+    return () => {
+      eventBus?.off('element.changed', handleShowSavingText);
+    };
+  }, [eventBus]);
 
   useEffect(() => {
     if (activeTab?.variant === TabVariant.MODEL) {
@@ -164,6 +196,26 @@ const Modeler = () => {
       >
         <Box ref={propertiesPanelRef} style={{ height: '100%' }} />
       </Aside>
+      {showSavingText && (
+        <Text
+          size="sm"
+          weight={600}
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+            backgroundColor: PRIMARY_COLOR[3],
+            color: PRIMARY_COLOR[1],
+            border: `1px solid ${PRIMARY_COLOR[1]}`,
+            zIndex: 101,
+            width: PROPERTIES_PANEL_WIDTH,
+            paddingLeft: 5,
+          }}
+        >
+          {!allModelsNotEdited && <Loader variant="dots" size="sm" mr={5} />}
+          {allModelsNotEdited ? 'All changes are saved' : 'Saving...'}
+        </Text>
+      )}
     </>
   );
 };
