@@ -9,6 +9,8 @@ export interface IModeler {
   projectId?: number;
   projectName?: string;
   name?: string;
+  processId?: number;
+  isEdited?: boolean;
 }
 
 interface ModelProps {
@@ -52,6 +54,17 @@ const modelSlice = createSlice({
       if (state.currentModeler?.id === action.payload) {
         state.currentModeler = state.modelers[index > 0 ? index - 1 : 0];
       }
+    },
+    updateModelEditState: (
+      state,
+      action: PayloadAction<{ modelId: string; isEdited: boolean }>
+    ) => {
+      const { modelId, isEdited } = action.payload;
+      const index = indexOf(
+        state.modelers,
+        find(state.modelers, (modeler) => modeler.id === modelId)
+      );
+      state.modelers[index].isEdited = isEdited;
     },
   },
 });

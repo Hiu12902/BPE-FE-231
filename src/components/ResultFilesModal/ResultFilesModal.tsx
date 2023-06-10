@@ -19,13 +19,14 @@ const ResultFilesModal = (props: ModalProps) => {
   const [files, setFiles] = useState<IResultFile[]>([]);
 
   const getResults = async () => {
-    if (!currentModeler?.projectId || !currentModeler.id) {
+    if (!currentModeler?.projectId || !currentModeler.id || !currentModeler.processId) {
       return;
     }
     try {
       const res = await projectApi.getResults({
         projectID: currentModeler.projectId,
         version: currentModeler?.id,
+        processID: currentModeler?.processId,
       });
       if (res) {
         setFiles(res);
@@ -59,7 +60,9 @@ const ResultFilesModal = (props: ModalProps) => {
       size="lg"
     >
       <Stack spacing={0}>
-        {files.length > 0 ? files.map((file) => <FileItem {...file} />) : renderNoFiles()}
+        {files.length > 0
+          ? files.map((file) => <FileItem {...file} projectId={currentModeler?.projectId || 0} />)
+          : renderNoFiles()}
       </Stack>
     </Modal>
   );

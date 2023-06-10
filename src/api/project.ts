@@ -21,27 +21,47 @@ class ProjectApi {
     return Client.post('/project', { name: projectName });
   }
 
+  public getProcessesByProject(projectId: number): Promise<any> {
+    return Client.get(`/project/${projectId}/process`);
+  }
+
   public getProjectDocument(projectId: number): Promise<any> {
     return Client.get(`/project/${projectId}/document`);
   }
 
-  public getBpmnFilesOfProject(projectId: number): Promise<any> {
-    return Client.get(`/bpmnfile/${projectId}`);
+  public getProcessVerions(payload: { projectId: number; processId: number }): Promise<any> {
+    const { projectId, processId } = payload;
+    return Client.get(`/project/${projectId}/process/${processId}/version`);
   }
 
-  public getBpmnFileContent(query: { projectId: number; version: string }): Promise<any> {
-    const { projectId, version } = query;
-    return Client.get(`/bpmnfile/${projectId}/${version}/text`);
+  public getBpmnFileContent(query: {
+    projectId: number;
+    version: string;
+    processId: number;
+  }): Promise<any> {
+    const { projectId, version, processId } = query;
+    return Client.get(`/project/${projectId}/process/${processId}/version/${version}`);
   }
 
-  public saveBpmnFile(query: { projectId: number; version: string }, body: FormData): Promise<any> {
-    const { projectId, version } = query;
-    return Client.put(`/bpmnfile/${projectId}/${version}/save`, body);
+  public autosaveBpmnFiles(body: FormData): Promise<any> {
+    return Client.put(`autosave/file`, body);
   }
 
-  public deleteBpmnFile(query: { projectId: number; version: string }): Promise<any> {
-    const { projectId, version } = query;
-    return Client.delete(`/bpmnfile/${projectId}/${version}/delete`);
+  public saveBpmnFile(
+    query: { projectId: number; version: string; processId: number },
+    body: FormData
+  ): Promise<any> {
+    const { projectId, version, processId } = query;
+    return Client.put(`/project/${projectId}/process/${processId}/version/${version}`, body);
+  }
+
+  public deleteVerion(query: {
+    projectId: number;
+    version: string;
+    processId: number;
+  }): Promise<any> {
+    const { projectId, version, processId } = query;
+    return Client.delete(`/project/${projectId}/process/${processId}/version/${version}`);
   }
 
   public renameProject(query: { projectId: number }, body: { name: string }) {
@@ -49,13 +69,16 @@ class ProjectApi {
     return Client.put(`/project/${projectId}/name`, body);
   }
 
-  public createNewVersion(query: { projectId: number }, body: FormData): Promise<any> {
-    const { projectId } = query;
-    return Client.post(`/bpmnfile/${projectId}/create`, body);
+  public createNewVersion(
+    query: { projectId: number; processId: number },
+    body: FormData
+  ): Promise<any> {
+    const { projectId, processId } = query;
+    return Client.post(`/project/${projectId}/process/${processId}/version`, body);
   }
 
   public deleteProject(projectId: number): Promise<any> {
-    return Client.delete(`/project/${projectId}/delete`);
+    return Client.delete(`/project/${projectId}`);
   }
 
   public getDocument(projectId: number): Promise<any> {
@@ -68,49 +91,88 @@ class ProjectApi {
 
   public saveDocument(query: { projectId: number }, body: FormData): Promise<any> {
     const { projectId } = query;
-    return Client.put(`/project/${projectId}/document/update`, body);
+    return Client.put(`/project/${projectId}/document/text`, body);
   }
 
   public getProjectMembers(projectId: number): Promise<any> {
     return Client.get(`/project/${projectId}/user`);
   }
 
-  public getModelsComments(query: { projectID: string; version: string }): Promise<any> {
-    return Client.get(`/bpmnfile/comment?${queryString.stringify(query)}`);
+  public getModelsComments(query: {
+    projectID: string;
+    version: string;
+    processID: number;
+  }): Promise<any> {
+    return Client.get(`/comment?${queryString.stringify(query)}`);
   }
 
-  public comment(body: { projectID: string; version: string; content: string }): Promise<any> {
-    return Client.post(`/bpmnfile/comment/add`, body);
+  public comment(body: {
+    projectID: string;
+    version: string;
+    content: string;
+    processID: number;
+  }): Promise<any> {
+    return Client.post(`/comment`, body);
   }
 
   public saveResult(body: {
-    projectID: number;
+    project_id: number;
+    process_id: number;
     version: string;
     name?: string;
     result: any;
   }): Promise<any> {
-    const { projectID } = body;
-    return Client.post(`/result/${projectID}/save`, body);
+    return Client.post(`/result/save`, body);
   }
 
   public deleteComment(body: { projectID: number; version: string; id: number }): Promise<any> {
     return Client.delete(`/bpmnfile/comment/delete`, { data: { ...body } });
   }
 
-  public renameFile(
+  public renameProcess(
     body: { name: string },
-    query: { projectId: number; version: string }
+    query: { projectId: number; processId: number }
   ): Promise<any> {
-    const { projectId, version } = query;
-    return Client.put(`/bpmnfile/${projectId}/${version}/name`, body);
+    const { projectId, processId } = query;
+    return Client.put(`/project/${projectId}/process/${processId}`, body);
   }
 
-  public getResults(query: { projectID: number; version: string }): Promise<any> {
+  public getResults(query: {
+    projectID: number;
+    version: string;
+    processID: number;
+  }): Promise<any> {
     return Client.get(`/result/all?${queryString.stringify(query)}`);
   }
 
   public shareProject(body: { user_id: number; role: UserRole }[], projectId: number) {
     return Client.post(`/project/${projectId}/user/grant`, body);
+  }
+
+  public createNewProcess(query: { projectId: number }, body: { name: string }): Promise<any> {
+    const { projectId } = query;
+    return Client.post(`/project/${projectId}/process`, body);
+  }
+
+  public deleteProcess(query: { projectId: number; processId: number }): Promise<any> {
+    const { projectId, processId } = query;
+    return Client.delete(`/project/${projectId}/process/${processId}`);
+  }
+
+  public getHistoryImages(query: {
+    projectID: number;
+    processID: number;
+    version: string;
+  }): Promise<any> {
+    return Client.get(`/image?${queryString.stringify(query)}`);
+  }
+
+  public autoSaveImages(body: FormData): Promise<any> {
+    return Client.post(`/autosave/image`, body);
+  }
+
+  public saveImage(body: FormData): Promise<any> {
+    return Client.post(`/image`, body);
   }
 }
 

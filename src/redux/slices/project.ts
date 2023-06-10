@@ -17,19 +17,12 @@ const projectSlice = createSlice({
     deleteProject: (state, action: PayloadAction<number>) => {
       delete state[action.payload];
     },
-    increaseVersionsCount: (state, action: PayloadAction<number>) => {
-      state[action.payload].versionsCount! += 1;
-    },
-    decreaseVersionsCount: (state, action: PayloadAction<number>) => {
-      const count = state[action.payload].versionsCount;
-      state[action.payload].versionsCount = count! > 0 ? count! - 1 : 0;
-    },
-    setVersionsCount: (
+    setProcessesCount: (
       state,
       action: PayloadAction<{ projectId: number; versionCount: number }>
     ) => {
       const { projectId, versionCount } = action.payload;
-      state[projectId].versionsCount = versionCount;
+      state[projectId].processesCount = versionCount;
     },
     updateProject: (state, action: PayloadAction<IProject>) => {
       return { ...state, [action.payload.id]: action.payload };

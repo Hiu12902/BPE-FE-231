@@ -1,4 +1,15 @@
-import { ActionIcon, Badge, Box, Grid, Group, Menu, Stack, Text, TextInput } from '@mantine/core';
+import {
+  Accordion,
+  ActionIcon,
+  Badge,
+  Box,
+  Grid,
+  Group,
+  Menu,
+  Stack,
+  Text,
+  TextInput,
+} from '@mantine/core';
 import { ReactComponent as IconFileText } from '@tabler/icons/icons/file-text.svg';
 import { ReactComponent as IconFile3d } from '@tabler/icons/icons/file-3d.svg';
 import { ReactComponent as IconTrash } from '@tabler/icons/icons/trash.svg';
@@ -7,6 +18,7 @@ import { ReactComponent as IconFileSymlink } from '@tabler/icons/icons/file-syml
 import { ReactComponent as IconCircleXFilled } from '@tabler/icons/icons/circle-x.svg';
 import { ReactComponent as IconAbc } from '@tabler/icons/icons/abc.svg';
 import { ReactComponent as IconFileSpreadsheet } from '@tabler/icons/icons/file-spreadsheet.svg';
+import { ReactComponent as IconHexagons } from '@tabler/icons/icons/hexagons.svg';
 import { useFileCardStyle } from './FileItem.style';
 import { IFile } from '@/interfaces/projects';
 import { PRIMARY_COLOR } from '@/constants/theme/themeConstants';
@@ -23,7 +35,7 @@ import { openConfirmModal } from '@mantine/modals';
 import { batch, useSelector } from 'react-redux';
 import { getActiveTab, getCurrentModeler, getModelers } from '@/redux/selectors';
 import useDetachModel from '@/core/hooks/useDetachModel';
-import { useState, useRef } from 'react';
+import { useState, useRef, MouseEventHandler, MouseEvent } from 'react';
 import { TabVariant } from '@/redux/slices/tabs';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
 import { randomId } from '@mantine/hooks';
@@ -36,27 +48,63 @@ const FileItem = (props: IFile) => {
     variant = 'general',
     documentLink,
     xmlFileLink,
-    size,
+    id,
     lastSaved,
     projectName,
     projectId,
     onDeleteFile,
-    canDelete,
     name,
     createAt,
     result,
+    processId,
+    num,
+    processName,
   } = props;
+  const isProcess = !xmlFileLink && !documentLink && !result;
+  const isVersion = !!xmlFileLink;
+  const isDocument = !!documentLink;
   const modelers = useSelector(getModelers);
   const currentModeler = useSelector(getCurrentModeler);
   const activeTab = useSelector(getActiveTab);
   const version = xmlFileLink?.split('/')[xmlFileLink?.split('/').length - 1].replace('.bpmn', '');
   const { classes } = useFileCardStyle();
-  const IconFile = documentLink ? IconFileText : result ? IconFileSpreadsheet : IconFile3d;
-  const isOpeningInEditor = !!modelers.find((modeler) => modeler.id === version);
+  const IconFile = isDocument
+    ? IconFileText
+    : result
+    ? IconFileSpreadsheet
+    : isVersion
+    ? IconFile3d
+    : IconHexagons;
+  const isOpeningInEditor =
+    !!modelers.find((modeler) => modeler.id === version) ||
+    !!modelers.find((modeler) => modeler.processId === id);
   const [fileNameRendered, setFileNameRendered] = useState<string | undefined>(name);
+  const [isProcessInEditor, setIsProcessInEditor] = useState(false);
+  const [versions, setVersions] = useState<IFile[]>([]);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const detach = useDetachModel();
   const notify = useNotification();
+
+  const getProcessVersions = async () => {
+    try {
+      if (versions.length > 0) {
+        return;
+      }
+      if (id) {
+        const res = await projectApi.getProcessVerions({ projectId: projectId, processId: id });
+        if (res) {
+          const versions = res.map((version: IFile) => ({
+            ...version,
+            processId: id,
+            processName: name,
+          }));
+          setVersions(versions);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const onOpenBpmnFile = () => {
     if (xmlFileLink && version) {
@@ -67,7 +115,8 @@ const FileItem = (props: IFile) => {
             id: version,
             projectId: projectId,
             projectName: projectName,
-            name: name,
+            name: `${processName}_ver_${num}`,
+            processId: processId,
           })
         );
         detach();
@@ -93,6 +142,7 @@ const FileItem = (props: IFile) => {
           id: newId,
           model: currentModeler?.id,
           projectID: currentModeler?.projectId,
+          processId: currentModeler?.processId,
         })
       );
       dispatch(toolSliceActions.setToolbarMode(TOOLBAR_MODE.EVALUATING));
@@ -101,8 +151,12 @@ const FileItem = (props: IFile) => {
 
   const onDeleteBpmnFile = async () => {
     try {
-      if (projectId && version) {
-        const res = await projectApi.deleteBpmnFile({ projectId: projectId, version: version });
+      if (projectId && version && processId) {
+        const res = await projectApi.deleteVerion({
+          projectId: projectId,
+          version: version,
+          processId: processId,
+        });
         if (res) {
           onDeleteFile?.(xmlFileLink ? xmlFileLink : documentLink);
         }
@@ -112,35 +166,55 @@ const FileItem = (props: IFile) => {
     }
   };
 
-  const openDeleteModal = () =>
+  const onDeleteProcess = async () => {
+    try {
+      if (!id) {
+        return;
+      }
+      const res = await projectApi.deleteProcess({
+        projectId: projectId,
+        processId: id,
+      });
+      if (res) {
+        onDeleteFile?.(id);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const openDeleteModal = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     openConfirmModal({
       title: 'Delete this file',
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete this file? Your action will not be able to undo.
+          Are you sure you want to delete this {isProcess ? 'process' : 'file'}? Your action will
+          not be able to undo.
         </Text>
       ),
       labels: { confirm: 'Delete', cancel: 'Cancel' },
       confirmProps: { color: 'red' },
-      onConfirm: onDeleteBpmnFile,
+      onConfirm: isProcess ? onDeleteProcess : onDeleteBpmnFile,
     });
+  };
 
   const onRenameFile = async () => {
     try {
-      if (nameInputRef.current && projectId && version) {
-        const res = await projectApi.renameFile(
+      if (nameInputRef.current && projectId && id) {
+        const res = await projectApi.renameProcess(
           { name: nameInputRef.current.value },
           {
             projectId: projectId,
-            version: version,
+            processId: id,
           }
         );
         if (res) {
           setFileNameRendered(nameInputRef.current.value);
           notify({
             title: 'Success!',
-            message: 'Rename file successfully!',
+            message: 'Rename process successfully!',
             type: 'success',
           });
         }
@@ -150,7 +224,8 @@ const FileItem = (props: IFile) => {
     }
   };
 
-  const openRenameModal = () => {
+  const openRenameModal = (e: any) => {
+    e.stopPropagation();
     openConfirmModal({
       title: 'Rename File',
       children: <TextInput placeholder="File's name" ref={nameInputRef} value={fileNameRendered} />,
@@ -170,86 +245,136 @@ const FileItem = (props: IFile) => {
     }
   };
 
-  return (
-    <Box
-      component={Stack}
-      spacing={0}
-      className={classes.container}
-      p="sm"
-      onDoubleClick={xmlFileLink ? onOpenBpmnFile : result ? onOpenResultFile : onOpenDocument}
-    >
-      <Grid>
-        <Grid.Col span={activeTab ? 4 : 5}>
-          <Group spacing={10}>
-            <IconFile height={30} width={30} strokeWidth="0.8" color={PRIMARY_COLOR[0]} />
-            <Text size="sm">
-              {documentLink
-                ? 'readme.md'
-                : result
-                ? `${fileNameRendered}.result`
-                : `${fileNameRendered}.bpmn`}
+  const renderFile = () => {
+    return (
+      <Box
+        component={Stack}
+        spacing={0}
+        className={classes.container}
+        p="sm"
+        onDoubleClick={
+          isVersion
+            ? onOpenBpmnFile
+            : result
+            ? onOpenResultFile
+            : isDocument
+            ? onOpenDocument
+            : undefined
+        }
+        onClick={isProcess ? getProcessVersions : undefined}
+      >
+        <Grid>
+          <Grid.Col span={activeTab ? 4 : 5}>
+            <Group spacing={10}>
+              <IconFile height={30} width={30} strokeWidth="0.8" color={PRIMARY_COLOR[0]} />
+              <Text size="sm">
+                {isDocument
+                  ? 'readme.md'
+                  : result
+                  ? `${fileNameRendered}.result`
+                  : isVersion
+                  ? `${processName}_ver_${num}.bpmn`
+                  : fileNameRendered}
+              </Text>
+            </Group>
+          </Grid.Col>
+          <Grid.Col span={result ? 7 : activeTab ? 5 : 3}>
+            <Text color="dimmed" size="sm" ml={77} className={classes.date}>
+              {result && 'Evaluated At: '}
+              {new Date(lastSaved || createAt || '')?.toLocaleString()}
             </Text>
-          </Group>
-        </Grid.Col>
-        {/* {variant === 'general' && (
-          <Text color="dimmed" size="sm" ml={237}>
-            {size} MB
-          </Text>
-        )} */}
-        <Grid.Col span={result ? 7 : activeTab ? 4 : 3}>
-          <Text color="dimmed" size="sm" ml={77}>
-            {result && 'Evaluated At: '}
-            {new Date(lastSaved || createAt || '')?.toLocaleString()}
-          </Text>
-        </Grid.Col>
-        {!result && (
-          <>
-            <Grid.Col span={3}>
-              {isOpeningInEditor ? (
-                <Badge color="green" radius="sm">
-                  Currently Working
-                </Badge>
-              ) : null}
-            </Grid.Col>
-            <Grid.Col span={1}>
-              {variant === 'general' && (
-                <Menu shadow="md" width={200} position="left-start">
-                  <Menu.Target>
-                    <ActionIcon variant="subtle">
-                      <IconDots />
-                    </ActionIcon>
-                  </Menu.Target>
+          </Grid.Col>
+          {!result && (
+            <>
+              <Grid.Col span={2}>
+                {isOpeningInEditor || isProcessInEditor ? (
+                  <Badge color="green" radius="sm">
+                    Editing
+                  </Badge>
+                ) : null}
+              </Grid.Col>
+              <Grid.Col span={1}>
+                {variant === 'general' && (
+                  <Menu shadow="md" width={200} position="left-start">
+                    <Menu.Target>
+                      <ActionIcon
+                        variant="subtle"
+                        className={classes.menu}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <IconDots />
+                      </ActionIcon>
+                    </Menu.Target>
 
-                  <Menu.Dropdown>
-                    <Menu.Item icon={<IconFileSymlink />} onClick={onOpenBpmnFile}>
-                      Open
-                    </Menu.Item>
-                    <Menu.Item
-                      icon={<IconCircleXFilled />}
-                      onClick={onCloseFile}
-                      disabled={!isOpeningInEditor}
-                    >
-                      Close
-                    </Menu.Item>
-                    <Menu.Item icon={<IconAbc />} onClick={openRenameModal} disabled={!xmlFileLink}>
-                      Rename
-                    </Menu.Item>
-                    <Menu.Item
-                      color="red"
-                      icon={<IconTrash />}
-                      onClick={openDeleteModal}
-                      disabled={!canDelete || isOpeningInEditor}
-                    >
-                      Delete
-                    </Menu.Item>
-                  </Menu.Dropdown>
-                </Menu>
-              )}
-            </Grid.Col>
-          </>
+                    <Menu.Dropdown>
+                      {!isProcess && (
+                        <Menu.Item
+                          icon={<IconFileSymlink />}
+                          onClick={isDocument ? onOpenDocument : onOpenBpmnFile}
+                        >
+                          Open
+                        </Menu.Item>
+                      )}
+                      {isVersion && (
+                        <Menu.Item
+                          icon={<IconCircleXFilled />}
+                          onClick={onCloseFile}
+                          disabled={!isOpeningInEditor}
+                        >
+                          Close
+                        </Menu.Item>
+                      )}
+                      {isProcess && (
+                        <Menu.Item
+                          icon={<IconAbc />}
+                          onClick={openRenameModal}
+                          disabled={!isProcess}
+                        >
+                          Rename
+                        </Menu.Item>
+                      )}
+                      <Menu.Item
+                        color="red"
+                        icon={<IconTrash />}
+                        onClick={openDeleteModal}
+                        disabled={isOpeningInEditor}
+                      >
+                        Delete
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                )}
+              </Grid.Col>
+            </>
+          )}
+        </Grid>
+      </Box>
+    );
+  };
+
+  return isProcess ? (
+    <Accordion.Item value={id?.toString() || ''}>
+      <Accordion.Control>{renderFile()}</Accordion.Control>
+      <Accordion.Panel>
+        {versions.length > 0 && (
+          <Stack spacing={0}>
+            {versions.map((version) => (
+              <FileItem
+                {...version}
+                projectId={projectId}
+                processName={fileNameRendered}
+                onDeleteFile={(link) => {
+                  const tempVersions = versions.filter((version) => version.xmlFileLink !== link);
+                  setVersions(tempVersions);
+                }}
+              />
+            ))}
+          </Stack>
         )}
-      </Grid>
-    </Box>
+      </Accordion.Panel>
+    </Accordion.Item>
+  ) : (
+    renderFile()
   );
 };
 

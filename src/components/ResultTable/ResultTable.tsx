@@ -33,15 +33,12 @@ export default function ResultTable({
   const [transparency, setTransparency] = useState<
     { view: string; numberOfExplicitTask: number; transparency: number }[]
   >([]);
-  const currentModeler = useSelector(selectors.getCurrentModeler);
   const activeTab = useSelector(selectors.getActiveTab);
 
   return !activeTab?.isCompare ? (
     <>
       <Stack>
-        <Title order={4}>
-          Evaluated Result of Diagram {currentModeler?.id.replace('mantine-', '')}
-        </Title>
+        <Title order={4}>{activeTab?.label}</Title>
         <DataTable
           withBorder
           borderRadius="sm"
