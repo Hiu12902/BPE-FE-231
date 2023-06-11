@@ -72,7 +72,7 @@ const ShareModal = (props: IShareModalProps) => {
   const handleShare = async () => {
     try {
       const payload = teammates
-        .slice(1, teammates.length - 1)
+        .slice(1, teammates.length)
         .map((user) => ({ user_id: user.id, role: UserRole.CAN_VIEW }));
       const res = await projectApi.shareProject(payload, projectId);
       if (res) {

@@ -35,7 +35,7 @@ import { openConfirmModal } from '@mantine/modals';
 import { batch, useSelector } from 'react-redux';
 import { getActiveTab, getCurrentModeler, getModelers } from '@/redux/selectors';
 import useDetachModel from '@/core/hooks/useDetachModel';
-import { useState, useRef, MouseEventHandler, MouseEvent } from 'react';
+import { useState, useRef, MouseEvent } from 'react';
 import { TabVariant } from '@/redux/slices/tabs';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
 import { randomId } from '@mantine/hooks';
@@ -367,6 +367,7 @@ const FileItem = (props: IFile) => {
                   const tempVersions = versions.filter((version) => version.xmlFileLink !== link);
                   setVersions(tempVersions);
                 }}
+                key={version.xmlFileLink}
               />
             ))}
           </Stack>

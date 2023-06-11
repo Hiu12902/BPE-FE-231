@@ -1,3 +1,4 @@
+import { UserRole } from '@/constants/project';
 import { IUser } from './user';
 
 export interface IFile {
@@ -24,7 +25,7 @@ export interface IFile {
 export interface IProject {
   disabled?: boolean;
   name?: string;
-  owner?: string;
+  owner?: IUser;
   size?: number;
   lastUpdated?: Date | string;
   createAt?: Date | string;
@@ -33,6 +34,7 @@ export interface IProject {
   onDeleteProject?: (projectId: number) => void;
   shouldGetDocuments?: boolean;
   processesCount?: number;
+  role?: UserRole;
 }
 
 export interface IWorkspace {
