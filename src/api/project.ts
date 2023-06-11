@@ -146,7 +146,7 @@ class ProjectApi {
   }
 
   public shareProject(body: { user_id: number; role: UserRole }[], projectId: number) {
-    return Client.post(`/project/${projectId}/user/grant`, body);
+    return Client.post(`/project/${projectId}/user`, body);
   }
 
   public createNewProcess(query: { projectId: number }, body: { name: string }): Promise<any> {
