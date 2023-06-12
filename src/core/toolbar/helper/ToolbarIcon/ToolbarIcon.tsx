@@ -1,8 +1,11 @@
 import { HOTKEY_MAP, TOOLBAR_HOTKEYS } from '@/core/toolbar/constants/hotkeys';
 import { Center, Group, Stack, Text, Title, Tooltip, UnstyledButton } from '@mantine/core';
 import { useOs } from '@mantine/hooks';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useToolbarIconStyle } from './ToolbarIcon.style';
+import { useSelector } from 'react-redux';
+import { getCurrentModeler } from '@/redux/selectors';
+import { UserRole } from '@/constants/project';
 
 interface IToolbarIcon {
   icon: React.FC<React.SVGProps<SVGSVGElement>>;
@@ -36,6 +39,11 @@ const ToolbarIcon = React.forwardRef<HTMLButtonElement, IToolbarIcon>(
     const { classes, cx } = useToolbarIconStyle();
     const os = useOs();
     const GroupComponent = orientation === 'horizontal' ? Group : Stack;
+    const currentModeler = useSelector(getCurrentModeler);
+    const forceDisabled =
+      currentModeler?.role === UserRole.CAN_VIEW &&
+      hotkey !== TOOLBAR_HOTKEYS.EXPORT &&
+      label !== 'Files';
 
     const TooltipLabel = () => (
       <Stack>
@@ -52,7 +60,7 @@ const ToolbarIcon = React.forwardRef<HTMLButtonElement, IToolbarIcon>(
       <Tooltip label={<TooltipLabel />} zIndex={99999} position="bottom">
         <UnstyledButton
           className={cx(classes.button, {
-            [classes.buttonDisabled]: disabled,
+            [classes.buttonDisabled]: disabled || forceDisabled,
             [classes.buttonActive]: active,
           })}
           onClick={onClick}

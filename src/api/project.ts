@@ -145,7 +145,7 @@ class ProjectApi {
     return Client.get(`/result/all?${queryString.stringify(query)}`);
   }
 
-  public shareProject(body: { user_id: number; role: UserRole }[], projectId: number) {
+  public shareProject(body: { user_id: number; role?: UserRole }[], projectId: number) {
     return Client.post(`/project/${projectId}/user`, body);
   }
 

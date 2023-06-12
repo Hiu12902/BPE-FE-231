@@ -1,7 +1,7 @@
 import { IUser, IUserInfoProps } from '@/interfaces/user';
 import { getCurrentUser } from '@/redux/selectors';
-import { Avatar, Box, Button, Group, Select, Text, createStyles } from '@mantine/core';
-import { forwardRef } from 'react';
+import { Avatar, Badge, Box, Button, Group, Select, Text, createStyles } from '@mantine/core';
+import { forwardRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ReactComponent as IconUserPlus } from '@tabler/icons/icons/user-plus.svg';
 import { UserRole } from '@/constants/project';
@@ -22,18 +22,26 @@ const UserInformation = forwardRef<HTMLDivElement, IUserInfoProps>((props: IUser
     name,
     email,
     avatar,
+    role: userRole,
     onClick,
     onAddTeammate,
     isSearching,
     isSelectingRole,
     isProfile,
+    onChangeRole,
   } = props;
+  const [role, setRole] = useState(userRole);
+
+  const onChange = (value: UserRole) => {
+    setRole(value);
+    onChangeRole?.(value);
+  };
 
   return (
     <Box className={classes.user} ref={ref} onClick={onClick}>
       <Group position="apart">
         <Group>
-          <Avatar src={avatar || currentUser.avatar} radius="xl" />
+          <Avatar src={!isProfile ? avatar : currentUser.avatar} radius="xl" />
 
           <div style={{ flex: 1 }}>
             <Text size="sm" weight={500}>
@@ -56,12 +64,12 @@ const UserInformation = forwardRef<HTMLDivElement, IUserInfoProps>((props: IUser
             </Button>
           ) : (
             isSelectingRole && (
-              <Select
+              userRole === UserRole.OWNER ? <Badge>Owner</Badge> : <Select
                 data={[
                   //@ts-ignore
-                  // { value: UserRole.CAN_EDIT, label: 'Editor' },
+                  { value: UserRole.CAN_EDIT, label: 'Editor' },
                   //@ts-ignore
-                  // { value: UserRole.CAN_SHARE, label: 'Sharer' },
+                  { value: UserRole.CAN_SHARE, label: 'Sharer' },
                   //@ts-ignore
                   { value: UserRole.CAN_VIEW, label: 'Viewer' },
                   //@ts-ignore
@@ -72,7 +80,9 @@ const UserInformation = forwardRef<HTMLDivElement, IUserInfoProps>((props: IUser
                 w={100}
                 dropdownPosition="bottom"
                 //@ts-ignore
-                defaultValue={UserRole.CAN_VIEW}
+                value={role}
+                //@ts-ignore
+                onChange={onChange}
               />
             )
           ))}

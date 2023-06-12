@@ -46,7 +46,8 @@ class Client {
   private _initializeRequestInterceptor = () => {
     this.axiosInstance.interceptors.request.use((config) => {
       if (typeof window !== 'undefined') {
-        const accessToken = localStorage.getItem(ACCESS_TOKEN);
+        const accessToken =
+          localStorage.getItem(ACCESS_TOKEN) || localStorage.getItem('resetToken');
 
         if (accessToken && config.headers) {
           config.headers.Authorization = `Bearer ${JSON.parse(accessToken)}`;

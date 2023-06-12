@@ -192,6 +192,7 @@ const BpeBpmnModeler = () => {
                   id: modeler?.id,
                   projectID: modeler?.projectId,
                   processId: modeler?.processId,
+                  role: modeler?.role,
                 })
               );
             });
@@ -246,6 +247,7 @@ const BpeBpmnModeler = () => {
           projectName: modeler.projectName,
           name: modeler.name,
           processId: modeler.processId,
+          role: modeler.role,
         }))
       );
       localStorage.currentOpenedModeler = currentModeler?.id;

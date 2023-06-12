@@ -1,3 +1,4 @@
+import { UserRole } from '@/constants/project';
 import { MouseEventHandler } from 'react';
 
 export interface IUser {
@@ -5,6 +6,7 @@ export interface IUser {
   email: string;
   name: string;
   avatar?: string;
+  role?: UserRole;
 }
 
 export interface IUserSignup {
@@ -25,4 +27,5 @@ export interface IUserInfoProps extends Partial<IUser> {
   isSearching?: boolean;
   isSelectingRole?: boolean;
   isProfile?: boolean;
+  onChangeRole?: (role: UserRole) => void;
 }

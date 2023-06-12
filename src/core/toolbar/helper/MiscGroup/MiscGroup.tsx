@@ -10,6 +10,7 @@ import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import projectApi from '@/api/project';
 import Workspace from '@/components/Workspace';
 import useNotification from '@/hooks/useNotification';
+import { UserRole } from '@/constants/project';
 
 const MiscGroup = () => {
   const [openCommentSection, setOpenCommentSection] = useState(false);
@@ -103,7 +104,10 @@ const MiscGroup = () => {
           </Menu.Target>
 
           <Menu.Dropdown>
-            <Menu.Item onClick={onCreateNewVersion} disabled={!currentModeler}>
+            <Menu.Item
+              onClick={onCreateNewVersion}
+              disabled={!currentModeler || currentModeler.role === UserRole.CAN_VIEW}
+            >
               Create New Version
             </Menu.Item>
             <Menu.Item onClick={() => setOpenModels(true)}>Open Models</Menu.Item>

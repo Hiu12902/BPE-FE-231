@@ -3,15 +3,12 @@ import {
   Paper,
   Title,
   Text,
-  TextInput,
-  Button,
   Container,
-  Group,
   rem,
-  PasswordInput,
-  Stack,
 } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import ChangePasswordForm from '../ChangePasswordForm/ChangePasswordForm';
 
 const useStyles = createStyles((theme) => ({
   title: {
@@ -37,6 +34,24 @@ const useStyles = createStyles((theme) => ({
 const ResetPassword = () => {
   const { classes } = useStyles();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const token = params.get('token');
+  const firstload = useRef(true);
+
+  useEffect(() => {
+    if (firstload.current) {
+      firstload.current = false;
+    }
+  }, [firstload.current]);
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem('resetToken', JSON.stringify(token));
+    } else if (!firstload.current) {
+      navigate('/login');
+    }
+  }, [token]);
+
   return (
     <Container size={460} my={30}>
       <Title className={classes.title} align="center" color="white">
@@ -47,25 +62,7 @@ const ResetPassword = () => {
       </Text>
 
       <Paper withBorder shadow="md" p={30} radius="md" mt="xl" w={460}>
-        <Stack>
-          <PasswordInput
-            required
-            label="New Password"
-            placeholder="Your new password"
-            radius="md"
-          />
-          <PasswordInput
-            required
-            label="Confirm Password"
-            placeholder="Confirm new password"
-            radius="md"
-          />
-        </Stack>
-        <Group position="apart" mt="lg" className={classes.controls}>
-          <Button className={classes.control} fullWidth>
-            Reset password
-          </Button>
-        </Group>
+        <ChangePasswordForm hideCancelButton />
       </Paper>
     </Container>
   );

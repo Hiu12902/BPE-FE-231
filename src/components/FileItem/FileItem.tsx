@@ -40,6 +40,7 @@ import { TabVariant } from '@/redux/slices/tabs';
 import { TOOLBAR_MODE } from '@/constants/toolbar';
 import { randomId } from '@mantine/hooks';
 import useNotification from '@/hooks/useNotification';
+import { UserRole } from '@/constants/project';
 
 const FileItem = (props: IFile) => {
   const dispatch = useAppDispatch();
@@ -59,6 +60,7 @@ const FileItem = (props: IFile) => {
     processId,
     num,
     processName,
+    role,
   } = props;
   const isProcess = !xmlFileLink && !documentLink && !result;
   const isVersion = !!xmlFileLink;
@@ -117,6 +119,7 @@ const FileItem = (props: IFile) => {
             projectName: projectName,
             name: `${processName}_ver_${num}`,
             processId: processId,
+            role: role,
           })
         );
         detach();
@@ -328,7 +331,7 @@ const FileItem = (props: IFile) => {
                         <Menu.Item
                           icon={<IconAbc />}
                           onClick={openRenameModal}
-                          disabled={!isProcess}
+                          disabled={!isProcess || role !== UserRole.OWNER}
                         >
                           Rename
                         </Menu.Item>
@@ -337,7 +340,7 @@ const FileItem = (props: IFile) => {
                         color="red"
                         icon={<IconTrash />}
                         onClick={openDeleteModal}
-                        disabled={isOpeningInEditor}
+                        disabled={isOpeningInEditor || role !== UserRole.OWNER}
                       >
                         Delete
                       </Menu.Item>
@@ -361,6 +364,7 @@ const FileItem = (props: IFile) => {
             {versions.map((version) => (
               <FileItem
                 {...version}
+                role={role}
                 projectId={projectId}
                 processName={fileNameRendered}
                 onDeleteFile={(link) => {

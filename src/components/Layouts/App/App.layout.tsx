@@ -30,6 +30,9 @@ const AppLayout = () => {
     if (!currentUser.email) {
       getUser();
     }
+    if (!!localStorage.getItem('resetToken')) {
+      localStorage.removeItem('resetToken');
+    }
   }, [currentUser]);
 
   return (
