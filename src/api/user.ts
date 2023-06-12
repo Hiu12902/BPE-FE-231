@@ -31,6 +31,14 @@ class UserApi {
   public searchUsers(searchQuery: string): Promise<any> {
     return Client.get(`/user/search?s=${searchQuery}`);
   }
+
+  public changePassword(newPassword: string): Promise<any> {
+    return Client.put(`/user/password`, { newPassword: newPassword });
+  }
+
+  public resetPassword(email: string): Promise<any> {
+    return Client.post(`/user/reset`, { email: email });
+  }
 }
 
 export default UserApi.instance;

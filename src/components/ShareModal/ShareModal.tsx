@@ -62,9 +62,9 @@ const ShareModal = (props: IShareModalProps) => {
 
   const handleAddTeammate = (user: IUser) => {
     if (teammates.length < 1) {
-      setTeammates(() => [currentUser as IUser, user]);
+      setTeammates(() => [currentUser as IUser, { ...user, role: UserRole.CAN_VIEW }]);
     } else {
-      setTeammates((team) => [...team, user]);
+      setTeammates((team) => [...team, { ...user, role: UserRole.CAN_VIEW }]);
     }
     setPopoverOpened(false);
   };
@@ -72,8 +72,8 @@ const ShareModal = (props: IShareModalProps) => {
   const handleShare = async () => {
     try {
       const payload = teammates
-        .slice(1, teammates.length)
-        .map((user) => ({ user_id: user.id, role: UserRole.CAN_VIEW }));
+        .filter((user) => user.email !== currentUser?.email)
+        .map((user) => ({ user_id: user.id, role: user.role }));
       const res = await projectApi.shareProject(payload, projectId);
       if (res) {
         notify({
@@ -89,6 +89,17 @@ const ShareModal = (props: IShareModalProps) => {
         message: 'Share project failed!',
         type: 'error',
       });
+    }
+  };
+
+  const getMembers = async () => {
+    try {
+      const res = await projectApi.getProjectMembers(projectId);
+      if (res) {
+        setTeammates(res);
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -114,6 +125,12 @@ const ShareModal = (props: IShareModalProps) => {
     setTeammates([]);
     onClose?.();
   };
+
+  useEffect(() => {
+    if (opened) {
+      getMembers();
+    }
+  }, [projectId, opened]);
 
   return (
     <Modal
@@ -141,11 +158,14 @@ const ShareModal = (props: IShareModalProps) => {
         <Popover.Dropdown>
           {searchResult.length > 0 ? (
             searchResult.map((user) => (
-              <UserInformation
-                {...user}
-                onAddTeammate={handleAddTeammate}
-                isSearching={!teammates.find((teammate) => teammate.id === user.id)}
-              />
+              <>
+                <UserInformation
+                  {...user}
+                  onAddTeammate={handleAddTeammate}
+                  isSearching={!teammates.find((teammate) => teammate.id === user.id)}
+                />
+                <Divider my="xs" />
+              </>
             ))
           ) : (
             <Center>
@@ -167,6 +187,12 @@ const ShareModal = (props: IShareModalProps) => {
                 {...user}
                 onAddTeammate={handleAddTeammate}
                 isSelectingRole={user.id !== currentUser.id}
+                onChangeRole={(role: UserRole) => {
+                  const tempTeammates = teammates.map((teammate) => {
+                    return teammate.id === user.id ? { ...teammate, role: role } : teammate;
+                  });
+                  setTeammates(tempTeammates);
+                }}
               />
             ))
           : renderNoSharedUsers()}

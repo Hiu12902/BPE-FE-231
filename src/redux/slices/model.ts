@@ -1,3 +1,4 @@
+import { UserRole } from '@/constants/project';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 import { find, indexOf, remove } from 'lodash';
@@ -11,6 +12,7 @@ export interface IModeler {
   name?: string;
   processId?: number;
   isEdited?: boolean;
+  role?: UserRole;
 }
 
 interface ModelProps {

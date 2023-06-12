@@ -1,19 +1,6 @@
 import UserInformation from '@/components/UserInformation/UserInformation';
 import { getCurrentUser } from '@/redux/selectors';
-import {
-  ActionIcon,
-  Avatar,
-  Badge,
-  Button,
-  Center,
-  Container,
-  Flex,
-  Grid,
-  Group,
-  Menu,
-  Stack,
-  Tabs,
-} from '@mantine/core';
+import { ActionIcon, Avatar, Badge, Container, Group, Menu, Tabs } from '@mantine/core';
 import { useSelector } from 'react-redux';
 import { ReactComponent as IconSignOut } from '@tabler/icons/icons/logout.svg';
 import { ACCESS_TOKEN } from '@/constants/localStorageKeys';
@@ -30,36 +17,16 @@ const AppHeader = () => {
 
   const renderUserInfoModal = () => {
     return (
-      <Grid>
-        <Grid.Col span={3}>
-          <Flex h="100%" align="center" justify="center" direction="column">
-            <Stack>
-              <Center>
-                <Avatar src={currentUser.avatar} radius="xl" size="xl" />
-              </Center>
-              <Button variant="subtle">Change avatar</Button>
-            </Stack>
-          </Flex>
-        </Grid.Col>
-        <Grid.Col span={9}>
-          <Tabs defaultValue="basic">
-            <Tabs.List>
-              <Tabs.Tab value="basic">Basics</Tabs.Tab>
-              <Tabs.Tab value="change-password">Change Password</Tabs.Tab>
-            </Tabs.List>
-            <Tabs.Panel value="basic">
-              <Container size="xl" p={20}>
-                Name: {currentUser.name}
-              </Container>
-            </Tabs.Panel>
-            <Tabs.Panel value="change-password">
-              <Container size="xl" p={20}>
-                <ChangePasswordForm />
-              </Container>
-            </Tabs.Panel>
-          </Tabs>
-        </Grid.Col>
-      </Grid>
+      <Tabs defaultValue="change-password">
+        <Tabs.List>
+          <Tabs.Tab value="change-password">Change Password</Tabs.Tab>
+        </Tabs.List>
+        <Tabs.Panel value="change-password">
+          <Container size="xl" p={20}>
+            <ChangePasswordForm />
+          </Container>
+        </Tabs.Panel>
+      </Tabs>
     );
   };
 

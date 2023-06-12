@@ -20,6 +20,7 @@ export interface IFile {
   processId?: number;
   num?: number;
   processName?: string;
+  role?: UserRole;
 }
 
 export interface IProject {
