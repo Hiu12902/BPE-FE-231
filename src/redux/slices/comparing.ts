@@ -11,10 +11,11 @@ export interface CompareResult {
     pl: number;
     view: string;
   }[];
+  name: string;
 }
 
 interface ComparingProps {
-  compareResult: CompareResult;
+  compareResult: CompareResult[];
   toCompareDiagram: string;
   diagramComparedTo: string;
 }
@@ -26,7 +27,7 @@ const comparingSlice = createSlice({
   } as ComparingProps,
 
   reducers: {
-    setCompareResult: (state, action: PayloadAction<CompareResult>) => {
+    setCompareResult: (state, action: PayloadAction<CompareResult[]>) => {
       state.compareResult = action.payload;
     },
     setDiagrams: (

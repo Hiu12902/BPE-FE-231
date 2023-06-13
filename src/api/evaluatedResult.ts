@@ -17,7 +17,7 @@ class EvaluatedResultApi {
     return Client.post(`/evaluate`, evalutePayload);
   }
 
-  public compare(comparePayload: string): Promise<CompareResult> {
+  public compare(comparePayload: string): Promise<CompareResult[]> {
     return Client.post(`/evaluate/compare`, comparePayload);
   }
 
