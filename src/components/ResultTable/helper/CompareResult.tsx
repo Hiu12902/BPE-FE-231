@@ -4,6 +4,7 @@ import {
   getComparingResult,
   getDiagramsComparing,
   getEvaluatedResult,
+  getModelers,
 } from '@/redux/selectors';
 import { CompareResult } from '@/redux/slices/comparing';
 import {
@@ -56,6 +57,9 @@ const CompareResultComponent = () => {
   const activeTab = useSelector(getActiveTab);
   const evaluatedResult = useSelector(getEvaluatedResult)[activeTab?.id as string];
   const { toComparedDiagram, diagramComparedTo } = useSelector(getDiagramsComparing);
+  const modelers = useSelector(getModelers);
+  const toComparedDiagramName = modelers.find((modeler) => modeler.id === toComparedDiagram)?.name;
+  const diagramComparedToName = modelers.find((modeler) => modeler.id === diagramComparedTo)?.name;
   const compareResultKeys = keys(compareResult);
 
   const getEvaluatedResultField = (idx: number, key: keyof CompareResult) => {
@@ -174,7 +178,7 @@ const CompareResultComponent = () => {
   return (
     <div className={classes.root}>
       <Title order={4}>
-        Diagram {toComparedDiagram} comparing to Diagram {diagramComparedTo}
+        Diagram {toComparedDiagramName} comparing to Diagram {diagramComparedToName}
       </Title>
       <Space h="lg" />
       <SimpleGrid cols={3} breakpoints={[{ maxWidth: 'sm', cols: 1 }]}>

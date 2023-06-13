@@ -375,6 +375,7 @@ const FileItem = (props: IFile) => {
                   setVersions(tempVersions);
                 }}
                 key={version.xmlFileLink}
+                projectName={projectName}
               />
             ))}
           </Stack>
