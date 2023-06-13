@@ -39,7 +39,7 @@ const Workspace = (workspace: IWorkspace) => {
       const projects = await projectApi.getAllProjects();
       if (projects) {
         console.log(projects);
-        
+
         batch(() => {
           projects.map((project: IProject) => dispatch(projectActions.setProject(project)));
         });
@@ -116,6 +116,7 @@ const Workspace = (workspace: IWorkspace) => {
               key={project.id}
               onDeleteProject={onDeleteProject}
               shouldGetDocuments={!isOpenFromEditor}
+              showExtraInfo={!isOpenFromEditor}
             />
           ))}
         </Accordion>

@@ -45,6 +45,15 @@ const MiscGroup = () => {
       }
     } catch (err) {
       console.error(err);
+      //@ts-ignore
+      if (err.data === 'current number of versions is equal to 5') {
+        notify({
+          title: 'Opps!',
+          message:
+            'The number of versions has reached limit, please delete other versions and try again!',
+          type: 'error',
+        });
+      }
     }
   };
 
