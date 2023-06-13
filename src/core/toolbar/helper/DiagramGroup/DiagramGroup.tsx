@@ -366,14 +366,17 @@ const DiagramGroup = () => {
         })
       );
       const flattenResult = flatten(results);
-      const payload = flattenResult.map((result) => ({
-        cycleTime: result.totalCycleTime,
-        cost: result.totalCost,
-        transparency: result.transparency,
-        flexibility: result.flexibility,
-        exceptionHandling: result.exceptionHandling,
-        quality: result.quality,
-      }));
+      const payload = results.map((process) =>
+        process.map((res) => ({
+          cycleTime: res.totalCycleTime,
+          cost: res.totalCost,
+          transparency: res.transparency,
+          flexibility: res.flexibility,
+          exceptionHandling: res.exceptionHandling,
+          quality: res.quality,
+          name: res.name,
+        }))
+      );
       const res = await evaluatedResultApi.compare(buildComparePayload(payload));
       const newId = randomId();
       batch(() => {
