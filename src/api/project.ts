@@ -116,13 +116,13 @@ class ProjectApi {
   }
 
   public saveResult(body: {
-    project_id: number;
-    process_id: number;
+    projectID: number;
+    processID: number;
     version: string;
     name?: string;
     result: any;
   }): Promise<any> {
-    return Client.post(`/result/save`, body);
+    return Client.post(`/result`, body);
   }
 
   public deleteComment(body: { projectID: number; version: string; id: number }): Promise<any> {

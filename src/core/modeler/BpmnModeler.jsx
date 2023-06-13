@@ -332,48 +332,48 @@ const BpeBpmnModeler = () => {
                 <Tabs.List className={classes.tabs} ref={tabsListRef}>
                   {tabs.map((tab) => {
                     return (
-                      <Indicator
-                        color="red"
-                        offset={10}
-                        withBorder
-                        size={15}
-                        disabled={!tab.isModelEdited}
+                      <Tabs.Tab
+                        disabled={
+                          toolbarMode === TOOLBAR_MODE.SIMULATING && tab.id !== activeTab?.id
+                        }
+                        value={tab.id}
+                        rightSection={
+                          !(tab.variant === TabVariant.MODEL && modelers.length < 2) && (
+                            <ActionIcon
+                              disabled={toolbarMode === TOOLBAR_MODE.SIMULATING}
+                              variant="subtle"
+                              radius={50}
+                              className={classes.closeIcon}
+                              p={0}
+                            >
+                              <IconBpeCancel
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  dispatch(tabsSliceActions.closeTab(tab.id));
+                                  if (activeTab?.id === tab.id) {
+                                    detach();
+                                  }
+                                  if (tab.variant === TabVariant.MODEL) {
+                                    dispatch(modelActions.deleteModeler(tab.id));
+                                  }
+                                }}
+                                opacity={toolbarMode === TOOLBAR_MODE.SIMULATING ? 0.5 : 1}
+                              />
+                            </ActionIcon>
+                          )
+                        }
+                        className={classes.tab}
                       >
-                        <Tabs.Tab
-                          disabled={
-                            toolbarMode === TOOLBAR_MODE.SIMULATING && tab.id !== activeTab?.id
-                          }
-                          value={tab.id}
-                          rightSection={
-                            !(tab.variant === TabVariant.MODEL && modelers.length < 2) && (
-                              <ActionIcon
-                                disabled={toolbarMode === TOOLBAR_MODE.SIMULATING}
-                                variant="subtle"
-                                radius={50}
-                                className={classes.closeIcon}
-                                p={0}
-                              >
-                                <IconBpeCancel
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    dispatch(tabsSliceActions.closeTab(tab.id));
-                                    if (activeTab?.id === tab.id) {
-                                      detach();
-                                    }
-                                    if (tab.variant === TabVariant.MODEL) {
-                                      dispatch(modelActions.deleteModeler(tab.id));
-                                    }
-                                  }}
-                                  opacity={toolbarMode === TOOLBAR_MODE.SIMULATING ? 0.5 : 1}
-                                />
-                              </ActionIcon>
-                            )
-                          }
-                          className={classes.tab}
+                        <Indicator
+                          color="red"
+                          offset={-3}
+                          withBorder
+                          size={15}
+                          disabled={!tab.isModelEdited}
                         >
                           {tab.label}
-                        </Tabs.Tab>
-                      </Indicator>
+                        </Indicator>
+                      </Tabs.Tab>
                     );
                   })}
                 </Tabs.List>

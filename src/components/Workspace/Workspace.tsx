@@ -38,8 +38,6 @@ const Workspace = (workspace: IWorkspace) => {
     try {
       const projects = await projectApi.getAllProjects();
       if (projects) {
-        console.log(projects);
-
         batch(() => {
           projects.map((project: IProject) => dispatch(projectActions.setProject(project)));
         });

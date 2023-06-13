@@ -2,7 +2,7 @@ import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import { IconBpeExportLarge, IconBpeSaveLarge } from '@/core/toolbar/utils/icons/Icons';
 import { Group, Stack, TextInput } from '@mantine/core';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
-import { CSSProperties, useEffect, useRef, useState } from 'react';
+import { CSSProperties, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getActiveTab, getEvaluatedResult } from '@/redux/selectors';
 import { openConfirmModal } from '@mantine/modals';
@@ -12,15 +12,13 @@ import useNotification from '@/hooks/useNotification';
 const EvaluationFunctionGroup = ({ style }: { style?: CSSProperties }) => {
   const activeTab = useSelector(getActiveTab);
   const evaluatedResult = useSelector(getEvaluatedResult)[activeTab?.id as string];
-  const [fileName, setFileName] = useState('');
+  const fileNameRef = useRef<HTMLInputElement>(null);
   const downloadLinkRef = useRef<HTMLAnchorElement>(null);
   const notify = useNotification();
 
   const handleSaveResult = async () => {
     try {
-      if (fileName === '') {
-        console.log(fileName);
-
+      if (!fileNameRef.current?.value) {
         notify({
           title: 'Error!',
           message: 'Please enter a valid file name!',
@@ -35,12 +33,20 @@ const EvaluationFunctionGroup = ({ style }: { style?: CSSProperties }) => {
         activeTab.model &&
         activeTab?.processId
       ) {
-        const res = await projectApi.saveResult({
-          project_id: activeTab?.projectID,
+        console.log({
+          projectID: activeTab?.projectID,
           version: activeTab?.model,
-          name: fileName,
+          name: fileNameRef.current.value,
           result: evaluatedResult,
-          process_id: activeTab?.processId,
+          processID: activeTab?.processId,
+        });
+
+        const res = await projectApi.saveResult({
+          projectID: activeTab?.projectID,
+          version: activeTab?.model,
+          name: fileNameRef.current.value,
+          result: evaluatedResult,
+          processID: activeTab?.processId,
         });
         if (res) {
           notify({
@@ -58,13 +64,7 @@ const EvaluationFunctionGroup = ({ style }: { style?: CSSProperties }) => {
   const openSaveResultModal = () => {
     openConfirmModal({
       title: 'Save Result',
-      children: (
-        <TextInput
-          placeholder="Name your result file"
-          onChange={(e) => setFileName(e.target.value)}
-          value={fileName}
-        />
-      ),
+      children: <TextInput placeholder="Name your result file" ref={fileNameRef} />,
       labels: { confirm: 'Confirm', cancel: 'Cancel' },
       onConfirm: handleSaveResult,
     });
