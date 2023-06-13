@@ -109,7 +109,6 @@ const DiagramGroup = () => {
   const [showAffix, setShowAffix] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [compareModels, setCompareModels] = useState<IModeler[]>([]);
-  const [warningDifferentProject, setWarningDifferentProject] = useState(false);
   const nextStep = () => setActiveStep((current) => (current < 2 ? current + 1 : current));
   const prevStep = () => setActiveStep((current) => (current > 0 ? current - 1 : current));
   const [toggleMode, eventBus, linting] = useGetModelerModules([
@@ -154,14 +153,6 @@ const DiagramGroup = () => {
   useEffect(() => {
     setIsInputValid(() => !checkUserInput());
   }, [userInputForm.values]);
-
-  useEffect(() => {
-    if (compareModels.length > 1 && compareModels[0].projectId !== compareModels[1].projectId) {
-      setWarningDifferentProject(true);
-    } else {
-      setWarningDifferentProject(false);
-    }
-  }, [compareModels]);
 
   const renderInputModal = () => {
     return (
@@ -212,17 +203,6 @@ const DiagramGroup = () => {
                   }}
                 />
               ))}
-              <Transition transition="fade" mounted={warningDifferentProject}>
-                {(transitionStyles) => (
-                  <Alert
-                    style={{ ...transitionStyles, borderLeft: `5px solid yellow` }}
-                    color="yellow"
-                  >
-                    Warning: We don't recommend selecting models from different projects since the
-                    compare results may not be accurate!
-                  </Alert>
-                )}
-              </Transition>
             </SimpleGrid>
           </Stepper.Step>
           <Stepper.Step label="Input performance level" description="Input your desired values">
@@ -372,6 +352,8 @@ const DiagramGroup = () => {
     };
     obj['as_is'] = payload[0];
     obj['to_be'] = payload[1];
+
+    console.log(obj);
 
     return obj;
   };
