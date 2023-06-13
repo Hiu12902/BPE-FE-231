@@ -10,7 +10,7 @@ import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
 import projectApi from '@/api/project';
 import useNotification from '@/hooks/useNotification';
 import { modelActions, tabsSliceActions } from '@/redux/slices';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import HistoryImagesModal from '@/components/HistoryImagesModal';
 import generateImage from '../ImportExportGroup/utils/exportImages';
 import { dataURLtoFile } from '@/core/utils/image';
@@ -22,11 +22,17 @@ const ModelGroup = () => {
   const lintingActive = useSelector(selectors.getLintingState);
   const notify = useNotification();
   const [openHistoryModal, setOpenHistoryModal] = useState(false);
+  const activeTab = useSelector(selectors.getActiveTab);
 
   const handleLinting = () => {
-    //@ts-ignore
     linting?.toggle();
   };
+
+  useEffect(() => {
+    if (linting?.isActive()) {
+      linting?.toggle();
+    }
+  }, [activeTab]);
 
   const onSaveModel = async () => {
     try {
