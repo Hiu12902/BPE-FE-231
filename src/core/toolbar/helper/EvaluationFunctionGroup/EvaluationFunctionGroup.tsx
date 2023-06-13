@@ -2,17 +2,17 @@ import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
 import { IconBpeExportLarge, IconBpeSaveLarge } from '@/core/toolbar/utils/icons/Icons';
 import { Group, Stack, TextInput } from '@mantine/core';
 import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
-import { CSSProperties, useRef, useState } from 'react';
+import { CSSProperties, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { getActiveTab, getComparingResult, getEvaluatedResult } from '@/redux/selectors';
+import { getActiveTab, getEvaluatedResult } from '@/redux/selectors';
 import { openConfirmModal } from '@mantine/modals';
 import projectApi from '@/api/project';
 import useNotification from '@/hooks/useNotification';
+import { TabVariant } from '@/redux/slices/tabs';
 
 const EvaluationFunctionGroup = ({ style }: { style?: CSSProperties }) => {
   const activeTab = useSelector(getActiveTab);
   const evaluatedResult = useSelector(getEvaluatedResult)[activeTab?.id as string];
-  const compareResult = useSelector(getComparingResult);
   const fileNameRef = useRef<HTMLInputElement>(null);
   const downloadLinkRef = useRef<HTMLAnchorElement>(null);
   const notify = useNotification();
@@ -90,7 +90,7 @@ const EvaluationFunctionGroup = ({ style }: { style?: CSSProperties }) => {
           orientation="vertical"
           size="large"
           onClick={openSaveResultModal}
-          disabled={!!compareResult}
+          disabled={activeTab?.isCompare}
         />
         <ToolbarIcon
           icon={IconBpeExportLarge}
@@ -99,7 +99,7 @@ const EvaluationFunctionGroup = ({ style }: { style?: CSSProperties }) => {
           orientation="vertical"
           size="large"
           onClick={() => downloadLinkRef.current?.click()}
-          disabled={!!compareResult}
+          disabled={activeTab?.isCompare}
         />
         <a ref={downloadLinkRef} download onClick={() => encodeResult()} />
       </Group>
