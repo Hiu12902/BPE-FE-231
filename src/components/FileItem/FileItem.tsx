@@ -3,6 +3,7 @@ import {
   ActionIcon,
   Badge,
   Box,
+  Flex,
   Grid,
   Group,
   Menu,
@@ -282,10 +283,12 @@ const FileItem = (props: IFile) => {
             </Group>
           </Grid.Col>
           <Grid.Col span={result ? 7 : activeTab ? 5 : 3}>
-            <Text color="dimmed" size="sm" ml={77} className={classes.date}>
-              {result && 'Evaluated At: '}
-              {new Date(lastSaved || createAt || '')?.toLocaleString()}
-            </Text>
+            <Flex align="center" h="100%">
+              <Text color="dimmed" size="sm" ml={77} className={classes.date}>
+                {result && 'Evaluated At: '}
+                {new Date(lastSaved || createAt || '')?.toLocaleString()}
+              </Text>
+            </Flex>
           </Grid.Col>
           {!result && (
             <>
