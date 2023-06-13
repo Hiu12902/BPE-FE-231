@@ -35,7 +35,8 @@ import UserInformation from '../UserInformation/UserInformation';
 
 const ProjectItem = (props: IProject) => {
   const dispatch = useAppDispatch();
-  const { name, id, createAt, onDeleteProject, shouldGetDocuments, owner, role } = props;
+  const { name, id, createAt, onDeleteProject, shouldGetDocuments, owner, role, showExtraInfo } =
+    props;
   const [files, setFiles] = useState<IFile[]>([]);
   const [projectNameRender, setProjectNameRender] = useState<string | undefined>(name);
   const [openShareModal, setOpenShareModal] = useState(false);
@@ -46,6 +47,7 @@ const ProjectItem = (props: IProject) => {
   const modelers = useSelector(getModelers);
   const isOpeningInEditor = !!modelers.find((modeler) => modeler.projectId === id);
   const notify = useNotification();
+  const shouldShowExtraInfo = showExtraInfo && role !== UserRole.OWNER && role;
 
   const getProjectFiles = async () => {
     try {
@@ -205,13 +207,13 @@ const ProjectItem = (props: IProject) => {
             onClose={() => setOpenShareModal(false)}
             projectId={id}
           />
-          <Grid.Col span={role !== UserRole.OWNER ? 3 : 5}>
+          <Grid.Col span={shouldShowExtraInfo ? 3 : 5}>
             <Group>
               <IconFolder width={30} height={30} color={PRIMARY_COLOR[0]} fill={PRIMARY_COLOR[0]} />
               <Text size="sm">{projectNameRender}</Text>
             </Group>
           </Grid.Col>
-          {role !== UserRole.OWNER && (
+          {shouldShowExtraInfo && (
             <Grid.Col span={2}>
               <Flex align="center" h="100%" gap={10}>
                 <Text color="dimmed" size="sm">
@@ -223,7 +225,7 @@ const ProjectItem = (props: IProject) => {
               </Flex>
             </Grid.Col>
           )}
-          <Grid.Col span={role !== UserRole.OWNER ? 4 : 6}>
+          <Grid.Col span={shouldShowExtraInfo ? 4 : 6}>
             <Flex align="center" h="100%">
               <Text color="dimmed" size="sm">
                 <Text span underline>
@@ -235,7 +237,7 @@ const ProjectItem = (props: IProject) => {
               </Text>
             </Flex>
           </Grid.Col>
-          {role !== UserRole.OWNER && role && (
+          {shouldShowExtraInfo && (
             <Grid.Col span={2}>
               <Flex align="center" h="100%" gap={10}>
                 <Badge size="md">{UserRoleText[role]}</Badge>

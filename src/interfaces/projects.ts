@@ -36,6 +36,7 @@ export interface IProject {
   shouldGetDocuments?: boolean;
   processesCount?: number;
   role?: UserRole;
+  showExtraInfo?: boolean;
 }
 
 export interface IWorkspace {
