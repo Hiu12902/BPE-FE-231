@@ -1,4 +1,11 @@
-import { IProject, IWorkspace } from '@/interfaces/projects';
+import projectApi from "@/api/project";
+import noProjects from "@/assets/no-projects.svg";
+import CreateProjectButton from "@/components/CreateProjectButton";
+import ProjectItem from "@/components/ProjectItem";
+import { IProject, IWorkspace } from "@/interfaces/projects";
+import { getProject } from "@/redux/selectors";
+import { projectActions } from "@/redux/slices";
+import { useAppDispatch } from "@/redux/store";
 import {
   Accordion,
   Box,
@@ -10,21 +17,16 @@ import {
   Skeleton,
   Stack,
   Text,
-  Title,
-} from '@mantine/core';
-import ProjectItem from '@/components/ProjectItem';
-import { ReactComponent as IconChevronRight } from '@tabler/icons/icons/chevron-right.svg';
-import { useEffect, useState } from 'react';
-import projectApi from '@/api/project';
-import CreateProjectButton from '@/components/CreateProjectButton';
-import noProjects from '@/assets/no-projects.svg';
-import { useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '@/redux/store';
-import { projectActions } from '@/redux/slices';
-import { batch, useSelector } from 'react-redux';
-import { getProject } from '@/redux/selectors';
+  Title
+} from "@mantine/core";
+import { ReactComponent as IconChevronRight } from "@tabler/icons/icons/chevron-right.svg";
+import { useEffect, useState } from "react";
+import { batch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useWorkspaceStyle } from "./Workspace.style";
 
 const Workspace = (workspace: IWorkspace) => {
+  const { classes } = useWorkspaceStyle();
   const dispatch = useAppDispatch();
   const projects = useSelector(getProject);
   const projectsMap = Object.keys(projects).map(function (key) {
@@ -39,7 +41,9 @@ const Workspace = (workspace: IWorkspace) => {
       const projects = await projectApi.getAllProjects();
       if (projects) {
         batch(() => {
-          projects.map((project: IProject) => dispatch(projectActions.setProject(project)));
+          projects.map((project: IProject) =>
+            dispatch(projectActions.setProject(project))
+          );
         });
       }
     } catch (err) {
@@ -53,6 +57,11 @@ const Workspace = (workspace: IWorkspace) => {
     dispatch(projectActions.setProject(project));
   };
 
+  const onDeleteProject = (projectId: number) => {
+    dispatch(projectActions.deleteProject(projectId));
+  };
+
+  // No Projects placeholder
   const renderNoProjects = () => {
     return (
       <Stack w={400}>
@@ -60,7 +69,8 @@ const Workspace = (workspace: IWorkspace) => {
           <Image src={noProjects} width={120} opacity={0.7} />
         </Center>
         <Text align="center" color="dimmed">
-          You don't have any projects yet! You can start right now by creating a new project.
+          You don't have any projects yet! You can start right now by creating a
+          new project.
         </Text>
         <Center>
           <CreateProjectButton onCreateProject={onCreateNewProject} />
@@ -69,6 +79,7 @@ const Workspace = (workspace: IWorkspace) => {
     );
   };
 
+  // Projects skeleton
   const renderProjectsSkeleton = () => {
     return [1, 2, 3].map((v) => <Skeleton height={50} key={v} mt={10} />);
   };
@@ -77,36 +88,31 @@ const Workspace = (workspace: IWorkspace) => {
     getAllProjects();
   }, []);
 
-  const onDeleteProject = (projectId: number) => {
-    dispatch(projectActions.deleteProject(projectId));
-  };
-
   return (
     <Box>
+      {/* Header */}
       <Group position="apart">
         <Title order={3}>{name} Workspace</Title>
         {!isOpenFromEditor && (
           <Group>
-            <Button variant="outline" onClick={() => navigate('/editor')}>
+            <Button variant="outline" onClick={() => navigate("/editor")}>
               Open Editor
             </Button>
             <CreateProjectButton onCreateProject={onCreateNewProject} />
           </Group>
         )}
       </Group>
+
       <Divider my="md" />
+
+      {/* Projects information */}
       {loading ? (
         renderProjectsSkeleton()
       ) : projectsMap.length > 0 ? (
         <Accordion
+          variant="separated"
           chevron={<IconChevronRight color="#868e96" />}
-          styles={{
-            chevron: {
-              '&[data-rotate]': {
-                transform: 'rotate(90deg)',
-              },
-            },
-          }}
+          className={classes.accordion}
         >
           {projectsMap.map((project) => (
             <ProjectItem

@@ -1,53 +1,57 @@
+import projectApi from "@/api/project";
+import { UserRole } from "@/constants/project";
+import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
+import { TOOLBAR_MODE } from "@/constants/toolbar";
+import useDetachModel from "@/core/hooks/useDetachModel";
+import useNotification from "@/hooks/useNotification";
+import { IFile } from "@/interfaces/projects";
 import {
-  Accordion,
-  ActionIcon,
-  Badge,
-  Box,
-  Flex,
-  Grid,
-  Group,
-  Menu,
-  Stack,
-  Text,
-  TextInput,
-} from '@mantine/core';
-import { ReactComponent as IconFileText } from '@tabler/icons/icons/file-text.svg';
-import { ReactComponent as IconFile3d } from '@tabler/icons/icons/file-3d.svg';
-import { ReactComponent as IconTrash } from '@tabler/icons/icons/trash.svg';
-import { ReactComponent as IconDots } from '@tabler/icons/icons/dots.svg';
-import { ReactComponent as IconFileSymlink } from '@tabler/icons/icons/file-symlink.svg';
-import { ReactComponent as IconCircleXFilled } from '@tabler/icons/icons/circle-x.svg';
-import { ReactComponent as IconAbc } from '@tabler/icons/icons/abc.svg';
-import { ReactComponent as IconFileSpreadsheet } from '@tabler/icons/icons/file-spreadsheet.svg';
-import { ReactComponent as IconHexagons } from '@tabler/icons/icons/hexagons.svg';
-import { useFileCardStyle } from './FileItem.style';
-import { IFile } from '@/interfaces/projects';
-import { PRIMARY_COLOR } from '@/constants/theme/themeConstants';
-import { useAppDispatch } from '@/redux/store';
+  getActiveTab,
+  getCurrentModeler,
+  getModelers,
+} from "@/redux/selectors";
 import {
   evaluatedResultActions,
   modelActions,
   tabsSliceActions,
   toolSliceActions,
-} from '@/redux/slices';
-import { useNavigate } from 'react-router-dom';
-import projectApi from '@/api/project';
-import { openConfirmModal } from '@mantine/modals';
-import { batch, useSelector } from 'react-redux';
-import { getActiveTab, getCurrentModeler, getModelers } from '@/redux/selectors';
-import useDetachModel from '@/core/hooks/useDetachModel';
-import { useState, useRef, MouseEvent } from 'react';
-import { TabVariant } from '@/redux/slices/tabs';
-import { TOOLBAR_MODE } from '@/constants/toolbar';
-import { randomId } from '@mantine/hooks';
-import useNotification from '@/hooks/useNotification';
-import { UserRole } from '@/constants/project';
+} from "@/redux/slices";
+import { TabVariant } from "@/redux/slices/tabs";
+import { useAppDispatch } from "@/redux/store";
+import {
+  Accordion,
+  Badge,
+  Box,
+  Flex,
+  Grid,
+  Group,
+  Skeleton,
+  Stack,
+  Text,
+  TextInput,
+} from "@mantine/core";
+import { randomId } from "@mantine/hooks";
+import { openConfirmModal } from "@mantine/modals";
+import { ReactComponent as IconAbc } from "@tabler/icons/icons/abc.svg";
+import { ReactComponent as IconCircleXFilled } from "@tabler/icons/icons/circle-x.svg";
+import { ReactComponent as IconFile3d } from "@tabler/icons/icons/file-3d.svg";
+import { ReactComponent as IconFileSpreadsheet } from "@tabler/icons/icons/file-spreadsheet.svg";
+import { ReactComponent as IconFileSymlink } from "@tabler/icons/icons/file-symlink.svg";
+import { ReactComponent as IconFileText } from "@tabler/icons/icons/file-text.svg";
+import { ReactComponent as IconHexagons } from "@tabler/icons/icons/hexagons.svg";
+import { ReactComponent as IconTrash } from "@tabler/icons/icons/trash.svg";
+import { MouseEvent, useRef, useState } from "react";
+import { batch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import DropdownMenu from "../DropdownMenu";
+import { IDropdownMenuContent } from "../DropdownMenu/DropdownMenu";
+import { useFileCardStyle } from "./FileItem.style";
 
 const FileItem = (props: IFile) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const {
-    variant = 'general',
+    variant = "general",
     documentLink,
     xmlFileLink,
     id,
@@ -69,7 +73,9 @@ const FileItem = (props: IFile) => {
   const modelers = useSelector(getModelers);
   const currentModeler = useSelector(getCurrentModeler);
   const activeTab = useSelector(getActiveTab);
-  const version = xmlFileLink?.split('/')[xmlFileLink?.split('/').length - 1].replace('.bpmn', '');
+  const version = xmlFileLink
+    ?.split("/")
+    [xmlFileLink?.split("/").length - 1].replace(".bpmn", "");
   const { classes } = useFileCardStyle();
   const IconFile = isDocument
     ? IconFileText
@@ -81,9 +87,12 @@ const FileItem = (props: IFile) => {
   const isOpeningInEditor =
     !!modelers.find((modeler) => modeler.id === version) ||
     !!modelers.find((modeler) => modeler.processId === id);
-  const [fileNameRendered, setFileNameRendered] = useState<string | undefined>(name);
+  const [fileNameRendered, setFileNameRendered] = useState<string | undefined>(
+    name
+  );
   const [isProcessInEditor, setIsProcessInEditor] = useState(false);
   const [versions, setVersions] = useState<IFile[]>([]);
+  const [loading, setLoading] = useState(true);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const detach = useDetachModel();
   const notify = useNotification();
@@ -94,7 +103,10 @@ const FileItem = (props: IFile) => {
         return;
       }
       if (id) {
-        const res = await projectApi.getProcessVerions({ projectId: projectId, processId: id });
+        const res = await projectApi.getProcessVerions({
+          projectId: projectId,
+          processId: id,
+        });
         if (res) {
           const versions = res.map((version: IFile) => ({
             ...version,
@@ -106,6 +118,8 @@ const FileItem = (props: IFile) => {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -129,18 +143,20 @@ const FileItem = (props: IFile) => {
           dispatch(tabsSliceActions.setActiveTab(version));
         }
       });
-      navigate('/editor');
+      navigate("/editor");
     }
   };
 
   const onOpenResultFile = () => {
     const newId = randomId();
     batch(() => {
-      dispatch(evaluatedResultActions.setEvaluatedResult({ result: result, id: newId }));
+      dispatch(
+        evaluatedResultActions.setEvaluatedResult({ result: result, id: newId })
+      );
       dispatch(
         tabsSliceActions.setTabs({
           label: `Evaluated Result - ${currentModeler?.name}`,
-          value: 'evaluateResult',
+          value: "evaluateResult",
           variant: TabVariant.RESULT,
           toolMode: TOOLBAR_MODE.EVALUATING,
           id: newId,
@@ -190,16 +206,16 @@ const FileItem = (props: IFile) => {
   const openDeleteModal = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     openConfirmModal({
-      title: 'Delete this file',
+      title: "Delete this file",
       centered: true,
       children: (
         <Text size="sm">
-          Are you sure you want to delete this {isProcess ? 'process' : 'file'}? Your action will
-          not be able to undo.
+          Are you sure you want to delete this {isProcess ? "process" : "file"}?
+          Your action will not be able to undo.
         </Text>
       ),
-      labels: { confirm: 'Delete', cancel: 'Cancel' },
-      confirmProps: { color: 'red' },
+      labels: { confirm: "Delete", cancel: "Cancel" },
+      confirmProps: { color: "red" },
       onConfirm: isProcess ? onDeleteProcess : onDeleteBpmnFile,
     });
   };
@@ -217,9 +233,9 @@ const FileItem = (props: IFile) => {
         if (res) {
           setFileNameRendered(nameInputRef.current.value);
           notify({
-            title: 'Success!',
-            message: 'Rename process successfully!',
-            type: 'success',
+            title: "Success!",
+            message: "Rename process successfully!",
+            type: "success",
           });
         }
       }
@@ -231,14 +247,22 @@ const FileItem = (props: IFile) => {
   const openRenameModal = (e: any) => {
     e.stopPropagation();
     openConfirmModal({
-      title: 'Rename File',
-      children: <TextInput placeholder="File's name" ref={nameInputRef} value={fileNameRendered} />,
-      labels: { confirm: 'Confirm', cancel: 'Cancel' },
+      title: "Rename File",
+      children: (
+        <TextInput
+          placeholder="File's name"
+          ref={nameInputRef}
+          value={fileNameRendered}
+        />
+      ),
+      labels: { confirm: "Confirm", cancel: "Cancel" },
       onConfirm: onRenameFile,
     });
   };
 
-  const onOpenDocument = () => navigate(`/document?project=${projectName}&p=${projectId}`);
+  const onOpenDocument = () => {
+    navigate(`/document?project=${projectName}&p=${projectId}`);
+  };
 
   const onCloseFile = () => {
     if (version) {
@@ -249,12 +273,42 @@ const FileItem = (props: IFile) => {
     }
   };
 
+  const dropdownMenuContent = [
+    {
+      icon: <IconFileSymlink />,
+      children: "Open",
+      onClick: isDocument ? onOpenDocument : onOpenBpmnFile,
+      display: !isProcess,
+    },
+    {
+      icon: <IconCircleXFilled />,
+      children: "Close",
+      onClick: onCloseFile,
+      disabled: !isOpeningInEditor,
+      display: isVersion,
+    },
+    {
+      icon: <IconAbc />,
+      children: "Rename",
+      onClick: openRenameModal,
+      disabled: !isProcess || role !== UserRole.OWNER,
+      display: isProcess,
+    },
+    {
+      icon: <IconTrash />,
+      children: "Delete",
+      color: "red",
+      onClick: openDeleteModal,
+      disabled: isOpeningInEditor || role !== UserRole.OWNER,
+    },
+  ];
+
   const renderFile = () => {
     return (
       <Box
         component={Stack}
-        spacing={0}
         className={classes.container}
+        mt={isDocument ? 15 : 0}
         p="sm"
         onDoubleClick={
           isVersion
@@ -267,13 +321,26 @@ const FileItem = (props: IFile) => {
         }
         onClick={isProcess ? getProcessVersions : undefined}
       >
-        <Grid>
-          <Grid.Col span={activeTab ? 4 : 5}>
+        <Grid justify="flex-start" align="center">
+          {/* File name */}
+          <Grid.Col span={activeTab ? 3 : 5}>
             <Group spacing={10}>
-              <IconFile height={30} width={30} strokeWidth="0.8" color={PRIMARY_COLOR[0]} />
-              <Text size="sm">
+              <IconFile
+                height={30}
+                width={30}
+                strokeWidth="0.8"
+                color={PRIMARY_COLOR[0]}
+              />
+              <Text
+                size="sm"
+                truncate="end"
+                style={{
+                  maxWidth: "80%",
+                  width: "80%",
+                }}
+              >
                 {isDocument
-                  ? 'readme.md'
+                  ? "readme.md"
                   : result
                   ? `${fileNameRendered}.result`
                   : isVersion
@@ -282,74 +349,42 @@ const FileItem = (props: IFile) => {
               </Text>
             </Group>
           </Grid.Col>
-          <Grid.Col span={result ? 7 : activeTab ? 5 : 3}>
-            <Flex align="center" h="100%">
-              <Text color="dimmed" size="sm" ml={77} className={classes.date}>
-                {result && 'Evaluated At: '}
-                {new Date(lastSaved || createAt || '')?.toLocaleString()}
+
+          {/* Last modified */}
+          <Grid.Col span={result ? 7 : activeTab ? 6 : 3}>
+            <Flex align="center" justify="flex-end" h="100%">
+              <Text color="dimmed" size="sm">
+                {result && "Evaluated At: "}
+                {new Date(lastSaved || createAt || "")?.toLocaleString()}
               </Text>
             </Flex>
           </Grid.Col>
+
           {!result && (
             <>
+              {/* Editing badge */}
               <Grid.Col span={2}>
-                {isOpeningInEditor || isProcessInEditor ? (
-                  <Badge color="green" radius="sm">
-                    Editing
-                  </Badge>
-                ) : null}
+                <Flex justify="center">
+                  {isOpeningInEditor || isProcessInEditor ? (
+                    <Badge color="green" radius="sm">
+                      Editing
+                    </Badge>
+                  ) : null}
+                </Flex>
               </Grid.Col>
-              <Grid.Col span={1}>
-                {variant === 'general' && (
-                  <Menu shadow="md" width={200} position="left-start">
-                    <Menu.Target>
-                      <ActionIcon
-                        variant="subtle"
-                        className={classes.menu}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <IconDots />
-                      </ActionIcon>
-                    </Menu.Target>
 
-                    <Menu.Dropdown>
-                      {!isProcess && (
-                        <Menu.Item
-                          icon={<IconFileSymlink />}
-                          onClick={isDocument ? onOpenDocument : onOpenBpmnFile}
-                        >
-                          Open
-                        </Menu.Item>
-                      )}
-                      {isVersion && (
-                        <Menu.Item
-                          icon={<IconCircleXFilled />}
-                          onClick={onCloseFile}
-                          disabled={!isOpeningInEditor}
-                        >
-                          Close
-                        </Menu.Item>
-                      )}
-                      {isProcess && (
-                        <Menu.Item
-                          icon={<IconAbc />}
-                          onClick={openRenameModal}
-                          disabled={!isProcess || role !== UserRole.OWNER}
-                        >
-                          Rename
-                        </Menu.Item>
-                      )}
-                      <Menu.Item
-                        color="red"
-                        icon={<IconTrash />}
-                        onClick={openDeleteModal}
-                        disabled={isOpeningInEditor || role !== UserRole.OWNER}
-                      >
-                        Delete
-                      </Menu.Item>
-                    </Menu.Dropdown>
-                  </Menu>
-                )}
+              {/* Dropdown menu */}
+              <Grid.Col span={1}>
+                <Flex justify="flex-end">
+                  {variant === "general" && (
+                    <DropdownMenu
+                      dropdownMenuContent={
+                        dropdownMenuContent as IDropdownMenuContent[]
+                      }
+                      disabled={isOpeningInEditor}
+                    />
+                  )}
+                </Flex>
               </Grid.Col>
             </>
           )}
@@ -359,26 +394,32 @@ const FileItem = (props: IFile) => {
   };
 
   return isProcess ? (
-    <Accordion.Item value={id?.toString() || ''}>
+    <Accordion.Item value={id?.toString() || ""}>
       <Accordion.Control>{renderFile()}</Accordion.Control>
       <Accordion.Panel>
-        {versions.length > 0 && (
-          <Stack spacing={0}>
-            {versions.map((version) => (
-              <FileItem
-                {...version}
-                role={role}
-                projectId={projectId}
-                processName={fileNameRendered}
-                onDeleteFile={(link) => {
-                  const tempVersions = versions.filter((version) => version.xmlFileLink !== link);
-                  setVersions(tempVersions);
-                }}
-                key={version.xmlFileLink}
-                projectName={projectName}
-              />
-            ))}
-          </Stack>
+        {loading ? (
+          <Skeleton height={50} mt={0} radius={0} />
+        ) : (
+          versions.length > 0 && (
+            <Stack spacing={0}>
+              {versions.map((version) => (
+                <FileItem
+                  {...version}
+                  role={role}
+                  projectId={projectId}
+                  processName={fileNameRendered}
+                  onDeleteFile={(link) => {
+                    const tempVersions = versions.filter(
+                      (version) => version.xmlFileLink !== link
+                    );
+                    setVersions(tempVersions);
+                  }}
+                  key={version.xmlFileLink}
+                  projectName={projectName}
+                />
+              ))}
+            </Stack>
+          )
         )}
       </Accordion.Panel>
     </Accordion.Item>
