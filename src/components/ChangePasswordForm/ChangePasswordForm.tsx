@@ -1,50 +1,27 @@
-import userApi from '@/api/user';
-import useNotification from '@/hooks/useNotification';
-import { Button, Group, PasswordInput, Stack } from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { useNavigate } from 'react-router-dom';
+import { Button, Group, PasswordInput, Stack } from "@mantine/core";
+import { useForm } from "@mantine/form";
 
 interface IProps {
   hideCancelButton?: boolean;
+  changePassword: (password: string) => void;
 }
 
-const ChangePasswordForm = ({ hideCancelButton }: IProps) => {
-  const notify = useNotification();
-  const navigate = useNavigate();
+const ChangePasswordForm = ({ hideCancelButton, changePassword }: IProps) => {
   const form = useForm({
     initialValues: {
-      password: '',
-      confirmPassword: '',
+      password: "",
+      confirmPassword: "",
     },
 
     validate: {
-      password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
+      password: (val) =>
+        val.length <= 6
+          ? "Password should include at least 6 characters"
+          : null,
       confirmPassword: (value, values) =>
-        value !== values.password ? 'Passwords did not match' : null,
+        value !== values.password ? "Passwords did not match" : null,
     },
   });
-
-  const changePassword = async () => {
-    try {
-      const res = await userApi.changePassword(form.values.password);
-      if (res) {
-        !hideCancelButton
-          ? notify({
-              title: 'Success',
-              message: 'Your password has been updated!',
-              type: 'success',
-            })
-          : navigate('/');
-      }
-    } catch (err) {
-      console.error(err);
-      notify({
-        title: 'Somethings went wrong',
-        message: 'Try again later',
-        type: 'error',
-      });
-    }
-  };
 
   return (
     <form onSubmit={form.onSubmit((values) => console.log(values))}>
@@ -54,8 +31,13 @@ const ChangePasswordForm = ({ hideCancelButton }: IProps) => {
           label="New Password"
           placeholder="Your new password"
           value={form.values.password}
-          onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
-          error={form.errors.password && 'Password should include at least 6 characters'}
+          onChange={(event) =>
+            form.setFieldValue("password", event.currentTarget.value)
+          }
+          error={
+            form.errors.password &&
+            "Password should include at least 6 characters"
+          }
           radius="md"
         />
 
@@ -64,18 +46,26 @@ const ChangePasswordForm = ({ hideCancelButton }: IProps) => {
           label="Confirm New Password"
           placeholder="Your new password"
           value={form.values.confirmPassword}
-          onChange={(event) => form.setFieldValue('confirmPassword', event.currentTarget.value)}
-          error={form.errors.confirmPassword && 'Passwords did not match'}
+          onChange={(event) =>
+            form.setFieldValue("confirmPassword", event.currentTarget.value)
+          }
+          error={form.errors.confirmPassword && "Passwords did not match"}
           radius="md"
         />
         {hideCancelButton ? (
-          <Button disabled={!form.isValid()} onClick={changePassword}>
+          <Button
+            disabled={!form.isValid()}
+            onClick={() => changePassword(form.values.password)}
+          >
             Reset password
           </Button>
         ) : (
           <Group position="right">
             <Button variant="subtle">Cancel</Button>
-            <Button disabled={!form.isValid()} onClick={changePassword}>
+            <Button
+              disabled={!form.isValid()}
+              onClick={() => changePassword(form.values.password)}
+            >
               Reset password
             </Button>
           </Group>

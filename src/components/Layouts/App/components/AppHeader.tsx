@@ -1,18 +1,53 @@
-import UserInformation from '@/components/UserInformation/UserInformation';
-import { getCurrentUser } from '@/redux/selectors';
-import { ActionIcon, Avatar, Badge, Container, Group, Menu, Tabs } from '@mantine/core';
-import { useSelector } from 'react-redux';
-import { ReactComponent as IconSignOut } from '@tabler/icons/icons/logout.svg';
-import { ACCESS_TOKEN } from '@/constants/localStorageKeys';
-import { openModal } from '@mantine/modals';
-import ChangePasswordForm from '@/components/ChangePasswordForm';
+import userApi from "@/api/user";
+import ChangePasswordForm from "@/components/ChangePasswordForm";
+import UserInformation from "@/components/UserInformation/UserInformation";
+import useNotification from "@/hooks/useNotification";
+import { getCurrentUser } from "@/redux/selectors";
+import {
+  ActionIcon,
+  Avatar,
+  Badge,
+  Container,
+  Group,
+  Menu,
+  Tabs,
+} from "@mantine/core";
+import { openModal } from "@mantine/modals";
+import { ReactComponent as IconSignOut } from "@tabler/icons/icons/logout.svg";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const AppHeader = () => {
   const currentUser = useSelector(getCurrentUser);
+  const notify = useNotification();
+  const navigate = useNavigate();
+  const hideCancelButton = false;
 
   const onSignOut = () => {
-    localStorage.removeItem(ACCESS_TOKEN);
+    localStorage.removeItem("accessToken");
     window.location.reload();
+  };
+
+  const changePassword = async (password: string) => {
+    try {
+      const res = await userApi.changePassword(password);
+      if (res) {
+        !hideCancelButton
+          ? notify({
+              title: "Success",
+              message: "Your password has been updated!",
+              type: "success",
+            })
+          : navigate("/");
+      }
+    } catch (err) {
+      console.error(err);
+      notify({
+        title: "Somethings went wrong while changing your password!",
+        message: "Try again later",
+        type: "error",
+      });
+    }
   };
 
   const renderUserInfoModal = () => {
@@ -23,7 +58,7 @@ const AppHeader = () => {
         </Tabs.List>
         <Tabs.Panel value="change-password">
           <Container size="xl" p={20}>
-            <ChangePasswordForm />
+            <ChangePasswordForm changePassword={changePassword} />
           </Container>
         </Tabs.Panel>
       </Tabs>
@@ -34,7 +69,7 @@ const AppHeader = () => {
     openModal({
       title: <Badge size="xl">PROFILE</Badge>,
       children: renderUserInfoModal(),
-      size: 'lg',
+      size: "lg",
     });
   };
 
