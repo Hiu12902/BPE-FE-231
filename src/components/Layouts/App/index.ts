@@ -1,1 +1,1 @@
-export { default } from './App.layout';
+export { default as WorkspaceLayout } from './App.layout';
