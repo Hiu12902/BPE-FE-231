@@ -17,7 +17,7 @@ import {
   Skeleton,
   Stack,
   Text,
-  Title
+  Title,
 } from "@mantine/core";
 import { ReactComponent as IconChevronRight } from "@tabler/icons/icons/chevron-right.svg";
 import { useEffect, useState } from "react";
