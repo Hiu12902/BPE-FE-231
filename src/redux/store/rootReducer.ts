@@ -7,6 +7,7 @@ import {
   projectSlice,
   toolSlice,
   userSlice,
+  workspaceSlice
 } from '../slices';
 import tabsSlice from '../slices/tabs';
 
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   [comparingSlice.name]: comparingSlice.reducer,
   [userSlice.name]: userSlice.reducer,
   [projectSlice.name]: projectSlice.reducer,
+  [workspaceSlice.name]: workspaceSlice.reducer
 });
 
 export default rootReducer;

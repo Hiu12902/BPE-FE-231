@@ -6,6 +6,7 @@ import projectSlice from './project';
 import tabsSlice from './tabs';
 import toolSlice from './tool';
 import userSlice from './user';
+import workspaceSlice from './workspaces';
 
 const toolSliceActions = toolSlice.actions;
 const tabsSliceActions = tabsSlice.actions;
@@ -15,6 +16,7 @@ const modelActions = modelSlice.actions;
 const comparingActions = comparingSlice.actions;
 const userActions = userSlice.actions;
 const projectActions = projectSlice.actions;
+const workspaceActions = workspaceSlice.actions;
 
 export {
   toolSliceActions,
@@ -33,4 +35,6 @@ export {
   userSlice,
   projectActions,
   projectSlice,
+  workspaceSlice,
+  workspaceActions
 };
