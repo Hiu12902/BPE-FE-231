@@ -6,7 +6,7 @@ import { getModelers } from "@/redux/selectors";
 import { useEffect } from "react";
 
 const MainScreen = () => {
-  useDocumentTitle("Home - BPSky");
+  useDocumentTitle("Personal Workspace | BPSky");
   const modelers = useSelector(getModelers);
 
   useEffect(() => {
