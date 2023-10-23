@@ -4,8 +4,8 @@ import { IWorkspace } from "@/interfaces/workspaces";
 import {
   getCurrentUser,
   getModelers,
-  getWorkspace,
   getPinnedWorkspace,
+  getWorkspace,
 } from "@/redux/selectors";
 import {
   pinnedWorkspaceActions,
@@ -27,11 +27,11 @@ import { useDocumentTitle } from "@mantine/hooks";
 import { ReactComponent as IconPlus } from "@tabler/icons/icons/plus.svg";
 import { useEffect, useState } from "react";
 import { batch, useSelector } from "react-redux";
+import CreateWorkspaceButton from "../CreateWorkspaceButton";
 import { EmptyRender } from "../EmptyRender";
 import { SearchInput } from "../SearchInput";
 import { WorkspaceItem } from "../WorkspaceItem";
 import { useDefaultHomepageStyle } from "./DefaultHomepage.style";
-import CreateWorkspaceButton from "../CreateWorkspaceButton";
 
 export interface TSearchInput {
   searchInput: string;
@@ -49,6 +49,8 @@ const DefaultHomepage = () => {
   const currentUser = useSelector(getCurrentUser);
   const [loading, setLoading] = useState<Boolean>(true);
   const [pinnedLoading, setPinnedLoading] = useState<Boolean>(true);
+  const [searchLoading, setSearchLoading] = useState<Boolean>(true);
+  const [isSearching, setIsSearching] = useState<Boolean>(false);
   const workspaces = useSelector(getWorkspace);
   const pinnedWorkspaces = useSelector(getPinnedWorkspace);
   const workspacesMap = Object.keys(workspaces).map(function (key) {
@@ -113,11 +115,39 @@ const DefaultHomepage = () => {
       searchInput: "",
     },
   });
+  const searchValue = form.values.searchInput;
 
-  const searchValue = form.values;
+  const searchWorkspaces = async () => {
+    setSearchLoading(true);
+    try {
+      const searchResult = await workspaceApi.searchWorkspace(searchValue);
+      if (searchResult) {
+        batch(() => {
+          searchResult.map((workspace: IWorkspace) =>
+            dispatch(workspaceActions.setWorkspace(workspace))
+          );
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const onCancelSearchWorkspaces = () => {
+    form.reset();
+    setLoading(true);
+    setIsSearching(false);
+    setSearchLoading(true);
+    setPinnedLoading(true);
+
+    dispatch(workspaceActions.clearWorkspaces());
+    getAllWorkspaces();
+    getAllPinnedWorkspaces();
+  };
 
   useEffect(() => {
-    getUser();
     getAllWorkspaces();
     getAllPinnedWorkspaces();
     if (modelers.length === 0) {
@@ -138,11 +168,17 @@ const DefaultHomepage = () => {
         <FormProvider form={form}>
           <form
             onSubmit={form.onSubmit(() => {
-              console.log("Submit form");
+              if (searchValue.length === 0) {
+                onCancelSearchWorkspaces();
+                return;
+              }
+              setIsSearching(true);
+              dispatch(workspaceActions.clearWorkspaces());
+              searchWorkspaces();
             })}
             className={classes.form}
           >
-            <SearchInput />
+            <SearchInput onCancel={onCancelSearchWorkspaces} />
           </form>
         </FormProvider>
 
@@ -150,33 +186,14 @@ const DefaultHomepage = () => {
         <CreateWorkspaceButton onCreateWorkspace={onCreateNewWorkspace} />
       </Group>
 
-      {/* Tabs */}
-      <Tabs className={classes.tabs} defaultValue="Recently opened">
-        {/* Tabs list */}
-        <Tabs.List>
-          <Tabs.Tab value="Recently opened">Recently opened</Tabs.Tab>
-          <Tabs.Tab value="Pinned">Pinned</Tabs.Tab>
-        </Tabs.List>
-
-        {/* Tabs panel for recently opened */}
-        <Tabs.Panel value="Recently opened">
-          {loading ? (
+      {isSearching ? (
+        <>
+          {/* Search result */}
+          {searchLoading ? (
             <Skeleton height={50} mt={10} />
           ) : workspacesMap.length === 0 ? (
             EmptyRender({
-              text: "You don't have any projects yet! You can start right now by creating a new project.",
-              action: (
-                <Button
-                  leftIcon={
-                    <IconPlus
-                      className={classes.buttonIcon}
-                      onClick={() => {}}
-                    />
-                  }
-                >
-                  New workspace
-                </Button>
-              ),
+              text: "No results found!",
             })
           ) : (
             <Accordion
@@ -189,29 +206,72 @@ const DefaultHomepage = () => {
               ))}
             </Accordion>
           )}
-        </Tabs.Panel>
+        </>
+      ) : (
+        <>
+          <Tabs className={classes.tabs} defaultValue="Recently opened">
+            {/* Tabs list */}
+            <Tabs.List>
+              <Tabs.Tab value="Recently opened">Recently opened</Tabs.Tab>
+              <Tabs.Tab value="Pinned">Pinned</Tabs.Tab>
+            </Tabs.List>
 
-        {/* Tab panel for Pinned */}
-        <Tabs.Panel value="Pinned">
-          {pinnedLoading ? (
-            <Skeleton height={50} mt={10} />
-          ) : pinnedWorkspacesMap.length === 0 ? (
-            EmptyRender({
-              text: "You don't have any pinned projects yet!",
-            })
-          ) : (
-            <Accordion
-              variant="contained"
-              chevron
-              className={classes.accordion}
-            >
-              {pinnedWorkspacesMap.map((workspace, index) => (
-                <WorkspaceItem {...workspace} key={index} />
-              ))}
-            </Accordion>
-          )}
-        </Tabs.Panel>
-      </Tabs>
+            {/* Tabs panel for recently opened */}
+            <Tabs.Panel value="Recently opened">
+              {loading ? (
+                <Skeleton height={50} mt={10} />
+              ) : workspacesMap.length === 0 ? (
+                EmptyRender({
+                  text: "You don't have any projects yet! You can start right now by creating a new project.",
+                  action: (
+                    <Button
+                      leftIcon={
+                        <IconPlus
+                          className={classes.buttonIcon}
+                          onClick={() => {}}
+                        />
+                      }
+                    >
+                      New workspace
+                    </Button>
+                  ),
+                })
+              ) : (
+                <Accordion
+                  variant="contained"
+                  chevron
+                  className={classes.accordion}
+                >
+                  {workspacesMap.map((workspace, index) => (
+                    <WorkspaceItem {...workspace} key={index} />
+                  ))}
+                </Accordion>
+              )}
+            </Tabs.Panel>
+
+            {/* Tab panel for Pinned */}
+            <Tabs.Panel value="Pinned">
+              {pinnedLoading ? (
+                <Skeleton height={50} mt={10} />
+              ) : pinnedWorkspacesMap.length === 0 ? (
+                EmptyRender({
+                  text: "You don't have any pinned projects yet!",
+                })
+              ) : (
+                <Accordion
+                  variant="contained"
+                  chevron
+                  className={classes.accordion}
+                >
+                  {pinnedWorkspacesMap.map((workspace, index) => (
+                    <WorkspaceItem {...workspace} key={index} />
+                  ))}
+                </Accordion>
+              )}
+            </Tabs.Panel>
+          </Tabs>
+        </>
+      )}
     </Container>
   );
 };

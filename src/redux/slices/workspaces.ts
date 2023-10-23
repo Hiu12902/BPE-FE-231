@@ -14,8 +14,11 @@ const workspaceSlice = createSlice({
         setWorkspace: (state, action: PayloadAction<IWorkspace>) => {
             state[action.payload.id] = action.payload;
         },
-        deleteWorkspace: (state, action: PayloadAction<{id: number}>) => {
+        deleteWorkspace: (state, action: PayloadAction<{ id: number }>) => {
             delete state[action.payload.id];
+        },
+        clearWorkspaces: () => {
+            return {};
         },
         updateWorkspaceName: (state, action: PayloadAction<{ id: number; name: string }>) => {
             state[action.payload.id].name = action.payload.name
