@@ -56,6 +56,10 @@ class WorkspaceApi {
     public pinWorkspace(workspaceId: number): Promise<any> {
         return Client.post("/workspace/pinned", { workspaceId });
     }
+
+    public searchWorkspace(searchValue: string): Promise<any> {
+        return Client.get(`/workspace/search/${searchValue}`);
+    }
 }
 
 export default WorkspaceApi.instance;
