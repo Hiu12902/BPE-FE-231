@@ -1,8 +1,17 @@
 import userApi from "@/api/user";
 import workspaceApi from "@/api/workspace";
-import { IRecentlyWorkspace, IWorkspace } from "@/interfaces/workspaces";
-import { getCurrentUser, getModelers, getWorkspace } from "@/redux/selectors";
-import { userActions, workspaceActions } from "@/redux/slices";
+import { IWorkspace } from "@/interfaces/workspaces";
+import {
+  getCurrentUser,
+  getModelers,
+  getWorkspace,
+  getPinnedWorkspace,
+} from "@/redux/selectors";
+import {
+  pinnedWorkspaceActions,
+  userActions,
+  workspaceActions,
+} from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import {
   Accordion,
@@ -39,9 +48,14 @@ const DefaultHomepage = () => {
   const modelers = useSelector(getModelers);
   const currentUser = useSelector(getCurrentUser);
   const [loading, setLoading] = useState<Boolean>(true);
+  const [pinnedLoading, setPinnedLoading] = useState<Boolean>(true);
   const workspaces = useSelector(getWorkspace);
+  const pinnedWorkspaces = useSelector(getPinnedWorkspace);
   const workspacesMap = Object.keys(workspaces).map(function (key) {
     return workspaces[parseInt(key)];
+  });
+  const pinnedWorkspacesMap = Object.keys(pinnedWorkspaces).map(function (key) {
+    return pinnedWorkspaces[parseInt(key)];
   });
 
   const getUser = async () => {
@@ -72,7 +86,24 @@ const DefaultHomepage = () => {
     }
   };
 
-  const onCreateNewWorkspace = (workspace: IRecentlyWorkspace) => {
+  const getAllPinnedWorkspaces = async () => {
+    try {
+      const pinnedWorkspaces = await workspaceApi.getPinnedWorkspaces();
+      if (pinnedWorkspaces) {
+        batch(() => {
+          pinnedWorkspaces.map((pinnedWorkspace: IWorkspace) =>
+            dispatch(pinnedWorkspaceActions.pinWorkspace(pinnedWorkspace))
+          );
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setPinnedLoading(false);
+    }
+  };
+
+  const onCreateNewWorkspace = (workspace: IWorkspace) => {
     dispatch(workspaceActions.setWorkspace(workspace));
   };
 
@@ -88,6 +119,7 @@ const DefaultHomepage = () => {
   useEffect(() => {
     getUser();
     getAllWorkspaces();
+    getAllPinnedWorkspaces();
     if (modelers.length === 0) {
       localStorage.removeItem("modelers");
       localStorage.removeItem("currentOpenedModeler");
@@ -161,7 +193,9 @@ const DefaultHomepage = () => {
 
         {/* Tab panel for Pinned */}
         <Tabs.Panel value="Pinned">
-          {workspacesMap.length === 0 ? (
+          {pinnedLoading ? (
+            <Skeleton height={50} mt={10} />
+          ) : pinnedWorkspacesMap.length === 0 ? (
             EmptyRender({
               text: "You don't have any pinned projects yet!",
             })
@@ -171,11 +205,9 @@ const DefaultHomepage = () => {
               chevron
               className={classes.accordion}
             >
-              {workspacesMap
-                // .filter((workspace) => workspace.isPinned === true)
-                .map((workspace, index) => (
-                  <WorkspaceItem {...workspace} key={index} />
-                ))}
+              {pinnedWorkspacesMap.map((workspace, index) => (
+                <WorkspaceItem {...workspace} key={index} />
+              ))}
             </Accordion>
           )}
         </Tabs.Panel>

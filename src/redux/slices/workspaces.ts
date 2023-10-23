@@ -14,20 +14,25 @@ const workspaceSlice = createSlice({
         setWorkspace: (state, action: PayloadAction<IWorkspace>) => {
             state[action.payload.id] = action.payload;
         },
-        deleteWorkspace: (state, action: PayloadAction<string>) => {
-            delete state[action.payload];
+        deleteWorkspace: (state, action: PayloadAction<{id: number}>) => {
+            delete state[action.payload.id];
         },
-        // setProcessesCount: (
-        //   state,
-        //   action: PayloadAction<{ projectId: number; versionCount: number }>
-        // ) => {
-        //   const { projectId, versionCount } = action.payload;
-        //   state[projectId].processesCount = versionCount;
-        // },
-        // updateProject: (state, action: PayloadAction<IProject>) => {
-        //   return { ...state, [action.payload.id]: action.payload };
-        // },
-    },
+        updateWorkspaceName: (state, action: PayloadAction<{ id: number; name: string }>) => {
+            state[action.payload.id].name = action.payload.name
+        },
+        updateWorkspaceDescription: (state, action: PayloadAction<{ id: string; description: string }>) => {
+            state[action.payload.id].description = action.payload.description
+        },
+        updateWorkspace: (state, action: PayloadAction<IWorkspace>) => {
+            return {
+                ...state,
+                [action.payload.id]: action.payload
+            }
+        },
+        updatePinWorkspace: (state, action: PayloadAction<IWorkspace>) => {
+            state[action.payload.id].isPinned = !action.payload.isPinned;
+        },
+    }
 });
 
 export default workspaceSlice;

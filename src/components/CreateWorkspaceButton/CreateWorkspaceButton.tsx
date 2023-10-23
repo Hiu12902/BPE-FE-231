@@ -5,6 +5,7 @@ import {
   Button,
   Divider,
   Group,
+  Input,
   Modal,
   TextInput,
   Textarea,
@@ -48,7 +49,7 @@ const CreateWorkspaceButton = ({
       }
       if (workspaceName && workspaceDescription) {
         const res = await workspaceApi.createWorkspace({
-          workspaceName: workspaceName,
+          name: workspaceName,
           description: workspaceDescription,
         });
         if (res) {
@@ -68,23 +69,34 @@ const CreateWorkspaceButton = ({
 
   const renderNewWorkspaceModal = () => {
     return (
-      <Modal opened={open} onClose={() => setOpen(false)} title="New Workspace">
+      <Modal
+        opened={open}
+        onClose={() => setOpen(false)}
+        title="Create new Workspace"
+        centered
+        overlayProps={{
+          blur: 3,
+          opacity: 0.55,
+        }}
+      >
         <Group>
-          <TextInput
-            className={classes.input}
-            placeholder="Name"
-            value={workspaceName}
-            onChange={(e) => setWorkspaceName(e.target.value)}
-          />
-          <Textarea
-            className={classes.input}
-            placeholder="Description"
-            minRows={3}
-            maxRows={10}
-            maxLength={1000}
-            value={workspaceDescription}
-            onChange={(e) => setWorkspaceDescription(e.target.value)}
-          />
+          <Input.Wrapper label="Name" className={classes.input}>
+            <TextInput
+              placeholder="Name"
+              value={workspaceName}
+              onChange={(e) => setWorkspaceName(e.target.value)}
+            />
+          </Input.Wrapper>
+          <Input.Wrapper label="Description" className={classes.input}>
+            <Textarea
+              placeholder="Description"
+              minRows={3}
+              maxRows={10}
+              maxLength={1000}
+              value={workspaceDescription}
+              onChange={(e) => setWorkspaceDescription(e.target.value)}
+            />
+          </Input.Wrapper>
         </Group>
         <Divider my="sm" />
         <Group position="right">

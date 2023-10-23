@@ -1,18 +1,14 @@
-
 export interface IWorkspace {
-    id: string;
+    id: number;
     name?: string;
     description?: string;
     createdAt?: Date | string;
     deleteAt?: Date | string;
-    ownerId?: string;
+    ownerId?: number;
     background?: string;
     icon?: string;
     isPersonal?: boolean;
     isDeleted?: boolean;
-}
-
-export interface IRecentlyWorkspace extends IWorkspace {
     openedAt?: string;
     isHided?: boolean;
     isPinned?: boolean;
