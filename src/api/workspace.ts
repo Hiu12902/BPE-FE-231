@@ -60,6 +60,10 @@ class WorkspaceApi {
     public searchWorkspace(searchValue: string): Promise<any> {
         return Client.get(`/workspace/search/${searchValue}`);
     }
+
+    public openWorkspace(workspaceId: number): Promise<any> {
+        return Client.post('/workspace/open', { workspaceId });
+    }
 }
 
 export default WorkspaceApi.instance;

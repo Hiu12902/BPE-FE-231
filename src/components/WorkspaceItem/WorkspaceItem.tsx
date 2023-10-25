@@ -73,12 +73,30 @@ const WorkspaceItem = (props: IWorkspace) => {
     } catch (err) {
       console.error(err);
       notify({
-        title: "Oops!",
+        title: "Pin workspace failed!",
         message:
           "An error has occurred while trying to pin workspace. Please try again",
         type: "error",
       });
     }
+  };
+
+  const onOpenWorkspace = async (e: any) => {
+    e.stopPropagation();
+    window.open(`workspace/${name}/${id}`, "_self");
+    // try {
+    //   const res = await workspaceApi.openWorkspace(id);
+    //   if (res) {
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    //   notify({
+    //     title: "Open workspace failed!",
+    //     message:
+    //       "Something went wrong while trying to open workspace. Please try again",
+    //     type: "error",
+    //   });
+    // }
   };
 
   const onDeleteWorkspace = async () => {
@@ -238,10 +256,7 @@ const WorkspaceItem = (props: IWorkspace) => {
     {
       icon: <IconFilePlus className={classes.dropdownMenuIcon} />,
       children: "Open",
-      onClick: () => {
-        console.log("Open selected workspace");
-      },
-      disabled: true,
+      onClick: onOpenWorkspace,
     },
     {
       icon: <IconTrash className={classes.dropdownMenuIcon} />,
@@ -254,14 +269,11 @@ const WorkspaceItem = (props: IWorkspace) => {
   return (
     <Accordion.Item value={id.toString()}>
       {/* Accordion control: (1) Click to Open Inner files (2) Double click to Open project */}
-      <Accordion.Control>
+      <Accordion.Control onDoubleClick={(e) => onOpenWorkspace(e)}>
         <Grid align="center" justify="center">
           {/* Project name */}
           <Grid.Col span={3}>
-            <Group
-              spacing={10}
-              onClick={() => console.log("Open selected workspace")}
-            >
+            <Group spacing={10}>
               <IconFolder
                 width={30}
                 height={30}
