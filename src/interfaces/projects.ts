@@ -37,6 +37,7 @@ export interface IProject {
   processesCount?: number;
   role?: UserRole;
   showExtraInfo?: boolean;
+  workspaceId?: number;
 }
 
 export interface IWorkspace {

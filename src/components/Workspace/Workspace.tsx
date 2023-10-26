@@ -2,15 +2,15 @@ import projectApi from "@/api/project";
 import noProjects from "@/assets/no-projects.svg";
 import CreateProjectButton from "@/components/CreateProjectButton";
 import ProjectItem from "@/components/ProjectItem";
-import { IProject, IWorkspace } from "@/interfaces/projects";
+import { IProject } from "@/interfaces/projects";
 import { getProject } from "@/redux/selectors";
 import { projectActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import {
   Accordion,
-  Box,
   Button,
   Center,
+  Container,
   Divider,
   Group,
   Image,
@@ -19,22 +19,71 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { createFormContext } from "@mantine/form";
+import { useDocumentTitle } from "@mantine/hooks";
 import { ReactComponent as IconChevronRight } from "@tabler/icons/icons/chevron-right.svg";
 import { useEffect, useState } from "react";
 import { batch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { SearchInput } from "../SearchInput";
 import { useWorkspaceStyle } from "./Workspace.style";
 
-const Workspace = (workspace: IWorkspace) => {
+export interface ISearchValue {
+  searchValue: string;
+}
+
+export const [ProjectFormProvider, useProjectFormContext, useForm] =
+  createFormContext<ISearchValue>();
+
+const Workspace = () => {
+  useDocumentTitle("Workspace | BKSky");
+
   const { classes } = useWorkspaceStyle();
   const dispatch = useAppDispatch();
   const projects = useSelector(getProject);
   const projectsMap = Object.keys(projects).map(function (key) {
     return projects[parseInt(key)];
   });
-  const { name, isOpenFromEditor } = workspace;
+  const { workspaceId, workspaceName } = useParams();
+  const isOpenFromEditor = false; // temporary value
   const [loading, setLoading] = useState(true);
+  const [searchLoading, setSearchLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(true);
   const navigate = useNavigate();
+
+  const form = useForm({
+    initialValues: {
+      searchValue: "",
+    },
+  });
+  const searchValue = form.values.searchValue;
+  const searchProjects = async () => {
+    setSearchLoading(true);
+    try {
+      const searchResult = await projectApi.searchProject({ searchValue });
+      if (searchResult) {
+        batch(() => {
+          searchResult.map((project: IProject) =>
+            dispatch(projectActions.setProject(project))
+          );
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const onCancelSearchProjects = () => {
+    form.reset();
+    setLoading(true);
+    setIsSearching(false);
+    setSearchLoading(true);
+
+    dispatch(projectActions.clearProjects());
+    getAllProjects();
+  };
 
   const getAllProjects = async () => {
     try {
@@ -61,7 +110,6 @@ const Workspace = (workspace: IWorkspace) => {
     dispatch(projectActions.deleteProject(projectId));
   };
 
-  // No Projects placeholder
   const renderNoProjects = () => {
     return (
       <Stack w={400}>
@@ -73,13 +121,15 @@ const Workspace = (workspace: IWorkspace) => {
           new project.
         </Text>
         <Center>
-          <CreateProjectButton onCreateProject={onCreateNewProject} />
+          <CreateProjectButton
+            workspaceId={Number(workspaceId)}
+            onCreateProject={onCreateNewProject}
+          />
         </Center>
       </Stack>
     );
   };
 
-  // Projects skeleton
   const renderProjectsSkeleton = () => {
     return [1, 2, 3].map((v) => <Skeleton height={50} key={v} mt={10} />);
   };
@@ -89,18 +139,40 @@ const Workspace = (workspace: IWorkspace) => {
   }, []);
 
   return (
-    <Box>
+    <Container size="xl">
       {/* Header */}
-      <Group position="apart">
-        <Title order={3}>{name} Workspace</Title>
-        {!isOpenFromEditor && (
-          <Group>
-            <Button variant="outline" onClick={() => navigate("/editor")}>
-              Open Editor
-            </Button>
-            <CreateProjectButton onCreateProject={onCreateNewProject} />
-          </Group>
-        )}
+      <Title order={2}>{workspaceName}</Title>
+
+      <Group position="apart" className={classes.searchGroup}>
+        <ProjectFormProvider form={form}>
+          <form
+            onSubmit={form.onSubmit(() => {
+              if (searchValue.length === 0) {
+                onCancelSearchProjects();
+                return;
+              }
+              setIsSearching(true);
+              dispatch(projectActions.clearProjects());
+              searchProjects();
+            })}
+            className={classes.form}
+          >
+            <SearchInput
+              onCancel={onCancelSearchProjects}
+              placeholder="Search project name, owner name, etc."
+              context="project"
+            />
+          </form>
+        </ProjectFormProvider>
+        <Group>
+          <Button variant="outline" onClick={() => navigate("/editor")}>
+            Open Editor
+          </Button>
+          <CreateProjectButton
+            workspaceId={Number(workspaceId)}
+            onCreateProject={onCreateNewProject}
+          />
+        </Group>
       </Group>
 
       <Divider my="md" />
@@ -127,7 +199,7 @@ const Workspace = (workspace: IWorkspace) => {
       ) : (
         <Center>{renderNoProjects()}</Center>
       )}
-    </Box>
+    </Container>
   );
 };
 

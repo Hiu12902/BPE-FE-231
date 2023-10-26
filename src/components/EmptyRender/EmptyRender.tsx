@@ -1,13 +1,13 @@
 import { Center, Stack, Image, Text } from "@mantine/core";
 import noProjects from "@/assets/no-projects.svg";
 
-export interface TEmptyRender {
+export interface IEmptyRender {
   icon?: string | React.ReactNode;
   text?: string | React.ReactNode;
   action?: React.ReactNode;
 }
 
-const EmptyRender = ({ icon = noProjects, text, action }: TEmptyRender) => {
+const EmptyRender = ({ icon = noProjects, text, action }: IEmptyRender) => {
   return (
     <Stack w="100%" mt={30}>
       <Center>

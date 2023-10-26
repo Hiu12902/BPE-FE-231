@@ -12,5 +12,11 @@ export const useWorkspaceStyle = createStyles((theme) => ({
             },
             display: "none",
         }
+    },
+    searchGroup: {
+        marginTop: rem(20),
+    },
+    form: {
+        width: '60%'
     }
 }));

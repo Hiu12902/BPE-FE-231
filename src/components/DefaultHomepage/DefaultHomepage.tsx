@@ -1,4 +1,3 @@
-import userApi from "@/api/user";
 import workspaceApi from "@/api/workspace";
 import { IWorkspace } from "@/interfaces/workspaces";
 import {
@@ -7,16 +6,13 @@ import {
   getPinnedWorkspace,
   getWorkspace,
 } from "@/redux/selectors";
-import {
-  pinnedWorkspaceActions,
-  userActions,
-  workspaceActions,
-} from "@/redux/slices";
+import { pinnedWorkspaceActions, workspaceActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import {
   Accordion,
-  Button,
   Container,
+  Flex,
+  Grid,
   Group,
   Skeleton,
   Tabs,
@@ -24,21 +20,21 @@ import {
 } from "@mantine/core";
 import { createFormContext } from "@mantine/form";
 import { useDocumentTitle } from "@mantine/hooks";
-import { ReactComponent as IconPlus } from "@tabler/icons/icons/plus.svg";
 import { useEffect, useState } from "react";
 import { batch, useSelector } from "react-redux";
 import CreateWorkspaceButton from "../CreateWorkspaceButton";
 import { EmptyRender } from "../EmptyRender";
+import { IEmptyRender } from "../EmptyRender/EmptyRender";
 import { SearchInput } from "../SearchInput";
 import { WorkspaceItem } from "../WorkspaceItem";
 import { useDefaultHomepageStyle } from "./DefaultHomepage.style";
 
-export interface TSearchInput {
-  searchInput: string;
+export interface ISearchValue {
+  searchValue: string;
 }
 
-export const [FormProvider, useFormContext, useForm] =
-  createFormContext<TSearchInput>();
+export const [WorkspaceFormProvider, useWorkspaceFormContext, useForm] =
+  createFormContext<ISearchValue>();
 
 const DefaultHomepage = () => {
   useDocumentTitle("Home | BPSky");
@@ -59,17 +55,6 @@ const DefaultHomepage = () => {
   const pinnedWorkspacesMap = Object.keys(pinnedWorkspaces).map(function (key) {
     return pinnedWorkspaces[parseInt(key)];
   });
-
-  const getUser = async () => {
-    try {
-      const res = await userApi.getMe();
-      if (res) {
-        dispatch(userActions.setUser(res));
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const getAllWorkspaces = async () => {
     try {
@@ -109,14 +94,12 @@ const DefaultHomepage = () => {
     dispatch(workspaceActions.setWorkspace(workspace));
   };
 
-  // Bắt giá trị của searchInput
   const form = useForm({
     initialValues: {
-      searchInput: "",
+      searchValue: "",
     },
   });
-  const searchValue = form.values.searchInput;
-
+  const searchValue = form.values.searchValue;
   const searchWorkspaces = async () => {
     setSearchLoading(true);
     try {
@@ -147,6 +130,48 @@ const DefaultHomepage = () => {
     getAllPinnedWorkspaces();
   };
 
+  const WorkspaceListRender = ({
+    workspaces,
+    loading,
+    emptyRender,
+  }: {
+    workspaces: IWorkspace[];
+    loading: Boolean;
+    emptyRender: IEmptyRender;
+  }) => {
+    return (
+      <>
+        {loading ? (
+          <Skeleton height={50} mt={10} />
+        ) : workspaces.length === 0 ? (
+          EmptyRender(emptyRender)
+        ) : (
+          <Accordion variant="contained" chevron className={classes.accordion}>
+            <Accordion.Item value="recentlyOpened">
+              <Accordion.Control value="recentlyOpened">
+                <Grid justify="center">
+                  <Grid.Col span={3}>
+                    <Flex justify="flex-start">Workspace Name</Flex>
+                  </Grid.Col>
+                  <Grid.Col span={3}>
+                    <Flex justify="center">Owner</Flex>
+                  </Grid.Col>
+                  <Grid.Col span={3}>
+                    <Flex justify="center">Last modified</Flex>
+                  </Grid.Col>
+                  <Grid.Col span={3} />
+                </Grid>
+              </Accordion.Control>
+            </Accordion.Item>
+            {workspaces.map((workspace, index) => (
+              <WorkspaceItem {...workspace} key={index} />
+            ))}
+          </Accordion>
+        )}
+      </>
+    );
+  };
+
   useEffect(() => {
     getAllWorkspaces();
     getAllPinnedWorkspaces();
@@ -158,14 +183,11 @@ const DefaultHomepage = () => {
 
   return (
     <Container size="xl">
-      {/* Welcome user */}
-      <Group position="apart">
-        <Title>Welcome, {currentUser.name}!</Title>
-      </Group>
+      <Title order={2}>Welcome, {currentUser.name}!</Title>
 
       {/* Search input & Button create workspace */}
       <Group position="apart" className={classes.searchGroup}>
-        <FormProvider form={form}>
+        <WorkspaceFormProvider form={form}>
           <form
             onSubmit={form.onSubmit(() => {
               if (searchValue.length === 0) {
@@ -178,99 +200,59 @@ const DefaultHomepage = () => {
             })}
             className={classes.form}
           >
-            <SearchInput onCancel={onCancelSearchWorkspaces} />
+            <SearchInput
+              onCancel={onCancelSearchWorkspaces}
+              placeholder="Search workspace name, owner name, etc."
+              context="workspace"
+            />
           </form>
-        </FormProvider>
-
-        {/* Create new workspace */}
+        </WorkspaceFormProvider>
         <CreateWorkspaceButton onCreateWorkspace={onCreateNewWorkspace} />
       </Group>
 
+      {/* Search result */}
       {isSearching ? (
-        <>
-          {/* Search result */}
-          {searchLoading ? (
-            <Skeleton height={50} mt={10} />
-          ) : workspacesMap.length === 0 ? (
-            EmptyRender({
-              text: "No results found!",
-            })
-          ) : (
-            <Accordion
-              variant="contained"
-              chevron
-              className={classes.accordion}
-            >
-              {workspacesMap.map((workspace, index) => (
-                <WorkspaceItem {...workspace} key={index} />
-              ))}
-            </Accordion>
-          )}
-        </>
+        <WorkspaceListRender
+          workspaces={workspacesMap}
+          loading={searchLoading}
+          emptyRender={{
+            text: "No results found!",
+          }}
+        />
       ) : (
-        <>
-          <Tabs className={classes.tabs} defaultValue="Recently opened">
-            {/* Tabs list */}
-            <Tabs.List>
-              <Tabs.Tab value="Recently opened">Recently opened</Tabs.Tab>
-              <Tabs.Tab value="Pinned">Pinned</Tabs.Tab>
-            </Tabs.List>
+        <Tabs className={classes.tabs} defaultValue="Recently opened">
+          <Tabs.List>
+            <Tabs.Tab value="Recently opened">Recently opened</Tabs.Tab>
+            <Tabs.Tab value="Pinned">Pinned</Tabs.Tab>
+          </Tabs.List>
 
-            {/* Tabs panel for recently opened */}
-            <Tabs.Panel value="Recently opened">
-              {loading ? (
-                <Skeleton height={50} mt={10} />
-              ) : workspacesMap.length === 0 ? (
-                EmptyRender({
-                  text: "You don't have any projects yet! You can start right now by creating a new project.",
-                  action: (
-                    <Button
-                      leftIcon={
-                        <IconPlus
-                          className={classes.buttonIcon}
-                          onClick={() => {}}
-                        />
-                      }
-                    >
-                      New workspace
-                    </Button>
-                  ),
-                })
-              ) : (
-                <Accordion
-                  variant="contained"
-                  chevron
-                  className={classes.accordion}
-                >
-                  {workspacesMap.map((workspace, index) => (
-                    <WorkspaceItem {...workspace} key={index} />
-                  ))}
-                </Accordion>
-              )}
-            </Tabs.Panel>
+          {/* Tabs panel for recently opened */}
+          <Tabs.Panel value="Recently opened">
+            <WorkspaceListRender
+              workspaces={workspacesMap}
+              loading={loading}
+              emptyRender={{
+                text: "You don't have any projects yet! You can start right now by creating a new project.",
+                action: (
+                  <CreateWorkspaceButton
+                    onCreateWorkspace={onCreateNewWorkspace}
+                  />
+                ),
+              }}
+            />
+          </Tabs.Panel>
 
-            {/* Tab panel for Pinned */}
-            <Tabs.Panel value="Pinned">
-              {pinnedLoading ? (
-                <Skeleton height={50} mt={10} />
-              ) : pinnedWorkspacesMap.length === 0 ? (
-                EmptyRender({
-                  text: "You don't have any pinned projects yet!",
-                })
-              ) : (
-                <Accordion
-                  variant="contained"
-                  chevron
-                  className={classes.accordion}
-                >
-                  {pinnedWorkspacesMap.map((workspace, index) => (
-                    <WorkspaceItem {...workspace} key={index} />
-                  ))}
-                </Accordion>
-              )}
-            </Tabs.Panel>
-          </Tabs>
-        </>
+          {/* Tab panel for Pinned */}
+          <Tabs.Panel value="Pinned">
+            <WorkspaceListRender
+              workspaces={pinnedWorkspacesMap}
+              loading={pinnedLoading}
+              emptyRender={{
+                text: "You don't have any pinned workspaces yet! You can start right now by pinning a workspace.",
+              }}
+            />
+          </Tabs.Panel>
+        </Tabs>
       )}
     </Container>
   );

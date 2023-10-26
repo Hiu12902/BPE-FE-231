@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import { ReactComponent as IconPlus } from "@tabler/icons/icons/plus.svg";
 import { useState } from "react";
-import { useCreateWorkspaceStyle } from "./CreateWorkspaceButton.style";
+import { useCreateWorkspaceButtonStyle } from "./CreateWorkspaceButton.style";
 
 const CreateWorkspaceButton = ({
   onCreateWorkspace,
@@ -23,7 +23,7 @@ const CreateWorkspaceButton = ({
   const [workspaceName, setWorkspaceName] = useState<string>();
   const [workspaceDescription, setWorkspaceDescription] = useState<string>();
   const notify = useNotification();
-  const { classes } = useCreateWorkspaceStyle();
+  const { classes } = useCreateWorkspaceButtonStyle();
 
   const onClear = () => {
     setOpen(false);
@@ -33,17 +33,16 @@ const CreateWorkspaceButton = ({
 
   const onCreateNewWorkspace = async () => {
     try {
-      if (!workspaceName) {
+      if (!workspaceName || !workspaceDescription) {
         notify({
           title: "Error!",
-          message: "Name is required!",
-          type: "error",
-        });
-      }
-      if (!workspaceDescription) {
-        notify({
-          title: "Error!",
-          message: "Description is required!",
+          message: `${
+            !workspaceName && !workspaceDescription
+              ? `Project's name and description`
+              : !workspaceDescription
+              ? `Project's description`
+              : `Project's name`
+          } can not be empty!`,
           type: "error",
         });
       }

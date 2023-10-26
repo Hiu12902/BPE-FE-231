@@ -1,3 +1,6 @@
+import projectApi from '@/api/project';
+import FileItem from '@/components/FileItem';
+import { IFile } from '@/interfaces/projects';
 import {
   Accordion,
   ActionIcon,
@@ -8,16 +11,12 @@ import {
   Stack,
   Title,
 } from '@mantine/core';
+import { useDocumentTitle } from '@mantine/hooks';
 import { ReactComponent as IconInfoCircleFilled } from '@tabler/icons/icons/info-circle-filled.svg';
 import { ReactComponent as IconUserShare } from '@tabler/icons/icons/user-plus.svg';
-import { useParams } from 'react-router-dom';
-import FileItem from '@/components/FileItem';
 import { useEffect, useState } from 'react';
-import { IFile } from '@/interfaces/projects';
-import projectApi from '@/api/project';
-import { fade } from '@mantine/core/lib/Skeleton/Skeleton.styles';
-import { useDocumentTitle } from '@mantine/hooks';
 import { unstable_batchedUpdates } from 'react-dom';
+import { useParams } from 'react-router-dom';
 
 const Project = () => {
   const { projectName, projectId } = useParams();

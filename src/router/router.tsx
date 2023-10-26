@@ -7,11 +7,11 @@ import AppLayout from "@/components/Layouts/App/App.layout";
 import AuthenticationLayout from "@/components/Layouts/Authentication";
 import WorkspaceLayout from "@/components/Layouts/Workspace/Workspace.layout";
 import Login from "@/components/Login";
-import MainScreen from "@/components/MainScreen";
 import Project from "@/components/Project";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Register from "@/components/Register";
 import ResetPassword from "@/components/ResetPassword";
+import Workspace from "@/components/Workspace";
 import BpeBpmnModeler from "@/core/modeler/BpmnModeler";
 import {
   createBrowserRouter,
@@ -25,11 +25,11 @@ const router = createBrowserRouter(
       <Route element={<ProtectedRoute />} errorElement={<CrashComponent />}>
         <Route element={<WorkspaceLayout />}>
           <Route path="/" element={<DefaultHomepage />} />
+          <Route path="workspace/:workspaceName/:workspaceId" element={<Workspace />} />
         </Route>
         <Route element={<AppLayout />}>
-          <Route path="/personal" element={<MainScreen />} />
           <Route path="/document" element={<DocumentEditor />} />
-          <Route path="/:projectName/:projectId" element={<Project />} />
+          <Route path="project/:projectName/:projectId" element={<Project />} />
         </Route>
         <Route path="/editor" element={<BpeBpmnModeler />} />
       </Route>

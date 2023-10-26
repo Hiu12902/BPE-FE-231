@@ -151,7 +151,7 @@ const ProjectItem = (props: IProject) => {
 
   const onOpenProject = (e: MouseEvent) => {
     e.stopPropagation();
-    window.open(`/${name}/${id}`, "_blank");
+    window.open(`/${name}/${id}`, "_self");
   };
 
   const openDeleteModal = (e: MouseEvent) => {

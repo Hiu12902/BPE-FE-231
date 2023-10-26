@@ -1,6 +1,6 @@
-import Client from '@/api/client';
-import { UserRole } from '@/constants/project';
-import queryString from 'query-string';
+import Client from "@/api/client";
+import { UserRole } from "@/constants/project";
+import queryString from "query-string";
 
 class ProjectApi {
   public static classInstance: ProjectApi;
@@ -14,11 +14,23 @@ class ProjectApi {
   }
 
   public getAllProjects(): Promise<any> {
-    return Client.get('/project/all');
+    return Client.get("/project/all");
   }
 
-  public createNewProject(projectName: string): Promise<any> {
-    return Client.post('/project', { name: projectName });
+  public createNewProject({
+    name,
+    description,
+    workspaceId,
+  }: {
+    name: string;
+    description?: string;
+    workspaceId: number;
+  }): Promise<any> {
+    return Client.post("/project", {
+      name: name,
+      description: description,
+      workspaceId: workspaceId,
+    });
   }
 
   public getProcessesByProject(projectId: number): Promise<any> {
@@ -29,7 +41,10 @@ class ProjectApi {
     return Client.get(`/project/${projectId}/document`);
   }
 
-  public getProcessVerions(payload: { projectId: number; processId: number }): Promise<any> {
+  public getProcessVerions(payload: {
+    projectId: number;
+    processId: number;
+  }): Promise<any> {
     const { projectId, processId } = payload;
     return Client.get(`/project/${projectId}/process/${processId}/version`);
   }
@@ -40,7 +55,9 @@ class ProjectApi {
     processId: number;
   }): Promise<any> {
     const { projectId, version, processId } = query;
-    return Client.get(`/project/${projectId}/process/${processId}/version/${version}`);
+    return Client.get(
+      `/project/${projectId}/process/${processId}/version/${version}`
+    );
   }
 
   public autosaveBpmnFiles(body: FormData): Promise<any> {
@@ -52,7 +69,10 @@ class ProjectApi {
     body: FormData
   ): Promise<any> {
     const { projectId, version, processId } = query;
-    return Client.put(`/project/${projectId}/process/${processId}/version/${version}`, body);
+    return Client.put(
+      `/project/${projectId}/process/${processId}/version/${version}`,
+      body
+    );
   }
 
   public deleteVerion(query: {
@@ -61,7 +81,9 @@ class ProjectApi {
     processId: number;
   }): Promise<any> {
     const { projectId, version, processId } = query;
-    return Client.delete(`/project/${projectId}/process/${processId}/version/${version}`);
+    return Client.delete(
+      `/project/${projectId}/process/${processId}/version/${version}`
+    );
   }
 
   public renameProject(query: { projectId: number }, body: { name: string }) {
@@ -74,7 +96,10 @@ class ProjectApi {
     body: FormData
   ): Promise<any> {
     const { projectId, processId } = query;
-    return Client.post(`/project/${projectId}/process/${processId}/version`, body);
+    return Client.post(
+      `/project/${projectId}/process/${processId}/version`,
+      body
+    );
   }
 
   public deleteProject(projectId: number): Promise<any> {
@@ -89,7 +114,10 @@ class ProjectApi {
     return Client.get(`/project/${projectId}/document/text`);
   }
 
-  public saveDocument(query: { projectId: number }, body: FormData): Promise<any> {
+  public saveDocument(
+    query: { projectId: number },
+    body: FormData
+  ): Promise<any> {
     const { projectId } = query;
     return Client.put(`/project/${projectId}/document/text`, body);
   }
@@ -125,7 +153,11 @@ class ProjectApi {
     return Client.post(`/result`, body);
   }
 
-  public deleteComment(body: { projectID: number; version: string; id: number }): Promise<any> {
+  public deleteComment(body: {
+    projectID: number;
+    version: string;
+    id: number;
+  }): Promise<any> {
     return Client.delete(`/bpmnfile/comment/delete`, { data: { ...body } });
   }
 
@@ -145,16 +177,25 @@ class ProjectApi {
     return Client.get(`/result/all?${queryString.stringify(query)}`);
   }
 
-  public shareProject(body: { user_id: number; role?: UserRole }[], projectId: number) {
+  public shareProject(
+    body: { user_id: number; role?: UserRole }[],
+    projectId: number
+  ) {
     return Client.post(`/project/${projectId}/user`, body);
   }
 
-  public createNewProcess(query: { projectId: number }, body: { name: string }): Promise<any> {
+  public createNewProcess(
+    query: { projectId: number },
+    body: { name: string }
+  ): Promise<any> {
     const { projectId } = query;
     return Client.post(`/project/${projectId}/process`, body);
   }
 
-  public deleteProcess(query: { projectId: number; processId: number }): Promise<any> {
+  public deleteProcess(query: {
+    projectId: number;
+    processId: number;
+  }): Promise<any> {
     const { projectId, processId } = query;
     return Client.delete(`/project/${projectId}/process/${processId}`);
   }
@@ -173,6 +214,10 @@ class ProjectApi {
 
   public saveImage(body: FormData): Promise<any> {
     return Client.post(`/image`, body);
+  }
+
+  public searchProject(query: { searchValue: string }): Promise<any> {
+    return Client.get(`/project/search/${query.searchValue}`);
   }
 }
 
