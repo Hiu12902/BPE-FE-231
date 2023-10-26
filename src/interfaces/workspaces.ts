@@ -12,4 +12,5 @@ export interface IWorkspace {
     openedAt?: string;
     isHided?: boolean;
     isPinned?: boolean;
+    offset: number; // USED FOR KEEPING ORDER OF WORKSPACES FROM REUTRNED FROM BE
 }

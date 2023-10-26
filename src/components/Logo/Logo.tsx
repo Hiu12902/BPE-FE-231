@@ -33,7 +33,7 @@ const Logo = ({
       <AppLogo
         height={height || 40}
         className={classes.logo}
-        onClick={() => navigate("/")}
+        onClick={() => window.open("/", "_self")}
       />
     </Center>
   );
