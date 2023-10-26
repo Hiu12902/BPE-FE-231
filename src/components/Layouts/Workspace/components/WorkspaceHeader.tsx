@@ -1,4 +1,10 @@
+import userApi from "@/api/user";
+import ChangePasswordForm from "@/components/ChangePasswordForm";
+import Logo from "@/components/Logo";
 import UserInformation from "@/components/UserInformation/UserInformation";
+import { ACCESS_TOKEN } from "@/constants/localStorageKeys";
+import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
+import useNotification from "@/hooks/useNotification";
 import { getCurrentUser } from "@/redux/selectors";
 import {
   ActionIcon,
@@ -9,16 +15,12 @@ import {
   Menu,
   Tabs,
 } from "@mantine/core";
-import { ReactComponent as IconSetting } from "@tabler/icons/icons/settings.svg";
-import { ReactComponent as IconNotification } from "@tabler/icons/icons/bell.svg";
-import { useSelector } from "react-redux";
-import { ReactComponent as IconSignOut } from "@tabler/icons/icons/logout.svg";
-import { ACCESS_TOKEN } from "@/constants/localStorageKeys";
 import { openModal } from "@mantine/modals";
-import ChangePasswordForm from "@/components/ChangePasswordForm";
-import useNotification from "@/hooks/useNotification";
+import { ReactComponent as IconNotification } from "@tabler/icons/icons/bell.svg";
+import { ReactComponent as IconSignOut } from "@tabler/icons/icons/logout.svg";
+import { ReactComponent as IconSetting } from "@tabler/icons/icons/settings.svg";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import userApi from "@/api/user";
 
 const WorkspaceHeader = () => {
   const currentUser = useSelector(getCurrentUser);
@@ -78,23 +80,24 @@ const WorkspaceHeader = () => {
 
   return (
     <Group
-      position="right"
+      position="apart"
       align="center"
       style={{
+        backgroundColor: PRIMARY_COLOR[1],
         height: "100%",
         padding: 0,
       }}
     >
-      <div />
+      <Logo />
       <Group mr={20}>
         {/* onClick: Navigate tới trang Workspace management */}
         <ActionIcon>
-          <IconSetting width={25} height={25} />
+          <IconSetting width={25} height={25} color="white" />
         </ActionIcon>
 
         {/* onClick: Navigate tới trang Notification */}
         <ActionIcon>
-          <IconNotification width={25} height={25} />
+          <IconNotification width={25} height={25} color="white" />
         </ActionIcon>
 
         {/* onClick: Open modal User Information */}

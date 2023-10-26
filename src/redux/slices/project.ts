@@ -27,6 +27,9 @@ const projectSlice = createSlice({
     updateProject: (state, action: PayloadAction<IProject>) => {
       return { ...state, [action.payload.id]: action.payload };
     },
+    clearProjects: () => {
+      return {};
+    }
   },
 });
 

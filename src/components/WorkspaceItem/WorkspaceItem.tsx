@@ -34,12 +34,25 @@ const WorkspaceItem = (props: IWorkspace) => {
   const dispatch = useAppDispatch();
   const currentUser = useSelector(getCurrentUser);
   const notify = useNotification();
-  const { id, name, createdAt, ownerId, isPinned } = props;
+  const { id, name, openedAt, ownerId, isPinned } = props;
   const nameInputRef = useRef<HTMLInputElement>(null);
   const [renderName, setRenderName] = useState<string | undefined>(name);
 
-  const formatTimestamp = (date: Date | string) =>
-    new Date(date).toLocaleString("it-IT");
+  const formatTimestamp = (date: Date | string) => {
+    function convertUTCDateToLocalDate(date: Date) {
+      var newDate = new Date(
+        date.getTime() + date.getTimezoneOffset() * 60 * 1000
+      );
+
+      var offset = date.getTimezoneOffset() / 60;
+      var hours = date.getHours();
+
+      newDate.setHours(hours - offset);
+
+      return newDate;
+    }
+    return convertUTCDateToLocalDate(new Date(date)).toLocaleString();
+  };
 
   const togglePin = async () => {
     try {
@@ -82,21 +95,21 @@ const WorkspaceItem = (props: IWorkspace) => {
   };
 
   const onOpenWorkspace = async (e: any) => {
-    e.stopPropagation();
-    window.open(`workspace/${name}/${id}`, "_self");
-    // try {
-    //   const res = await workspaceApi.openWorkspace(id);
-    //   if (res) {
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    //   notify({
-    //     title: "Open workspace failed!",
-    //     message:
-    //       "Something went wrong while trying to open workspace. Please try again",
-    //     type: "error",
-    //   });
-    // }
+    try {
+      const res = await workspaceApi.openWorkspace(id);
+      if (res) {
+        e.stopPropagation();
+        window.open(`workspace/${name}/${id}`, "_self");
+      }
+    } catch (error) {
+      console.log(error);
+      notify({
+        title: "Open workspace failed!",
+        message:
+          "Something went wrong while trying to open workspace. Please try again",
+        type: "error",
+      });
+    }
   };
 
   const onDeleteWorkspace = async () => {
@@ -307,11 +320,7 @@ const WorkspaceItem = (props: IWorkspace) => {
           <Grid.Col span={3}>
             <Flex justify="center">
               <Text color="dimmed" size="sm">
-                {createdAt
-                  ? formatTimestamp(createdAt)
-                      .split(",")[1]
-                      .concat(" ", formatTimestamp(createdAt).split(",")[0])
-                  : new Date(Date.now()).toLocaleString("it-IT")}
+                {openedAt && formatTimestamp(openedAt)}
               </Text>
             </Flex>
           </Grid.Col>
