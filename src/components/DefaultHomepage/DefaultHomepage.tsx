@@ -49,20 +49,24 @@ const DefaultHomepage = () => {
   const [isSearching, setIsSearching] = useState<Boolean>(false);
   const workspaces = useSelector(getWorkspace);
   const pinnedWorkspaces = useSelector(getPinnedWorkspace);
-  const workspacesMap = Object.keys(workspaces).map(function (key) {
-    return workspaces[parseInt(key)];
-  });
-  const pinnedWorkspacesMap = Object.keys(pinnedWorkspaces).map(function (key) {
-    return pinnedWorkspaces[parseInt(key)];
-  });
-
+  const workspacesMap = Object.values(workspaces).sort(
+    (a, b) => a.offset - b.offset
+  );
+  const pinnedWorkspacesMap = Object.values(pinnedWorkspaces).sort(
+    (a, b) => a.offset - b.offset
+  );
   const getAllWorkspaces = async () => {
     try {
       const workspaces = await workspaceApi.getAllWorkspaces();
       if (workspaces) {
         batch(() => {
-          workspaces.map((workspace: IWorkspace) =>
-            dispatch(workspaceActions.setWorkspace(workspace))
+          workspaces.map((workspace: IWorkspace, index: number) =>
+            dispatch(
+              workspaceActions.setWorkspace({
+                ...workspace,
+                offset: index,
+              })
+            )
           );
         });
       }

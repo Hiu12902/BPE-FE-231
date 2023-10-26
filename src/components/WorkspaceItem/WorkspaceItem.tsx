@@ -41,9 +41,8 @@ const WorkspaceItem = (props: IWorkspace) => {
   const formatTimestamp = (date: Date | string) => {
     function convertUTCDateToLocalDate(date: Date) {
       var newDate = new Date(
-        date.getTime() + date.getTimezoneOffset() * 60 * 1000
+        date.getTime() - date.getTimezoneOffset() * 60 * 1000
       );
-
       var offset = date.getTimezoneOffset() / 60;
       var hours = date.getHours();
 
