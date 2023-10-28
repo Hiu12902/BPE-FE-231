@@ -2,7 +2,7 @@ import workspaceApi from "@/api/workspace";
 import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
 import useNotification from "@/hooks/useNotification";
 import { IWorkspace } from "@/interfaces/workspaces";
-import { getCurrentUser } from "@/redux/selectors";
+import { getCurrentUser, getPinnedWorkspace } from "@/redux/selectors";
 import { pinnedWorkspaceActions, workspaceActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import {
@@ -33,10 +33,11 @@ const WorkspaceItem = (props: IWorkspace) => {
   const { classes } = useWorkspaceItemStyle();
   const dispatch = useAppDispatch();
   const currentUser = useSelector(getCurrentUser);
+  const workspaces = useSelector(getPinnedWorkspace);
   const notify = useNotification();
   const { id, name, openedAt, ownerId, isPinned } = props;
   const nameInputRef = useRef<HTMLInputElement>(null);
-  const [renderName, setRenderName] = useState<string | undefined>(name);
+  const [renderName, setRenderName] = useState<string | undefined>();
 
   const formatTimestamp = (date: Date | string) => {
     function convertUTCDateToLocalDate(date: Date) {
@@ -299,7 +300,7 @@ const WorkspaceItem = (props: IWorkspace) => {
                   maxWidth: "80%",
                 }}
               >
-                {renderName}
+                {renderName === undefined ? name : renderName}
               </Text>
             </Group>
           </Grid.Col>

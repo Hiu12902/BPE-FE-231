@@ -1,5 +1,4 @@
 import projectApi from "@/api/project";
-import noProjects from "@/assets/no-projects.svg";
 import CreateProjectButton from "@/components/CreateProjectButton";
 import ProjectItem from "@/components/ProjectItem";
 import { IProject } from "@/interfaces/projects";
@@ -9,14 +8,12 @@ import { useAppDispatch } from "@/redux/store";
 import {
   Accordion,
   Button,
-  Center,
   Container,
   Divider,
+  Flex,
+  Grid,
   Group,
-  Image,
   Skeleton,
-  Stack,
-  Text,
   Title,
 } from "@mantine/core";
 import { createFormContext } from "@mantine/form";
@@ -25,6 +22,7 @@ import { ReactComponent as IconChevronRight } from "@tabler/icons/icons/chevron-
 import { useEffect, useState } from "react";
 import { batch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import EmptyRender, { IEmptyRender } from "../EmptyRender/EmptyRender";
 import { SearchInput } from "../SearchInput";
 import { useWorkspaceStyle } from "./Workspace.style";
 
@@ -41,14 +39,14 @@ const Workspace = () => {
   const { classes } = useWorkspaceStyle();
   const dispatch = useAppDispatch();
   const projects = useSelector(getProject);
-  const projectsMap = Object.keys(projects).map(function (key) {
-    return projects[parseInt(key)];
-  });
+  const projectsMap = Object.values(projects).sort(
+    (a, b) => a.offset - b.offset
+  );
   const { workspaceId, workspaceName } = useParams();
   const isOpenFromEditor = false; // temporary value
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(true);
-  const [isSearching, setIsSearching] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
 
   const form = useForm({
@@ -82,7 +80,12 @@ const Workspace = () => {
     setSearchLoading(true);
 
     dispatch(projectActions.clearProjects());
+    clearProjects();
     getAllProjects();
+  };
+
+  const clearProjects = async () => {
+    dispatch(projectActions.clearProjects());
   };
 
   const getAllProjects = async () => {
@@ -90,8 +93,13 @@ const Workspace = () => {
       const projects = await projectApi.getAllProjects();
       if (projects) {
         batch(() => {
-          projects.map((project: IProject) =>
-            dispatch(projectActions.setProject(project))
+          projects.map((project: IProject, index: number) =>
+            dispatch(
+              projectActions.setProject({
+                ...project,
+                offset: index,
+              })
+            )
           );
         });
       }
@@ -110,28 +118,56 @@ const Workspace = () => {
     dispatch(projectActions.deleteProject(projectId));
   };
 
-  const renderNoProjects = () => {
+  const ProjectListRender = ({
+    projects,
+    loading,
+    emptyRender,
+  }: {
+    projects: IProject[];
+    loading: Boolean;
+    emptyRender: IEmptyRender;
+  }) => {
     return (
-      <Stack w={400}>
-        <Center>
-          <Image src={noProjects} width={120} opacity={0.7} />
-        </Center>
-        <Text align="center" color="dimmed">
-          You don't have any projects yet! You can start right now by creating a
-          new project.
-        </Text>
-        <Center>
-          <CreateProjectButton
-            workspaceId={Number(workspaceId)}
-            onCreateProject={onCreateNewProject}
-          />
-        </Center>
-      </Stack>
+      <>
+        {loading ? (
+          <Skeleton height={50} mt={10} />
+        ) : projects.length === 0 ? (
+          EmptyRender(emptyRender)
+        ) : (
+          <Accordion
+            variant="separated"
+            chevron={<IconChevronRight color="#868e96" />}
+            className={classes.accordion}
+          >
+            <Accordion.Item value="Header">
+              <Accordion.Control>
+                <Grid justify="center">
+                  <Grid.Col span={3}>
+                    <Flex justify="center">Workspace Name</Flex>
+                  </Grid.Col>
+                  <Grid.Col span={3}>
+                    <Flex justify="center">Owner</Flex>
+                  </Grid.Col>
+                  <Grid.Col span={3}>
+                    <Flex justify="center">Last modified</Flex>
+                  </Grid.Col>
+                  <Grid.Col span={3} />
+                </Grid>
+              </Accordion.Control>
+            </Accordion.Item>
+            {projectsMap.map((project) => (
+              <ProjectItem
+                {...project}
+                key={project.id}
+                onDeleteProject={onDeleteProject}
+                shouldGetDocuments={!isOpenFromEditor}
+                showExtraInfo={!isOpenFromEditor}
+              />
+            ))}
+          </Accordion>
+        )}
+      </>
     );
-  };
-
-  const renderProjectsSkeleton = () => {
-    return [1, 2, 3].map((v) => <Skeleton height={50} key={v} mt={10} />);
   };
 
   useEffect(() => {
@@ -140,7 +176,6 @@ const Workspace = () => {
 
   return (
     <Container size="xl">
-      {/* Header */}
       <Title order={2}>{workspaceName}</Title>
 
       <Group position="apart" className={classes.searchGroup}>
@@ -177,27 +212,28 @@ const Workspace = () => {
 
       <Divider my="md" />
 
-      {/* Projects information */}
-      {loading ? (
-        renderProjectsSkeleton()
-      ) : projectsMap.length > 0 ? (
-        <Accordion
-          variant="separated"
-          chevron={<IconChevronRight color="#868e96" />}
-          className={classes.accordion}
-        >
-          {projectsMap.map((project) => (
-            <ProjectItem
-              {...project}
-              key={project.id}
-              onDeleteProject={onDeleteProject}
-              shouldGetDocuments={!isOpenFromEditor}
-              showExtraInfo={!isOpenFromEditor}
-            />
-          ))}
-        </Accordion>
+      {isSearching ? (
+        <ProjectListRender
+          projects={projectsMap}
+          loading={searchLoading}
+          emptyRender={{
+            text: "No results found!",
+          }}
+        />
       ) : (
-        <Center>{renderNoProjects()}</Center>
+        <ProjectListRender
+          projects={projectsMap}
+          loading={loading}
+          emptyRender={{
+            text: "You don't have any projects yet! You can start right now by creating a new project.",
+            action: (
+              <CreateProjectButton
+                workspaceId={Number(workspaceId)}
+                onCreateProject={onCreateNewProject}
+              />
+            ),
+          }}
+        />
       )}
     </Container>
   );

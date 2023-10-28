@@ -17,6 +17,9 @@ const pinnedWorkspaceSlice = createSlice({
         unpinWorkspace: (state, action: PayloadAction<{ id: number }>) => {
             delete state[action.payload.id];
         },
+        clearPinnedWorkspaces: () => {
+            return {} as IInitialState;
+        }
     }
 });
 

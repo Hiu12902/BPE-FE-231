@@ -11,13 +11,20 @@ class WorkspaceApi {
         return this.classInstance;
     }
 
-    public getAllWorkspaces(): Promise<any> {
-        return Client.get("/workspace/me/all");
+    public getAllWorkspaces(query: {
+        openedAt?: string;
+        ownerId?: number;
+        keyword?: string;
+        page?: number;
+        limit?: number;
+        pinned?: string;
+    }): Promise<any> {
+        return Client.get(`/workspace/me/all`, { params: { ...query } });
     }
 
-    public getPinnedWorkspaces(): Promise<any> {
-        return Client.get("/workspace/me/pinned");
-    }
+    // public getPinnedWorkspaces(): Promise<any> {
+    //     return Client.get("/workspace/me/pinned");
+    // }
 
     public createWorkspace({
         name,
@@ -57,9 +64,9 @@ class WorkspaceApi {
         return Client.post("/workspace/pinned", { workspaceId });
     }
 
-    public searchWorkspace(searchValue: string): Promise<any> {
-        return Client.get(`/workspace/search/${searchValue}`);
-    }
+    // public searchWorkspace(query: { searchValue: string }): Promise<any> {
+    //     return Client.get(`/workspace/search/${query.searchValue}`);
+    // }
 
     public openWorkspace(workspaceId: number): Promise<any> {
         return Client.post('/workspace/open', { workspaceId });

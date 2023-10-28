@@ -14,9 +14,9 @@ import ResetPassword from "@/components/ResetPassword";
 import Workspace from "@/components/Workspace";
 import BpeBpmnModeler from "@/core/modeler/BpmnModeler";
 import {
+  Route,
   createBrowserRouter,
   createRoutesFromElements,
-  Route,
 } from "react-router-dom";
 
 const router = createBrowserRouter(
@@ -25,7 +25,10 @@ const router = createBrowserRouter(
       <Route element={<ProtectedRoute />} errorElement={<CrashComponent />}>
         <Route element={<WorkspaceLayout />}>
           <Route path="/" element={<DefaultHomepage />} />
-          <Route path="workspace/:workspaceName/:workspaceId" element={<Workspace />} />
+          <Route
+            path="workspace/:workspaceName/:workspaceId"
+            element={<Workspace />}
+          />
         </Route>
         <Route element={<AppLayout />}>
           <Route path="/document" element={<DocumentEditor />} />

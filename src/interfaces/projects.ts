@@ -38,12 +38,13 @@ export interface IProject {
   role?: UserRole;
   showExtraInfo?: boolean;
   workspaceId?: number;
+  offset: number; // USED FOR KEEPING ORDER OF WORKSPACES FROM REUTRNED FROM BE
 }
 
-export interface IWorkspace {
-  name: string;
-  isOpenFromEditor?: boolean;
-}
+// export interface IWorkspace {
+//   name: string;
+//   isOpenFromEditor?: boolean;
+// }
 
 export interface IComment {
   id: number;
