@@ -14,6 +14,7 @@ import { Header } from "./components/Header";
 const RecentlyOpened = ({
   searchValue,
   isSearching,
+  onSetIsSearching,
   loading,
   onSetLoading,
   searchLoading,
@@ -21,6 +22,7 @@ const RecentlyOpened = ({
 }: {
   searchValue?: string;
   isSearching?: Boolean;
+  onSetIsSearching: (loading: Boolean) => void;
   loading: Boolean;
   onSetLoading: (loading: Boolean) => void;
   searchLoading: Boolean;
@@ -72,12 +74,13 @@ const RecentlyOpened = ({
       const workspaces = await workspaceApi.getAllWorkspaces({
         ...(queryFilter ? queryFilter : queryParams),
         keyword: searchValue,
-        page: queryFilter || searchValue ? 1 : pagination.page,
+        page: queryFilter || (searchValue && isSearching) ? 1 : pagination.page,
       });
       if (workspaces) {
         setPagination({
           ...pagination,
-          page: queryFilter || searchValue ? 1 : pagination.page,
+          page:
+            queryFilter || (searchValue && isSearching) ? 1 : pagination.page,
           total: workspaces.total,
           limit: workspaces.limit,
         });
@@ -97,6 +100,7 @@ const RecentlyOpened = ({
     } finally {
       onSetLoading(false);
       onSetSearchLoading(false);
+      onSetIsSearching(false);
     }
   };
 

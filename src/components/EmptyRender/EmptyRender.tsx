@@ -9,7 +9,7 @@ export interface IEmptyRender {
 
 const EmptyRender = ({ icon = noProjects, text, action }: IEmptyRender) => {
   return (
-    <Stack w="100%" mt={30}>
+    <Stack w="100%" mt={30} mb={30}>
       <Center>
         <Image src={icon as string} width={120} opacity={0.7} />
       </Center>
