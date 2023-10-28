@@ -8,6 +8,7 @@ import { useAppDispatch } from "@/redux/store";
 import {
   Accordion,
   ActionIcon,
+  Avatar,
   Divider,
   Flex,
   Grid,
@@ -15,6 +16,7 @@ import {
   Input,
   Text,
   TextInput,
+  Tooltip,
 } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { ReactComponent as IconAbc } from "@tabler/icons/icons/abc.svg";
@@ -28,6 +30,7 @@ import { useSelector } from "react-redux";
 import DropdownMenu from "../DropdownMenu";
 import { IDropdownMenuContent } from "../DropdownMenu/DropdownMenu";
 import { useWorkspaceItemStyle } from "./WorkspaceItem.style";
+import UserInformation from "../UserInformation";
 
 const WorkspaceItem = (props: IWorkspace) => {
   const { classes } = useWorkspaceItemStyle();
@@ -35,7 +38,16 @@ const WorkspaceItem = (props: IWorkspace) => {
   const currentUser = useSelector(getCurrentUser);
   const workspaces = useSelector(getPinnedWorkspace);
   const notify = useNotification();
-  const { id, name, openedAt, ownerId, isPinned } = props;
+  const {
+    id,
+    name,
+    openedAt,
+    isPinned,
+    ownerId,
+    ownerAvatar,
+    ownerEmail,
+    ownerName,
+  } = props;
   const nameInputRef = useRef<HTMLInputElement>(null);
   const [renderName, setRenderName] = useState<string | undefined>();
 
@@ -308,10 +320,28 @@ const WorkspaceItem = (props: IWorkspace) => {
           {/* Owner avatar */}
           {true && (
             <Grid.Col span={3}>
-              <Flex justify="center">
+              <Flex justify="center" align="center">
                 <Text color="dimmed" size="sm">
-                  Owned by: {ownerId}
+                  Owned by:
                 </Text>
+                <Tooltip
+                  label={
+                    <UserInformation
+                      {...{
+                        id: ownerId,
+                        name: ownerName,
+                        email: ownerEmail,
+                        avatar: ownerAvatar,
+                      }}
+                    />
+                  }
+                  color="white"
+                  style={{
+                    border: "1px solid #ccc",
+                  }}
+                >
+                  <Avatar src={ownerAvatar} radius={50} />
+                </Tooltip>
               </Flex>
             </Grid.Col>
           )}

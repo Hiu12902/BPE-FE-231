@@ -5,6 +5,9 @@ export interface IWorkspace {
     createdAt?: Date | string;
     deleteAt?: Date | string;
     ownerId?: number;
+    ownerAvatar?: string;
+    ownerName?: string;
+    ownerEmail?: string;
     background?: string;
     icon?: string;
     isPersonal?: boolean;
