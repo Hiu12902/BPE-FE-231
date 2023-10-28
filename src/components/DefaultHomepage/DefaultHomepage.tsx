@@ -102,6 +102,9 @@ const DefaultHomepage = () => {
             <RecentlyOpened
               searchValue={searchValue}
               isSearching={isSearching}
+              onSetIsSearching={(loading) => {
+                setIsSearching(loading);
+              }}
               loading={recentlyLoading}
               onSetLoading={(loading) => {
                 setRecentlyLoading(loading);
@@ -119,6 +122,9 @@ const DefaultHomepage = () => {
             <Pinned
               searchValue={searchValue}
               isSearching={isSearching}
+              onSetIsSearching={(loading) => {
+                setIsSearching(loading);
+              }}
               loading={pinnedLoading}
               onSetLoading={(loading) => {
                 setPinnedLoading(loading);

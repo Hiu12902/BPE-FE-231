@@ -13,6 +13,7 @@ import { Header } from "./components/Header";
 const Pinned = ({
   searchValue,
   isSearching,
+  onSetIsSearching,
   loading,
   onSetLoading,
   searchLoading,
@@ -20,6 +21,7 @@ const Pinned = ({
 }: {
   searchValue?: string;
   isSearching?: Boolean;
+  onSetIsSearching: (loading: Boolean) => void;
   loading: Boolean;
   onSetLoading: (loading: Boolean) => void;
   searchLoading: Boolean;
@@ -65,13 +67,14 @@ const Pinned = ({
       const pinnedWorkspaces = await workspaceApi.getAllWorkspaces({
         ...(queryFilter ? queryFilter : queryParams),
         keyword: searchValue,
-        page: queryFilter || searchValue ? 1 : pagination.page,
+        page: queryFilter || (searchValue && isSearching) ? 1 : pagination.page,
         pinned: "true",
       });
       if (pinnedWorkspaces) {
         setPagination({
           ...pagination,
-          page: queryFilter || searchValue ? 1 : pagination.page,
+          page:
+            queryFilter || (searchValue && isSearching) ? 1 : pagination.page,
           total: pinnedWorkspaces.total,
           limit: pinnedWorkspaces.limit,
         });
@@ -92,6 +95,7 @@ const Pinned = ({
     } finally {
       onSetLoading(false);
       onSetSearchLoading(false);
+      onSetIsSearching(false);
     }
   };
 
