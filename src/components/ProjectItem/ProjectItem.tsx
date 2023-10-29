@@ -1,7 +1,7 @@
 import projectApi from "@/api/project";
 import FileItem from "@/components/FileItem";
 import ShareModal from "@/components/ShareModal";
-import { UserRole, UserRoleText } from "@/constants/project";
+import { UserRoleText } from "@/constants/project";
 import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
 import useNotification from "@/hooks/useNotification";
 import { IFile, IProject } from "@/interfaces/projects";
@@ -14,7 +14,6 @@ import {
   Badge,
   Flex,
   Grid,
-  Group,
   Skeleton,
   Text,
   TextInput,
@@ -42,10 +41,9 @@ const ProjectItem = (props: IProject) => {
     id,
     createAt,
     onDeleteProject,
-    shouldGetDocuments,
+    shouldGetDocuments = true,
     owner,
     role,
-    showExtraInfo,
   } = props;
   const [files, setFiles] = useState<IFile[]>([]);
   const [projectNameRender, setProjectNameRender] = useState<
@@ -62,9 +60,21 @@ const ProjectItem = (props: IProject) => {
     (modeler) => modeler.projectId === id
   );
   const notify = useNotification();
-  // Show extra info của Project khi & chỉ khi: (1) Role là Owner (2) showExtraInfo = true, nhưng showExtraInfo được truyền từ isOpenFromEditor ở Workspace
-  const shouldShowExtraInfo =
-    showExtraInfo && (role as UserRole) !== UserRole.OWNER;
+
+  const formatTimestamp = (date: Date | string) => {
+    function convertUTCDateToLocalDate(date: Date) {
+      var newDate = new Date(
+        date.getTime() - date.getTimezoneOffset() * 60 * 1000
+      );
+      var offset = date.getTimezoneOffset() / 60;
+      var hours = date.getHours();
+
+      newDate.setHours(hours - offset);
+
+      return newDate;
+    }
+    return convertUTCDateToLocalDate(new Date(date)).toLocaleString();
+  };
 
   const getProjectFiles = async () => {
     try {
@@ -96,20 +106,27 @@ const ProjectItem = (props: IProject) => {
 
   const onRenameProject = async () => {
     try {
-      if (nameInputRef.current) {
+      if (nameInputRef.current?.value.length === 0) {
+        notify({
+          title: "Warning!",
+          message: "Project name cannot be empty!",
+          type: "warning",
+        });
+      }
+      if (nameInputRef.current && nameInputRef.current.value) {
+        const updateName = nameInputRef.current.value;
         const res = await projectApi.renameProject(
           { projectId: id },
-          { name: nameInputRef.current?.value }
+          { name: updateName }
         );
         if (res) {
-          setProjectNameRender(nameInputRef.current?.value);
+          setProjectNameRender(updateName);
           dispatch(
             projectActions.updateProject({
               ...props,
-              name: nameInputRef.current?.value,
+              name: updateName,
             })
           );
-          nameInputRef.current.value = "";
           notify({
             title: "Success!",
             message: "Rename project successfully!",
@@ -225,9 +242,6 @@ const ProjectItem = (props: IProject) => {
     }
   };
 
-  const formatTimestamp = (date: Date | string) =>
-    new Date(date).toLocaleString("it-IT");
-
   const dropdownMenuContent = [
     {
       icon: <IconUserShare className={classes.dropdownMenuIcon} />,
@@ -248,7 +262,6 @@ const ProjectItem = (props: IProject) => {
       icon: <IconTrash className={classes.dropdownMenuIcon} />,
       color: "red",
       children:
-        // (
         //   <Tooltip
         //     label="You are currently working on this project, make sure to close it before delete"
         //     multiline
@@ -258,7 +271,6 @@ const ProjectItem = (props: IProject) => {
         //   >
         //     Delete
         //   </Tooltip>
-        // ),
         "Delete",
       onClick: openDeleteModal,
     },
@@ -271,7 +283,7 @@ const ProjectItem = (props: IProject) => {
         onClick={getProjectFiles}
         onDoubleClick={onOpenProject}
       >
-        <Grid align="center">
+        <Grid align="center" justify="center">
           <ShareModal
             opened={openShareModal}
             onClose={() => setOpenShareModal(false)}
@@ -279,8 +291,8 @@ const ProjectItem = (props: IProject) => {
           />
 
           {/* Project name */}
-          <Grid.Col span={shouldShowExtraInfo ? 3 : 5}>
-            <Group spacing={10}>
+          <Grid.Col span={3}>
+            <Flex justify="flex-start" align="center">
               <IconFolder
                 width={30}
                 height={30}
@@ -291,55 +303,45 @@ const ProjectItem = (props: IProject) => {
                 size="sm"
                 truncate="end"
                 style={{
+                  marginLeft: 5,
                   maxWidth: "80%",
                 }}
               >
                 {projectNameRender}
               </Text>
-            </Group>
+            </Flex>
           </Grid.Col>
 
           {/* Owner avatar */}
-          {shouldShowExtraInfo && (
-            <Grid.Col span={2}>
-              <Group>
-                <Text color="dimmed" size="sm">
-                  Owned by:
-                </Text>
-                <Tooltip label={<UserInformation {...owner} />} color="white">
-                  <Avatar src={owner?.avatar} radius={50} />
-                </Tooltip>
-              </Group>
-            </Grid.Col>
-          )}
+          <Grid.Col span={3}>
+            <Flex justify="center" align="center">
+              <Tooltip
+                label={<UserInformation {...owner} />}
+                color="white"
+                style={{
+                  border: "1px solid #ccc",
+                }}
+              >
+                <Avatar src={owner?.avatar} radius={50} />
+              </Tooltip>
+            </Flex>
+          </Grid.Col>
 
           {/* Last modified */}
-          <Grid.Col span={shouldShowExtraInfo ? 4 : 4}>
-            <Flex align="center" justify="flex-end" h="100%">
+          <Grid.Col span={3}>
+            <Flex align="center" justify="center" h="100%">
               <Text color="dimmed" size="sm">
-                {createAt
-                  ? formatTimestamp(createAt)
-                      .split(",")[1]
-                      .concat(" ", formatTimestamp(createAt).split(",")[0])
-                  : new Date(Date.now()).toLocaleString("it-IT")}
+                {createAt && formatTimestamp(createAt)}
               </Text>
             </Flex>
           </Grid.Col>
 
-          {/* Role */}
-          {shouldShowExtraInfo && (
-            <Grid.Col span={2}>
-              <Flex align="center" justify="center" h="100%" gap={10}>
-                {role !== undefined ? (
-                  <Badge size="md">{UserRoleText[role]}</Badge>
-                ) : null}
-              </Flex>
-            </Grid.Col>
-          )}
-
-          {/* Dropdown menu */}
-          <Grid.Col span={shouldShowExtraInfo ? 1 : 3}>
-            <Flex justify="flex-end">
+          {/* Role & dropdown menu */}
+          <Grid.Col span={3}>
+            <Flex justify="flex-end" align="center" gap={10}>
+              {role !== undefined ? (
+                <Badge size="md">{UserRoleText[role]}</Badge>
+              ) : null}
               <DropdownMenu
                 dropdownMenuContent={
                   dropdownMenuContent as IDropdownMenuContent[]

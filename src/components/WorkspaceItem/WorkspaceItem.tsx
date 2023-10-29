@@ -36,7 +36,6 @@ const WorkspaceItem = (props: IWorkspace) => {
   const { classes } = useWorkspaceItemStyle();
   const dispatch = useAppDispatch();
   const currentUser = useSelector(getCurrentUser);
-  const workspaces = useSelector(getPinnedWorkspace);
   const notify = useNotification();
   const {
     id,
@@ -293,7 +292,6 @@ const WorkspaceItem = (props: IWorkspace) => {
 
   return (
     <Accordion.Item value={id.toString()}>
-      {/* Accordion control: (1) Click to Open Inner files (2) Double click to Open project */}
       <Accordion.Control onDoubleClick={(e) => onOpenWorkspace(e)}>
         <Grid align="center" justify="center">
           {/* Project name */}
@@ -318,33 +316,28 @@ const WorkspaceItem = (props: IWorkspace) => {
           </Grid.Col>
 
           {/* Owner avatar */}
-          {true && (
-            <Grid.Col span={3}>
-              <Flex justify="center" align="center">
-                <Text color="dimmed" size="sm">
-                  Owned by:
-                </Text>
-                <Tooltip
-                  label={
-                    <UserInformation
-                      {...{
-                        id: ownerId,
-                        name: ownerName,
-                        email: ownerEmail,
-                        avatar: ownerAvatar,
-                      }}
-                    />
-                  }
-                  color="white"
-                  style={{
-                    border: "1px solid #ccc",
-                  }}
-                >
-                  <Avatar src={ownerAvatar} radius={50} />
-                </Tooltip>
-              </Flex>
-            </Grid.Col>
-          )}
+          <Grid.Col span={3}>
+            <Flex justify="center" align="center">
+              <Tooltip
+                label={
+                  <UserInformation
+                    {...{
+                      id: ownerId,
+                      name: ownerName,
+                      email: ownerEmail,
+                      avatar: ownerAvatar,
+                    }}
+                  />
+                }
+                color="white"
+                style={{
+                  border: "1px solid #ccc",
+                }}
+              >
+                <Avatar src={ownerAvatar} radius={50} />
+              </Tooltip>
+            </Flex>
+          </Grid.Col>
 
           {/* Last modified */}
           <Grid.Col span={3}>

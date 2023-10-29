@@ -1,8 +1,8 @@
 import projectApi from "@/api/project";
 import CreateProjectButton from "@/components/CreateProjectButton";
-import ProjectItem from "@/components/ProjectItem";
+import { IPagination, IQueryParams } from "@/interfaces/common";
 import { IProject } from "@/interfaces/projects";
-import { getProject } from "@/redux/selectors";
+import { getCurrentUser, getProject } from "@/redux/selectors";
 import { projectActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import {
@@ -10,21 +10,20 @@ import {
   Button,
   Container,
   Divider,
-  Flex,
-  Grid,
   Group,
+  Pagination,
   Skeleton,
   Title,
 } from "@mantine/core";
 import { createFormContext } from "@mantine/form";
 import { useDocumentTitle } from "@mantine/hooks";
-import { ReactComponent as IconChevronRight } from "@tabler/icons/icons/chevron-right.svg";
 import { useEffect, useState } from "react";
 import { batch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import EmptyRender, { IEmptyRender } from "../EmptyRender/EmptyRender";
+import EmptyRender from "../EmptyRender/EmptyRender";
 import { SearchInput } from "../SearchInput";
 import { useWorkspaceStyle } from "./Workspace.style";
+import { Header, List } from "./components";
 
 export interface ISearchValue {
   searchValue: string;
@@ -43,57 +42,71 @@ const Workspace = () => {
     (a, b) => a.offset - b.offset
   );
   const { workspaceId, workspaceName } = useParams();
-  const isOpenFromEditor = false; // temporary value
+  const currentUser = useSelector(getCurrentUser);
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
+
+  const [pagination, setPagination] = useState<IPagination>({
+    page: 1,
+    total: 0,
+    limit: 10,
+  });
+  const [queryParams, setQueryParams] = useState<IQueryParams>({});
 
   const form = useForm({
     initialValues: {
       searchValue: "",
     },
   });
+
   const searchValue = form.values.searchValue;
-  const searchProjects = async () => {
-    setSearchLoading(true);
-    try {
-      const searchResult = await projectApi.searchProject({ searchValue });
-      if (searchResult) {
-        batch(() => {
-          searchResult.map((project: IProject) =>
-            dispatch(projectActions.setProject(project))
-          );
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setSearchLoading(false);
-    }
-  };
 
   const onCancelSearchProjects = () => {
     form.reset();
-    setLoading(true);
     setIsSearching(false);
+    onReturnDefaultState();
+  };
+
+  const onReturnDefaultState = () => {
+    setLoading(true);
     setSearchLoading(true);
 
     dispatch(projectActions.clearProjects());
-    clearProjects();
-    getAllProjects();
   };
 
-  const clearProjects = async () => {
-    dispatch(projectActions.clearProjects());
+  const onCreateNewProject = (project: IProject) =>
+    dispatch(
+      projectActions.setProject({
+        ...project,
+        offset: -1,
+        role: project.ownerId === currentUser.id ? 0 : undefined,
+      })
+    );
+
+  const handlePageChange = (page: number) => {
+    setPagination({ ...pagination, page });
+    onReturnDefaultState();
   };
 
-  const getAllProjects = async () => {
+  const getAllProjects = async (queryFilter?: IQueryParams) => {
     try {
-      const projects = await projectApi.getAllProjects();
+      const projects = await projectApi.getAllProjects(Number(workspaceId), {
+        ...(queryFilter ? queryFilter : queryParams),
+        keyword: searchValue,
+        page: queryFilter || (searchValue && isSearching) ? 1 : pagination.page,
+      });
       if (projects) {
+        setPagination({
+          ...pagination,
+          page:
+            queryFilter || (searchValue && isSearching) ? 1 : pagination.page,
+          total: projects.total,
+          limit: projects.limit,
+        });
         batch(() => {
-          projects.map((project: IProject, index: number) =>
+          projects.data.map((project: IProject, index: number) =>
             dispatch(
               projectActions.setProject({
                 ...project,
@@ -107,72 +120,27 @@ const Workspace = () => {
       console.error(err);
     } finally {
       setLoading(false);
+      setSearchLoading(false);
+      setIsSearching(false);
     }
   };
 
-  const onCreateNewProject = (project: IProject) => {
-    dispatch(projectActions.setProject(project));
-  };
-
-  const onDeleteProject = (projectId: number) => {
-    dispatch(projectActions.deleteProject(projectId));
-  };
-
-  const ProjectListRender = ({
-    projects,
-    loading,
-    emptyRender,
-  }: {
-    projects: IProject[];
-    loading: Boolean;
-    emptyRender: IEmptyRender;
-  }) => {
-    return (
-      <>
-        {loading ? (
-          <Skeleton height={50} mt={10} />
-        ) : projects.length === 0 ? (
-          EmptyRender(emptyRender)
-        ) : (
-          <Accordion
-            variant="separated"
-            chevron={<IconChevronRight color="#868e96" />}
-            className={classes.accordion}
-          >
-            <Accordion.Item value="Header">
-              <Accordion.Control>
-                <Grid justify="center">
-                  <Grid.Col span={3}>
-                    <Flex justify="center">Workspace Name</Flex>
-                  </Grid.Col>
-                  <Grid.Col span={3}>
-                    <Flex justify="center">Owner</Flex>
-                  </Grid.Col>
-                  <Grid.Col span={3}>
-                    <Flex justify="center">Last modified</Flex>
-                  </Grid.Col>
-                  <Grid.Col span={3} />
-                </Grid>
-              </Accordion.Control>
-            </Accordion.Item>
-            {projectsMap.map((project) => (
-              <ProjectItem
-                {...project}
-                key={project.id}
-                onDeleteProject={onDeleteProject}
-                shouldGetDocuments={!isOpenFromEditor}
-                showExtraInfo={!isOpenFromEditor}
-              />
-            ))}
-          </Accordion>
-        )}
-      </>
-    );
+  const onQueryFilter = async (queryFilter: IQueryParams) => {
+    try {
+      setLoading(true);
+      setQueryParams(queryFilter);
+      dispatch(projectActions.clearProjects());
+      getAllProjects(queryFilter);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
-    getAllProjects();
-  }, []);
+    if (searchLoading) {
+      getAllProjects();
+    }
+  }, [isSearching, searchLoading, pagination.page]);
 
   return (
     <Container size="xl">
@@ -186,9 +154,8 @@ const Workspace = () => {
                 onCancelSearchProjects();
                 return;
               }
+              onReturnDefaultState();
               setIsSearching(true);
-              dispatch(projectActions.clearProjects());
-              searchProjects();
             })}
             className={classes.form}
           >
@@ -211,30 +178,40 @@ const Workspace = () => {
       </Group>
 
       <Divider my="md" />
-
-      {isSearching ? (
-        <ProjectListRender
-          projects={projectsMap}
-          loading={searchLoading}
-          emptyRender={{
-            text: "No results found!",
-          }}
-        />
-      ) : (
-        <ProjectListRender
-          projects={projectsMap}
-          loading={loading}
-          emptyRender={{
-            text: "You don't have any projects yet! You can start right now by creating a new project.",
-            action: (
-              <CreateProjectButton
-                workspaceId={Number(workspaceId)}
-                onCreateProject={onCreateNewProject}
-              />
-            ),
-          }}
-        />
-      )}
+      <Accordion variant="contained" chevron className={classes.accordion}>
+        <Accordion.Item value="header">
+          <Accordion.Control
+            children={<Header onQueryFilter={onQueryFilter} />}
+          />
+        </Accordion.Item>
+        <List projects={projectsMap} />
+        {loading || searchLoading ? (
+          <Skeleton height={50} mt={10} />
+        ) : projectsMap.length === 0 ? (
+          isSearching ? (
+            EmptyRender({
+              text: "No results found",
+            })
+          ) : (
+            EmptyRender({
+              text: "You don't have any projects yet! You can start right now by creating a new project.",
+              action: onCreateNewProject,
+            })
+          )
+        ) : (
+          <Accordion.Item value="pagination">
+            <Accordion.Control
+              children={
+                <Pagination
+                  value={pagination.page}
+                  total={Math.ceil(pagination.total / pagination.limit)}
+                  onChange={handlePageChange}
+                />
+              }
+            />
+          </Accordion.Item>
+        )}
+      </Accordion>
     </Container>
   );
 };

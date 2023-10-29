@@ -1,6 +1,6 @@
 import { createStyles, rem } from '@mantine/core';
 
-export const useWorkspaceStyle = createStyles(() => ({
+export const useListStyle = createStyles(() => ({
     accordion: {
         '.mantine-Accordion-content': {
             padding: rem(5),
@@ -10,12 +10,7 @@ export const useWorkspaceStyle = createStyles(() => ({
                 transform: "rotate(90deg)",
                 transition: "transform 300ms ease",
             },
+            display: "none",
         }
     },
-    searchGroup: {
-        marginTop: rem(20),
-    },
-    form: {
-        width: '60%'
-    }
 }));

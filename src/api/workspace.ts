@@ -19,7 +19,11 @@ class WorkspaceApi {
         limit?: number;
         pinned?: string;
     }): Promise<any> {
-        return Client.get(`/workspace/me/all`, { params: { ...query } });
+        return Client.get(`/workspace/me/all`, {
+            params: {
+                ...query
+            }
+        });
     }
 
     // public getPinnedWorkspaces(): Promise<any> {
