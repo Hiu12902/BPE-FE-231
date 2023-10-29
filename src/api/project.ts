@@ -13,8 +13,20 @@ class ProjectApi {
     return this.classInstance;
   }
 
-  public getAllProjects(): Promise<any> {
-    return Client.get("/project/all");
+  public getAllProjects(
+    workspaceId: number,
+    query?: {
+      createdAt?: string;
+      keyword?: string;
+      page?: number;
+    }): Promise<any> {
+    return Client.post("/project/all", {
+      workspaceId
+    }, {
+      params: {
+        ...query
+      }
+    });
   }
 
   public createNewProject({

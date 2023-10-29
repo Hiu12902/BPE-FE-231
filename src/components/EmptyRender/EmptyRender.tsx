@@ -4,7 +4,7 @@ import noProjects from "@/assets/no-projects.svg";
 export interface IEmptyRender {
   icon?: string | React.ReactNode;
   text?: string | React.ReactNode;
-  action?: React.ReactNode;
+  action?: any;
 }
 
 const EmptyRender = ({ icon = noProjects, text, action }: IEmptyRender) => {

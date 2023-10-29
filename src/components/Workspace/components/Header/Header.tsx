@@ -1,5 +1,4 @@
 import { IQueryParams } from "@/interfaces/index";
-import { getCurrentUser } from "@/redux/selectors";
 import {
   ActionIcon,
   Checkbox,
@@ -11,7 +10,6 @@ import {
 } from "@mantine/core";
 import { ReactComponent as IconFilter } from "@tabler/icons/icons/filter.svg";
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { useHeaderStyle } from "./Header.style";
 
 const Header = ({
@@ -20,7 +18,6 @@ const Header = ({
   onQueryFilter: (queryFilter: IQueryParams) => void;
 }) => {
   const { classes } = useHeaderStyle();
-  const { id } = useSelector(getCurrentUser);
   const [filters, setFilters] = useState<string[]>([]);
 
   return (
@@ -32,7 +29,7 @@ const Header = ({
         <Flex justify="center" children={"Owner"} />
       </Grid.Col>
       <Grid.Col span={3}>
-        <Flex justify="center" children={"Last modified"} />
+        <Flex justify="center" children={"Created at"} />
       </Grid.Col>
       <Grid.Col span={3}>
         <Flex justify="flex-end">
@@ -43,18 +40,15 @@ const Header = ({
               </ActionIcon>
             </HoverCard.Target>
 
-            <HoverCard.Dropdown>
+            <HoverCard.Dropdown py="lg">
               <Title size={"h6"}>Filter by:</Title>
               <Divider my="xs" />
               <Checkbox.Group
                 onChange={(value: string[]) => {
                   const queryFilter: IQueryParams = {};
                   value.forEach((filter: string) => {
-                    if (filter === "owner") {
-                      queryFilter.ownerId = id;
-                    }
                     if (filter === "oldest") {
-                      queryFilter.openedAt = "oldest";
+                      queryFilter.createdAt = "oldest";
                     }
                   });
                   setFilters(value);
@@ -63,8 +57,7 @@ const Header = ({
                 value={filters}
                 className={classes.checkboxGroup}
               >
-                <Checkbox value="owner" label="My workspaces" />
-                <Checkbox value="oldest" label="Lastest opened workspaces" />
+                <Checkbox value="oldest" label="Lastest opened projects" />
               </Checkbox.Group>
             </HoverCard.Dropdown>
           </HoverCard>

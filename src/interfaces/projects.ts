@@ -39,6 +39,7 @@ export interface IProject {
   showExtraInfo?: boolean;
   workspaceId?: number;
   offset: number; // USED FOR KEEPING ORDER OF WORKSPACES FROM REUTRNED FROM BE
+  ownerId?: number; // RETURN WHILE CREATING NEW PROJECT
 }
 
 // export interface IWorkspace {

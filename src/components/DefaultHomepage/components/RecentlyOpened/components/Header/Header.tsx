@@ -1,6 +1,14 @@
 import { IQueryParams } from "@/interfaces/index";
 import { getCurrentUser } from "@/redux/selectors";
-import { ActionIcon, Checkbox, Flex, Grid, HoverCard } from "@mantine/core";
+import {
+  ActionIcon,
+  Checkbox,
+  Divider,
+  Flex,
+  Grid,
+  HoverCard,
+  Title,
+} from "@mantine/core";
 import { ReactComponent as IconFilter } from "@tabler/icons/icons/filter.svg";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -28,7 +36,7 @@ const Header = ({
       </Grid.Col>
       <Grid.Col span={3}>
         <Flex justify="flex-end">
-          <HoverCard width={200} shadow="md" position="bottom-end">
+          <HoverCard width={300} shadow="md" position="bottom-end">
             <HoverCard.Target>
               <ActionIcon>
                 <IconFilter width={20} height={20} />
@@ -36,6 +44,8 @@ const Header = ({
             </HoverCard.Target>
 
             <HoverCard.Dropdown>
+              <Title size={"h6"}>Filter by:</Title>
+              <Divider my="xs" />
               <Checkbox.Group
                 onChange={(value: string[]) => {
                   const queryFilter: IQueryParams = {};
@@ -53,8 +63,8 @@ const Header = ({
                 value={filters}
                 className={classes.checkboxGroup}
               >
-                <Checkbox value="owner" label="Workspace của tôi" />
-                <Checkbox value="oldest" label="Được mở cuối cùng" />
+                <Checkbox value="owner" label="My workspaces" />
+                <Checkbox value="oldest" label="Lastest opened workspaces" />
               </Checkbox.Group>
             </HoverCard.Dropdown>
           </HoverCard>
