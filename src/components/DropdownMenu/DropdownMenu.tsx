@@ -3,7 +3,7 @@ import { ReactComponent as IconDots } from "@tabler/icons/icons/dots.svg";
 
 export interface IDropdownMenuContent {
   icon: React.ReactNode | React.ReactNode[];
-  children: React.ReactNode;
+  children: React.ReactNode | React.ReactNode[];
   color?: string;
   onClick: (e: React.MouseEvent | React.MouseEvent<HTMLButtonElement>) => void;
   onMouseEnter?: () => void;
