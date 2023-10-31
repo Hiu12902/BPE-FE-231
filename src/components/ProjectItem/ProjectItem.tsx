@@ -16,42 +16,34 @@ import {
   Grid,
   Skeleton,
   Text,
-  TextInput,
   Tooltip,
 } from "@mantine/core";
-import { openConfirmModal } from "@mantine/modals";
 import { ReactComponent as IconAbc } from "@tabler/icons/icons/abc.svg";
 import { ReactComponent as IconChevronRight } from "@tabler/icons/icons/chevron-right.svg";
 import { ReactComponent as IconFilePlus } from "@tabler/icons/icons/file-plus.svg";
 import { ReactComponent as IconFolder } from "@tabler/icons/icons/folder.svg";
 import { ReactComponent as IconTrash } from "@tabler/icons/icons/trash.svg";
 import { ReactComponent as IconUserShare } from "@tabler/icons/icons/user-plus.svg";
-import { MouseEvent, useRef, useState } from "react";
+import { MouseEvent, RefObject, useState } from "react";
 import { useSelector } from "react-redux";
 import DropdownMenu from "../DropdownMenu";
 import { IDropdownMenuContent } from "../DropdownMenu/DropdownMenu";
+import { CreateModal, DeleteModal, RenameModal } from "../Modal";
 import UserInformation from "../UserInformation/UserInformation";
 import { useProjectItemStyle } from "./ProjectItem.style";
 
 const ProjectItem = (props: IProject) => {
   const { classes } = useProjectItemStyle();
   const dispatch = useAppDispatch();
-  const {
-    name,
-    id,
-    createAt,
-    onDeleteProject,
-    shouldGetDocuments = true,
-    owner,
-    role,
-  } = props;
+  const { name, id, createAt, shouldGetDocuments = true, owner, role } = props;
   const [files, setFiles] = useState<IFile[]>([]);
   const [projectNameRender, setProjectNameRender] = useState<
     string | undefined
   >(name);
   const [openShareModal, setOpenShareModal] = useState(false);
-  const nameInputRef = useRef<HTMLInputElement>(null);
-  const processNameInputRef = useRef<HTMLInputElement>(null);
+  const [openRenameModal, setOpenRenameModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [openCreateModal, setOpenCreateModal] = useState(false);
   const bpmnFilesCount = files.filter((file) => file.xmlFileLink).length;
   const [hoverOnDeleteBtn, setHoverOnDeleteBtn] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -104,7 +96,17 @@ const ProjectItem = (props: IProject) => {
     }
   };
 
-  const onRenameProject = async () => {
+  const onOpenProject = (e: MouseEvent) => {
+    e.stopPropagation();
+    window.open(`/${name}/${id}`, "_self");
+  };
+
+  const onOpenRenameModal = (e: MouseEvent) => {
+    e.stopPropagation();
+    setOpenRenameModal(true);
+  };
+
+  const onRenameProject = async (nameInputRef: RefObject<HTMLInputElement>) => {
     try {
       if (nameInputRef.current?.value.length === 0) {
         notify({
@@ -145,20 +147,31 @@ const ProjectItem = (props: IProject) => {
     }
   };
 
-  const openRenameModal = (e: MouseEvent) => {
+  const onOpenDeleteModal = (e: MouseEvent) => {
     e.stopPropagation();
-    openConfirmModal({
-      title: "Rename project",
-      children: (
-        <TextInput
-          placeholder="Project's name"
-          ref={nameInputRef}
-          value={projectNameRender}
-        />
-      ),
-      labels: { confirm: "Confirm", cancel: "Cancel" },
-      onConfirm: onRenameProject,
-    });
+    if (isOpeningInEditor) {
+      return;
+    }
+    setOpenDeleteModal(true);
+  };
+
+  const onDeleteProject = async (id: number) => {
+    try {
+      if (id) {
+        const res = await projectApi.deleteProject(id);
+        if (res) {
+          dispatch(projectActions.deleteProject(id));
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      notify({
+        title: "Oops!",
+        message:
+          "An error has occurred while trying to delete project. Please try again",
+        type: "error",
+      });
+    }
   };
 
   const onOpenShareModal = (e: MouseEvent) => {
@@ -166,48 +179,16 @@ const ProjectItem = (props: IProject) => {
     setOpenShareModal(true);
   };
 
-  const onOpenProject = (e: MouseEvent) => {
+  const onOpenCreateModal = (e: MouseEvent) => {
     e.stopPropagation();
-    window.open(`/${name}/${id}`, "_self");
+    setOpenCreateModal(true);
   };
 
-  const openDeleteModal = (e: MouseEvent) => {
-    e.stopPropagation();
-    if (isOpeningInEditor) {
-      return;
-    }
-    openConfirmModal({
-      title: <Text size="lg">Delete this project</Text>,
-      centered: true,
-      children: (
-        <Text>
-          Are you sure you want to delete this project?{" "}
-          <Text span weight={600}>
-            Your action will not be able to undo.
-          </Text>
-        </Text>
-      ),
-      labels: { confirm: "Delete", cancel: "Cancel" },
-      confirmProps: { color: "red" },
-      onConfirm: handleDeleteProject,
-    });
-  };
-
-  const onOpenCreateNewProcessModal = (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    openConfirmModal({
-      title: <Badge>New Process</Badge>,
-      children: (
-        <TextInput label="New Process name" ref={processNameInputRef} />
-      ),
-      labels: { confirm: "Confirm", cancel: "Cancel" },
-      onConfirm: handleCreateNewProcess,
-    });
-  };
-
-  const handleCreateNewProcess = async () => {
+  const onCreateProcess = async (
+    processNameInputRef: RefObject<HTMLInputElement>
+  ) => {
     try {
-      if (processNameInputRef.current) {
+      if (processNameInputRef.current && processNameInputRef.current) {
         const res = await projectApi.createNewProcess(
           { projectId: id },
           { name: processNameInputRef.current.value }
@@ -223,25 +204,6 @@ const ProjectItem = (props: IProject) => {
     }
   };
 
-  const handleDeleteProject = async () => {
-    try {
-      if (id) {
-        const res = await projectApi.deleteProject(id);
-        if (res) {
-          onDeleteProject?.(id);
-        }
-      }
-    } catch (err) {
-      console.error(err);
-      notify({
-        title: "Oops!",
-        message:
-          "An error has occurred while trying to delete project. Please try again",
-        type: "error",
-      });
-    }
-  };
-
   const dropdownMenuContent = [
     {
       icon: <IconUserShare className={classes.dropdownMenuIcon} />,
@@ -251,34 +213,32 @@ const ProjectItem = (props: IProject) => {
     {
       icon: <IconAbc className={classes.dropdownMenuIcon} />,
       children: "Rename",
-      onClick: openRenameModal,
+      onClick: onOpenRenameModal,
     },
     {
       icon: <IconFilePlus className={classes.dropdownMenuIcon} />,
       children: "New Process",
-      onClick: onOpenCreateNewProcessModal,
+      onClick: onOpenCreateModal,
     },
     {
       icon: <IconTrash className={classes.dropdownMenuIcon} />,
       color: "red",
-      children:
-        //   <Tooltip
-        //     label="You are currently working on this project, make sure to close it before delete"
-        //     multiline
-        //     width={220}
-        //     opened={isOpeningInEditor && hoverOnDeleteBtn}
-        //     position="bottom"
-        //   >
-        //     Delete
-        //   </Tooltip>
-        "Delete",
-      onClick: openDeleteModal,
+      children: (
+        <Tooltip
+          label="You are currently working on this project, make sure to close it before delete"
+          multiline
+          width={220}
+          opened={isOpeningInEditor && hoverOnDeleteBtn}
+          position="bottom"
+          children={<Text>Delete</Text>}
+        />
+      ),
+      onClick: onOpenDeleteModal,
     },
   ];
 
   return (
     <Accordion.Item value={id.toString()}>
-      {/* Accordion control: (1) Click to Open Inner files (2) Double click to Open project */}
       <Accordion.Control
         onClick={getProjectFiles}
         onDoubleClick={onOpenProject}
@@ -288,6 +248,29 @@ const ProjectItem = (props: IProject) => {
             opened={openShareModal}
             onClose={() => setOpenShareModal(false)}
             projectId={id}
+          />
+
+          <RenameModal
+            opened={openRenameModal}
+            onClose={() => setOpenRenameModal(false)}
+            title="Rename project"
+            nameRender={projectNameRender}
+            onRename={onRenameProject}
+          />
+
+          <DeleteModal
+            objectId={id}
+            opened={openDeleteModal}
+            onClose={() => setOpenDeleteModal(false)}
+            title="Delete this project"
+            onDelete={onDeleteProject}
+          />
+
+          <CreateModal
+            title="Create new process"
+            opened={openCreateModal}
+            onClose={() => setOpenCreateModal(false)}
+            onCreate={onCreateProcess}
           />
 
           {/* Project name */}
