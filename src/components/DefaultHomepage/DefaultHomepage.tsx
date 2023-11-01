@@ -85,7 +85,9 @@ const DefaultHomepage = () => {
         </WorkspaceFormProvider>
         <CreateWorkspaceButton
           onCreateWorkspace={(workspace) => {
-            dispatch(workspaceActions.setWorkspace(workspace));
+            dispatch(
+              workspaceActions.setWorkspace({ ...workspace, offset: -1 })
+            );
           }}
         />
       </Group>
