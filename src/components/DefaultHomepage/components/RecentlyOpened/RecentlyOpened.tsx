@@ -123,7 +123,15 @@ const RecentlyOpened = ({
 
   return (
     <>
-      <Accordion variant="contained" chevron mt={rem(20)}>
+      <Accordion
+        variant="contained"
+        styles={{
+          chevron: {
+            display: "none",
+          },
+        }}
+        mt={rem(20)}
+      >
         <Accordion.Item value="recentlyOpened">
           <Accordion.Control
             children={<Header onQueryFilter={onQueryFilter} />}

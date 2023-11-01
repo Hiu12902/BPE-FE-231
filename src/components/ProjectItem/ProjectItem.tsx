@@ -319,16 +319,23 @@ const ProjectItem = (props: IProject) => {
             </Flex>
           </Grid.Col>
 
-          {/* Role & dropdown menu */}
-          <Grid.Col span={3}>
-            <Flex justify="flex-end" align="center" gap={10}>
-              {role !== undefined ? (
+          {/* Role */}
+          <Grid.Col span={2}>
+            <Flex justify="center" align="center" gap={10}>
+              {role !== undefined && (
                 <Badge size="md">{UserRoleText[role]}</Badge>
-              ) : null}
+              )}
+            </Flex>
+          </Grid.Col>
+
+          {/* Dropdown menu */}
+          <Grid.Col span={1}>
+            <Flex justify="flex-end">
               <DropdownMenu
                 dropdownMenuContent={
                   dropdownMenuContent as IDropdownMenuContent[]
                 }
+                disabled={isOpeningInEditor}
               />
             </Flex>
           </Grid.Col>

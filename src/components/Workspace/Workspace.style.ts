@@ -10,6 +10,7 @@ export const useWorkspaceStyle = createStyles(() => ({
                 transform: "rotate(90deg)",
                 transition: "transform 300ms ease",
             },
+            display: 'none'
         }
     },
     searchGroup: {

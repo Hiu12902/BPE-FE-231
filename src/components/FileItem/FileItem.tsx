@@ -323,7 +323,8 @@ const FileItem = (props: IFile) => {
       >
         <Grid justify="flex-start" align="center">
           {/* File name */}
-          <Grid.Col span={activeTab ? 3 : 5}>
+          {/* <Grid.Col span={activeTab ? 3 : 5}> */}
+          <Grid.Col span={3}>
             <Group spacing={10}>
               <IconFile
                 height={30}
@@ -350,9 +351,12 @@ const FileItem = (props: IFile) => {
             </Group>
           </Grid.Col>
 
+          <Grid.Col span={3} />
+
           {/* Last modified */}
-          <Grid.Col span={result ? 7 : activeTab ? 6 : 3}>
-            <Flex align="center" justify="flex-end" h="100%">
+          {/* <Grid.Col span={result ? 7 : activeTab ? 6 : 3}> */}
+          <Grid.Col span={3}>
+            <Flex align="center" justify="center" h="100%">
               <Text color="dimmed" size="sm">
                 {result && "Evaluated At: "}
                 {new Date(lastSaved || createAt || "")?.toLocaleString()}

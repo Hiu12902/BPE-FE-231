@@ -4,6 +4,7 @@ export const useProjectItemStyle = createStyles(() => ({
     accordion: {
         ".mantine-Accordion-content": {
             padding: 0,
+            margin: 0,
         },
         ".mantine-Accordion-control": {
             padding: 0,
@@ -16,7 +17,7 @@ export const useProjectItemStyle = createStyles(() => ({
                 transform: "rotate(90deg)",
             },
             margin: 10,
-            display: "none",
+            display: 'none'
         },
     },
     dropdownMenuIcon: {
