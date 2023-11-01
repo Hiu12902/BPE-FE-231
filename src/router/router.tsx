@@ -12,6 +12,12 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Register from "@/components/Register";
 import ResetPassword from "@/components/ResetPassword";
 import Workspace from "@/components/Workspace";
+import {
+  Customization,
+  Members,
+  Requests,
+  WorkspaceManagement,
+} from "@/components/WorkspaceManagement";
 import BpeBpmnModeler from "@/core/modeler/BpmnModeler";
 import {
   Route,
@@ -23,12 +29,18 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route element={<ProtectedRoute />} errorElement={<CrashComponent />}>
-        <Route element={<WorkspaceLayout />}>
+        <Route element={<WorkspaceLayout showNavbar={false} />}>
           <Route path="/" element={<DefaultHomepage />} />
           <Route
             path="workspace/:workspaceName/:workspaceId"
             element={<Workspace />}
           />
+        </Route>
+        <Route element={<WorkspaceLayout showNavbar={true} />}>
+          <Route path="/management" element={<WorkspaceManagement />} />
+          <Route path="/management/members" element={<Members />} />
+          <Route path="/management/request" element={<Requests />} />
+          <Route path="/management/customization" element={<Customization />} />
         </Route>
         <Route element={<AppLayout />}>
           <Route path="/document" element={<DocumentEditor />} />
