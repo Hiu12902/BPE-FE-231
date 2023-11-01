@@ -1,6 +1,6 @@
 import projectApi from "@/api/project";
 import FileItem from "@/components/FileItem";
-import ShareModal from "@/components/ShareModal";
+// import ShareModal from "@/components/ShareModal";
 import { UserRoleText } from "@/constants/project";
 import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
 import useNotification from "@/hooks/useNotification";
@@ -28,7 +28,7 @@ import { MouseEvent, RefObject, useState } from "react";
 import { useSelector } from "react-redux";
 import DropdownMenu from "../DropdownMenu";
 import { IDropdownMenuContent } from "../DropdownMenu/DropdownMenu";
-import { CreateModal, DeleteModal, RenameModal } from "../Modal";
+import { CreateModal, DeleteModal, RenameModal, ShareModal } from "../Modal";
 import UserInformation from "../UserInformation/UserInformation";
 import { useProjectItemStyle } from "./ProjectItem.style";
 
