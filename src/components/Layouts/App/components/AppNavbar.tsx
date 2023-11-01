@@ -1,54 +1,61 @@
-import BackButton from '@/components/BackButton';
-import { Accordion, AccordionProps, Button, Space, Tooltip, createStyles } from '@mantine/core';
-import { ReactComponent as IconFolder } from '@tabler/icons/icons/folder.svg';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { IProject } from '@/interfaces/projects';
-import { batch, useSelector } from 'react-redux';
-import { getProject } from '@/redux/selectors';
-import projectApi from '@/api/project';
-import { useAppDispatch } from '@/redux/store';
-import { projectActions } from '@/redux/slices';
-import { useEffect } from 'react';
+import BackButton from "@/components/BackButton";
+import {
+  Accordion,
+  AccordionProps,
+  Button,
+  Space,
+  Tooltip,
+  createStyles,
+} from "@mantine/core";
+import { ReactComponent as IconFolder } from "@tabler/icons/icons/folder.svg";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { IProject } from "@/interfaces/projects";
+import { batch, useSelector } from "react-redux";
+import { getProject } from "@/redux/selectors";
+import projectApi from "@/api/project";
+import { useAppDispatch } from "@/redux/store";
+import { projectActions } from "@/redux/slices";
+import { useEffect } from "react";
 
 interface IProps extends Partial<AccordionProps> {}
 
 const useStyles = createStyles((theme) => ({
   control: {
-    '&:hover': {
+    "&:hover": {
       backgroundColor: theme.colors.blue[3],
     },
   },
 
   item: {
-    borderBottom: 'none',
+    borderBottom: "none",
   },
 
   label: {
-    color: 'white',
+    color: "white",
     fontWeight: 600,
   },
 
   chevron: {
-    color: 'white',
+    color: "white",
   },
 
   project: {
-    color: 'white',
-    alignItems: 'flex-start',
-    '&:hover': {
+    color: "white",
+    alignItems: "flex-start",
+    "&:hover": {
       color: theme.colors.blue[6],
     },
   },
 
   buttonLabel: {
     fontSize: 14,
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
 
   buttonInner: {
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
   },
 }));
 
@@ -61,6 +68,7 @@ const AppNavbar = (props: IProps) => {
   const projectsMap = Object.keys(projects).map(function (key) {
     return projects[parseInt(key)];
   });
+  const { workspaceId } = useParams();
 
   const onOpenProject = (project: IProject) => {
     navigate(`/${project.name}/${project.id}`);
@@ -68,10 +76,13 @@ const AppNavbar = (props: IProps) => {
 
   const getAllProjects = async () => {
     try {
-      const projects = await projectApi.getAllProjects();
+      const projects = await projectApi.getAllProjects(Number(workspaceId));
+
       if (projects) {
         batch(() => {
-          projects.map((project: IProject) => dispatch(projectActions.setProject(project)));
+          projects.map((project: IProject) =>
+            dispatch(projectActions.setProject(project))
+          );
         });
       }
     } catch (err) {
@@ -87,7 +98,7 @@ const AppNavbar = (props: IProps) => {
 
   return (
     <>
-      {location.pathname === '/document' && (
+      {location.pathname === "/document" && (
         <>
           <Space h="lg" />
           <BackButton />

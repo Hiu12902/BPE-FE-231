@@ -195,7 +195,12 @@ const Workspace = () => {
           ) : (
             EmptyRender({
               text: "You don't have any projects yet! You can start right now by creating a new project.",
-              action: onCreateNewProject,
+              action: (
+                <CreateProjectButton
+                  workspaceId={Number(workspaceId)}
+                  onCreateProject={onCreateNewProject}
+                />
+              ),
             })
           )
         ) : (

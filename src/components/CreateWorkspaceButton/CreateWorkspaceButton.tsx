@@ -38,10 +38,10 @@ const CreateWorkspaceButton = ({
           title: "Error!",
           message: `${
             !workspaceName && !workspaceDescription
-              ? `Project's name and description`
+              ? `Workspace's name and description`
               : !workspaceDescription
-              ? `Project's description`
-              : `Project's name`
+              ? `Workspace's description`
+              : `Workspace's name`
           } can not be empty!`,
           type: "error",
         });

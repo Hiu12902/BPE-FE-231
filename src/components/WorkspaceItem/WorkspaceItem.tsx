@@ -25,12 +25,13 @@ import { ReactComponent as IconFolder } from "@tabler/icons/icons/folder.svg";
 import { ReactComponent as IStar } from "@tabler/icons/icons/star.svg";
 import { ReactComponent as IconTrash } from "@tabler/icons/icons/trash.svg";
 import { ReactComponent as IconUserShare } from "@tabler/icons/icons/user-plus.svg";
-import { useRef, useState } from "react";
+import { RefObject, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import DropdownMenu from "../DropdownMenu";
 import { IDropdownMenuContent } from "../DropdownMenu/DropdownMenu";
 import { useWorkspaceItemStyle } from "./WorkspaceItem.style";
 import UserInformation from "../UserInformation";
+import { DeleteModal, RenameModal, ShareModal } from "../Modal";
 
 const WorkspaceItem = (props: IWorkspace) => {
   const { classes } = useWorkspaceItemStyle();
@@ -49,6 +50,11 @@ const WorkspaceItem = (props: IWorkspace) => {
   } = props;
   const nameInputRef = useRef<HTMLInputElement>(null);
   const [renderName, setRenderName] = useState<string | undefined>();
+
+  const [openShareModal, setOpenShareModal] = useState(false);
+  const [openRenameModal, setOpenRenameModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [openCreateModal, setOpenCreateModal] = useState(false);
 
   const formatTimestamp = (date: Date | string) => {
     function convertUTCDateToLocalDate(date: Date) {
@@ -123,32 +129,14 @@ const WorkspaceItem = (props: IWorkspace) => {
     }
   };
 
-  const onDeleteWorkspace = async () => {
-    try {
-      if (id) {
-        const res = await workspaceApi.deleteWorkspace(id);
-        if (res) {
-          dispatch(workspaceActions.deleteWorkspace({ id }));
-          dispatch(pinnedWorkspaceActions.unpinWorkspace({ id }));
-          notify({
-            title: "Success!",
-            message: "Project has been deleted successfully",
-            type: "success",
-          });
-        }
-      }
-    } catch (err) {
-      console.error(err);
-      notify({
-        title: "Oops!",
-        message:
-          "An error has occurred while trying to delete workspace. Please try again",
-        type: "error",
-      });
-    }
+  const onOpenRenameModal = (e: MouseEvent) => {
+    e.stopPropagation();
+    setOpenRenameModal(true);
   };
 
-  const onRenameWorkspace = async () => {
+  const onRenameWorkspace = async (
+    nameInputRef: RefObject<HTMLInputElement>
+  ) => {
     try {
       if (nameInputRef.current?.value.length === 0) {
         notify({
@@ -189,78 +177,42 @@ const WorkspaceItem = (props: IWorkspace) => {
     }
   };
 
-  const openRenameModal = (e: MouseEvent) => {
-    e.stopPropagation();
-    openConfirmModal({
-      title: "Rename workspace",
-      children: (
-        <Input.Wrapper label="Name">
-          <TextInput
-            placeholder="New name for workspace..."
-            ref={nameInputRef}
-            value={renderName}
-          />
-        </Input.Wrapper>
-      ),
-      centered: true,
-      labels: {
-        confirm: "Confirm",
-        cancel: "Cancel",
-      },
-      onConfirm: onRenameWorkspace,
-      overlayProps: {
-        opacity: 0.55,
-        blur: 3,
-      },
-    });
-  };
-
-  const openDeleteModal = (e: MouseEvent) => {
+  const onOpenDeleteModal = (e: MouseEvent) => {
     e.stopPropagation();
     if (currentUser.id && currentUser.id !== ownerId) {
-      openConfirmModal({
-        title: <Text size="lg">Delete this Workspace</Text>,
-        centered: true,
-        children: (
-          <Text>
-            You are not the owner of this workspace.{" "}
-            <Text span weight={600}>
-              You cannot delete this workspace.
-            </Text>
-          </Text>
-        ),
-        labels: { confirm: "OK", cancel: "Cancel" },
-        confirmProps: { color: "blue" },
-        onConfirm: () => {},
-      });
-    } else {
-      openConfirmModal({
-        title: (
-          <Text
-            size="lg"
-            color="red"
-            style={{
-              fontWeight: "bold",
-            }}
-          >
-            Delete this Workspace
-          </Text>
-        ),
-        centered: true,
-        children: (
-          <>
-            <Text>Are you sure you want to delete this workspace?</Text>
-            <Text span weight={600}>
-              Your action will not be able to undo.
-            </Text>
-            <Divider my="sm" />
-          </>
-        ),
-        labels: { confirm: "Delete", cancel: "Cancel" },
-        confirmProps: { color: "red" },
-        onConfirm: onDeleteWorkspace,
+      return;
+    }
+    setOpenDeleteModal(true);
+  };
+
+  const onDeleteWorkspace = async () => {
+    try {
+      if (id) {
+        const res = await workspaceApi.deleteWorkspace(id);
+        if (res) {
+          dispatch(workspaceActions.deleteWorkspace({ id }));
+          dispatch(pinnedWorkspaceActions.unpinWorkspace({ id }));
+          notify({
+            title: "Success!",
+            message: "Project has been deleted successfully",
+            type: "success",
+          });
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      notify({
+        title: "Oops!",
+        message:
+          "An error has occurred while trying to delete workspace. Please try again",
+        type: "error",
       });
     }
+  };
+
+  const onOpenShareModal = (e: MouseEvent) => {
+    e.stopPropagation();
+    setOpenShareModal(true);
   };
 
   const dropdownMenuContent = [
@@ -275,7 +227,7 @@ const WorkspaceItem = (props: IWorkspace) => {
     {
       icon: <IconAbc className={classes.dropdownMenuIcon} />,
       children: "Rename",
-      onClick: openRenameModal,
+      onClick: onOpenRenameModal,
     },
     {
       icon: <IconFilePlus className={classes.dropdownMenuIcon} />,
@@ -286,7 +238,7 @@ const WorkspaceItem = (props: IWorkspace) => {
       icon: <IconTrash className={classes.dropdownMenuIcon} />,
       color: "red",
       children: "Delete",
-      onClick: openDeleteModal,
+      onClick: onOpenDeleteModal,
     },
   ];
 
@@ -294,6 +246,28 @@ const WorkspaceItem = (props: IWorkspace) => {
     <Accordion.Item value={id.toString()}>
       <Accordion.Control onDoubleClick={(e) => onOpenWorkspace(e)}>
         <Grid align="center" justify="center">
+          <ShareModal
+            opened={openShareModal}
+            onClose={() => setOpenShareModal(false)}
+            projectId={id}
+          />
+
+          <RenameModal
+            opened={openRenameModal}
+            onClose={() => setOpenRenameModal(false)}
+            title="Rename workspace"
+            nameRender={renderName}
+            onRename={onRenameWorkspace}
+          />
+
+          <DeleteModal
+            objectId={id}
+            opened={openDeleteModal}
+            onClose={() => setOpenDeleteModal(false)}
+            title="Delete this workspace"
+            onDelete={onDeleteWorkspace}
+          />
+
           {/* Project name */}
           <Grid.Col span={3}>
             <Group spacing={10}>
