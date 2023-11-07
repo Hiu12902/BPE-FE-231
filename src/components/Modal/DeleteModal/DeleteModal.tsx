@@ -10,19 +10,22 @@ import {
 
 interface IDeleteModalProps extends ModalProps {
   title: string;
-  objectId: number;
-  onDelete: (id: number) => void;
+  message: string;
+  objectId?: number;
+  objectIdList?: number[];
+  onDelete: (id?: number, idList?: number[]) => void;
 }
 
 const DeleteModal = (props: IDeleteModalProps) => {
-  const { opened, onClose, title, onDelete, objectId } = props;
+  const { opened, onClose, title, onDelete, objectId, objectIdList, message } =
+    props;
 
   const handleCancel = () => {
     onClose?.();
   };
 
   const handleDelete = () => {
-    onDelete(objectId);
+    onDelete(objectId, objectIdList);
     onClose?.();
   };
 
@@ -42,7 +45,7 @@ const DeleteModal = (props: IDeleteModalProps) => {
         },
       }}
     >
-      <Text>Are you sure you want to delete this project?</Text>
+      <Text>{message}</Text>
       <Text span weight={600} color="red">
         Your action will not be able to undo.
       </Text>

@@ -7,7 +7,3 @@ export interface IPagination {
 export interface IQueryParams {
     [key: string]: any;
 }
-
-export interface IFilters {
-    [key: string]: any;
-}

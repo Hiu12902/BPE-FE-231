@@ -7,3 +7,4 @@ export * from './toolSelectors';
 export * from './userSelectors';
 export * from './projectSelector';
 export * from './workspaceSelector';
+export * from './membersSelector';

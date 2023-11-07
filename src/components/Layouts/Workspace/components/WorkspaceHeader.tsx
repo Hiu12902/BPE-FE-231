@@ -22,7 +22,7 @@ import { ReactComponent as IconSetting } from "@tabler/icons/icons/settings.svg"
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const WorkspaceHeader = () => {
+const WorkspaceHeader = ({ showNavBar }: { showNavBar: boolean }) => {
   const currentUser = useSelector(getCurrentUser);
   const notify = useNotification();
   const navigate = useNavigate();
@@ -83,7 +83,7 @@ const WorkspaceHeader = () => {
       position="apart"
       align="center"
       style={{
-        backgroundColor: PRIMARY_COLOR[1],
+        backgroundColor: showNavBar ? "white" : PRIMARY_COLOR[1],
         height: "100%",
         padding: 0,
       }}
@@ -92,12 +92,20 @@ const WorkspaceHeader = () => {
       <Group mr={20}>
         {/* onClick: Navigate tới trang Workspace management */}
         <ActionIcon>
-          <IconSetting width={25} height={25} color="white" />
+          <IconSetting
+            width={25}
+            height={25}
+            color={showNavBar ? "#999" : "#fff"}
+          />
         </ActionIcon>
 
         {/* onClick: Navigate tới trang Notification */}
         <ActionIcon>
-          <IconNotification width={25} height={25} color="white" />
+          <IconNotification
+            width={25}
+            height={25}
+            color={showNavBar ? "#999" : "#fff"}
+          />
         </ActionIcon>
 
         {/* onClick: Open modal User Information */}

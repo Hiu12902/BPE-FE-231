@@ -1,7 +1,7 @@
-import React from "react";
+import { Members } from "./components";
 
 const WorkspaceManagement = () => {
-  return <div>WorkspaceManagement</div>;
+  return <Members />;
 };
 
 export default WorkspaceManagement;

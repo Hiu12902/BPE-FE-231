@@ -37,10 +37,18 @@ const router = createBrowserRouter(
           />
         </Route>
         <Route element={<WorkspaceLayout showNavbar={true} />}>
-          <Route path="/management" element={<WorkspaceManagement />} />
-          <Route path="/management/members" element={<Members />} />
-          <Route path="/management/request" element={<Requests />} />
-          <Route path="/management/customization" element={<Customization />} />
+          <Route
+            path="/management/members/:workspaceName/:workspaceId"
+            element={<Members />}
+          />
+          <Route
+            path="/management/requests/:workspaceName/:workspaceId"
+            element={<Requests />}
+          />
+          <Route
+            path="/management/customization/:workspaceName/:workspaceId"
+            element={<Customization />}
+          />
         </Route>
         <Route element={<AppLayout />}>
           <Route path="/document" element={<DocumentEditor />} />

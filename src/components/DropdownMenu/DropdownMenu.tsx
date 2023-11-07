@@ -5,7 +5,7 @@ export interface IDropdownMenuContent {
   icon: React.ReactNode | React.ReactNode[];
   children: React.ReactNode | React.ReactNode[];
   color?: string;
-  onClick: (e: React.MouseEvent | React.MouseEvent<HTMLButtonElement>) => void;
+  onClick: (e: MouseEvent | React.MouseEvent<HTMLButtonElement>) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   disabled?: boolean;

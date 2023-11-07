@@ -3,7 +3,7 @@ import noProjects from "@/assets/no-projects.svg";
 
 export interface IEmptyRender {
   icon?: string | React.ReactNode;
-  text?: string | React.ReactNode;
+  text?: string;
   action?: any;
 }
 

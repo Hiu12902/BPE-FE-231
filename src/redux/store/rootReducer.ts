@@ -3,6 +3,7 @@ import {
   comparingSlice,
   evaluatedResultSlice,
   lintingSlice,
+  membersSlice,
   modelSlice,
   pinnedWorkspaceSlice,
   projectSlice,
@@ -22,7 +23,8 @@ const rootReducer = combineReducers({
   [userSlice.name]: userSlice.reducer,
   [projectSlice.name]: projectSlice.reducer,
   [workspaceSlice.name]: workspaceSlice.reducer,
-  [pinnedWorkspaceSlice.name]: pinnedWorkspaceSlice.reducer
+  [pinnedWorkspaceSlice.name]: pinnedWorkspaceSlice.reducer,
+  [membersSlice.name]: membersSlice.reducer,
 });
 
 export default rootReducer;

@@ -1,6 +1,9 @@
 import userApi from "@/api/user";
 import Logo from "@/components/Logo";
-import { APP_PALETTE_WIDTH } from "@/constants/theme/themeConstants";
+import {
+  APP_PALETTE_WIDTH,
+  PRIMARY_COLOR,
+} from "@/constants/theme/themeConstants";
 import { getCurrentUser } from "@/redux/selectors";
 import { userActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
@@ -56,6 +59,9 @@ const WorkspaceLayout = ({ showNavbar }: IWorkspaceLayout) => {
               }).background,
               top: 0,
             })}
+            style={{
+              backgroundColor: PRIMARY_COLOR[1],
+            }}
           >
             <Logo />
             <WorkspaceNavbar mt={35} />
@@ -64,7 +70,7 @@ const WorkspaceLayout = ({ showNavbar }: IWorkspaceLayout) => {
       }
       header={
         <Header height={60} fixed={false}>
-          <WorkspaceHeader />
+          <WorkspaceHeader showNavBar={showNavbar as boolean} />
         </Header>
       }
       styles={{
@@ -73,7 +79,13 @@ const WorkspaceLayout = ({ showNavbar }: IWorkspaceLayout) => {
         },
       }}
     >
-      <Box style={{ marginLeft: 10, marginTop: 70 }}>
+      <Box
+        style={{
+          marginLeft: showNavbar ? APP_PALETTE_WIDTH + 10 : 10,
+          marginTop: 70,
+          height: "90%",
+        }}
+      >
         <Outlet />
       </Box>
     </AppShell>

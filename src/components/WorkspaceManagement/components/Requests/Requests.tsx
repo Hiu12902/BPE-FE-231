@@ -1,9 +1,11 @@
-import React from 'react'
+import React from "react";
 
 const Requests = () => {
   return (
-    <div>Requests</div>
-  )
-}
+    <div>
+      <h1>Requests</h1>
+    </div>
+  );
+};
 
-export default Requests
+export default Requests;

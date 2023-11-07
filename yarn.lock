@@ -2222,10 +2222,10 @@ make-dir@^3.0.2:
   dependencies:
     semver "^6.0.0"
 
-mantine-datatable@^2.2.9:
-  version "2.2.9"
-  resolved "https://registry.npmjs.org/mantine-datatable/-/mantine-datatable-2.2.9.tgz"
-  integrity sha512-+6jbORkGblnLU4Rq+q0oOn6BOwMSEybLl4tEKYmv4vmiiPliDQCH+14/dqrMC2t6dPcDpf27L42lOwy7TZBtaw==
+mantine-datatable@^2.9.14:
+  version "2.9.14"
+  resolved "https://registry.npmjs.org/mantine-datatable/-/mantine-datatable-2.9.14.tgz"
+  integrity sha512-ujYUwNTqsr7ngKICoMjTIolqGm40jNiD0du+y4lY2Faqt7/3iksUdAAzPrYRM+QlHyyznsX3aHKLEjw19/VASA==
 
 markdown-table@^3.0.0:
   version "3.0.3"

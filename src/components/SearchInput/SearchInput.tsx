@@ -1,14 +1,15 @@
 import { ActionIcon, Input } from "@mantine/core";
 import { ReactComponent as IconSearch } from "@tabler/icons/icons/search.svg";
 import { ReactComponent as IconCancel } from "@tabler/icons/icons/x.svg";
-import { useSearchInputStyle } from "./SearchInput.style";
 import { useWorkspaceFormContext } from "../DefaultHomepage/DefaultHomepage";
 import { useProjectFormContext } from "../Workspace/Workspace";
+import { useSearchInputStyle } from "./SearchInput.style";
+import { useMembersFormContext } from "../WorkspaceManagement/components/Members/Members";
 
 export interface ISearchInput {
   onCancel?: () => void;
   placeholder?: string;
-  context?: "workspace" | "project" | "process";
+  context?: "workspace" | "project" | "process" | "members";
 }
 
 const SearchInput = ({ onCancel, placeholder, context }: ISearchInput) => {
@@ -16,11 +17,11 @@ const SearchInput = ({ onCancel, placeholder, context }: ISearchInput) => {
   const form =
     context === "workspace"
       ? useWorkspaceFormContext()
-      : "project"
+      : context === "project"
       ? useProjectFormContext()
-      : // : "process"
-        // ? useProcessFormContext()
-        undefined;
+      : context === "members"
+      ? useMembersFormContext()
+      : null;
   return (
     <Input
       variant="filled"

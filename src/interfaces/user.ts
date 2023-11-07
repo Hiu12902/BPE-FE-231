@@ -7,6 +7,7 @@ export interface IUser {
   name: string;
   avatar?: string;
   role?: UserRole;
+  permission?: string | null; // permission in workspace
 }
 
 export interface IUserSignup {
@@ -28,4 +29,5 @@ export interface IUserInfoProps extends Partial<IUser> {
   isSelectingRole?: boolean;
   isProfile?: boolean;
   onChangeRole?: (role: UserRole) => void;
+  onChangePermission?: (permission: string) => void;
 }
