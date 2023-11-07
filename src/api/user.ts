@@ -28,8 +28,10 @@ class UserApi {
     return Client.post(`/user/resend`, payload);
   }
 
-  public searchUsers(searchQuery: string): Promise<any> {
-    return Client.get(`/user/search?s=${searchQuery}`);
+  public searchUsers(searchQuery: string, workspaceId?: number): Promise<any> {
+    return Client.get(`/user/search`, {
+      params: { s: searchQuery, workspaceId: workspaceId },
+    });
   }
 
   public changePassword(newPassword: string): Promise<any> {

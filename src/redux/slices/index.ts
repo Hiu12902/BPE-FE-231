@@ -1,6 +1,7 @@
 import comparingSlice from './comparing';
 import evaluatedResultSlice from './evaluateResult';
 import lintingSlice from './linting';
+import membersSlice from './members';
 import modelSlice from './model';
 import pinnedWorkspaceSlice from './pinnedWorkspace';
 import projectSlice from './project';
@@ -19,6 +20,7 @@ const userActions = userSlice.actions;
 const projectActions = projectSlice.actions;
 const workspaceActions = workspaceSlice.actions;
 const pinnedWorkspaceActions = pinnedWorkspaceSlice.actions;
+const membersActions = membersSlice.actions;
 
 export {
   toolSliceActions,
@@ -41,4 +43,6 @@ export {
   workspaceActions,
   pinnedWorkspaceSlice,
   pinnedWorkspaceActions,
+  membersSlice,
+  membersActions,
 };

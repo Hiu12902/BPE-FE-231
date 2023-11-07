@@ -1,11 +1,8 @@
-import projectApi from "@/api/project";
+import { membersApi } from "@/api/index";
 import userApi from "@/api/user";
-import UserInformation from "@/components/UserInformation";
-import { UserRole } from "@/constants/project";
+import { EmptyRender } from "@/components/EmptyRender";
 import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
-import useNotification from "@/hooks/useNotification";
 import { IUser } from "@/interfaces/user";
-import { getCurrentUser } from "@/redux/selectors";
 import {
   Badge,
   Button,
@@ -24,31 +21,43 @@ import {
 import { useDebouncedValue } from "@mantine/hooks";
 import { ReactComponent as IconUserOff } from "@tabler/icons/icons/user-off.svg";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { MemberItem } from "./components";
 
-interface IShareModalProps extends ModalProps {
-  projectId: number;
+interface IInviteModalProps extends ModalProps {
+  workspaceId: number;
+  onInvite: (assignPermissions: IAssignPermissions) => void;
 }
 
-const ShareModal = (props: IShareModalProps) => {
-  const { opened, onClose, projectId } = props;
+interface IAssignPermissions {
+  [id: number]: string;
+}
+
+const InviteModal = ({
+  opened,
+  onClose,
+  workspaceId,
+  onInvite,
+}: IInviteModalProps) => {
   const [input, setInput] = useState<string>("");
   const [searchValue] = useDebouncedValue(input, 500);
-  const [popoverOpened, setPopoverOpened] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [members, setMembers] = useState<IUser[]>([]);
   const [searchResult, setSearchResult] = useState<IUser[]>([]);
-  const [teammates, setTeammates] = useState<IUser[]>([]);
-  const currentUser = useSelector(getCurrentUser);
-  const notify = useNotification();
+  const [popoverOpened, setPopoverOpened] = useState<boolean>(false);
+  const [assignPermissions, setAssignPermissions] =
+    useState<IAssignPermissions>({});
 
   const searchUsers = async () => {
     try {
       if (searchValue.length > 0) {
-        const users = await userApi.searchUsers(searchValue);
-        const userTransformed = users.map((user: IUser) => ({
-          ...user,
-          value: user.id?.toString(),
-        }));
-        setSearchResult(userTransformed);
+        const users = await userApi.searchUsers(searchValue, workspaceId);
+        if (users) {
+          const userTransformed = users.map((user: IUser) => ({
+            ...user,
+            value: user.id?.toString(),
+          }));
+          setSearchResult(userTransformed);
+        }
       } else {
         setSearchResult([]);
       }
@@ -57,69 +66,49 @@ const ShareModal = (props: IShareModalProps) => {
     }
   };
 
-  useEffect(() => {
-    searchUsers();
-  }, [searchValue]);
-
   const handleAddTeammate = (user: IUser) => {
-    if (teammates.length < 1) {
-      setTeammates(() => [
-        currentUser as IUser,
-        { ...user, role: UserRole.CAN_VIEW },
-      ]);
-    } else {
-      setTeammates((team) => [...team, { ...user, role: UserRole.CAN_VIEW }]);
-    }
+    setMembers([...members, user]);
     setPopoverOpened(false);
-  };
-
-  const handleShare = async () => {
-    try {
-      const payload = teammates
-        .filter((user) => user.email !== currentUser?.email)
-        .map((user) => ({ user_id: user.id, role: user.role }));
-      const res = await projectApi.shareProject(payload, projectId);
-      if (res) {
-        notify({
-          title: "Success!",
-          message: "Share project successfully!",
-          type: "success",
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      notify({
-        title: "Error!",
-        message: "Share project failed!",
-        type: "error",
-      });
-    }
   };
 
   const getMembers = async () => {
     try {
-      const res = await projectApi.getProjectMembers(projectId);
-      if (res) {
-        setTeammates(res);
+      const members = await membersApi.getAllWorkspaceMembers(
+        Number(workspaceId)
+      );
+      if (members) {
+        setMembers(members.data);
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleCancel = () => {
     setInput("");
+    setMembers([]);
+    setLoading(true);
     setSearchResult([]);
     setPopoverOpened(false);
-    setTeammates([]);
     onClose?.();
   };
+
+  const handleInvite = () => {
+    onInvite(assignPermissions);
+    onClose?.();
+  };
+
+  useEffect(() => {
+    searchUsers();
+  }, [searchValue]);
 
   useEffect(() => {
     if (opened) {
       getMembers();
     }
-  }, [projectId, opened]);
+  }, [workspaceId, opened]);
 
   return (
     <Modal
@@ -127,7 +116,7 @@ const ShareModal = (props: IShareModalProps) => {
       centered
       opened={opened}
       onClose={handleCancel}
-      title={<Badge size="lg">Share This Project</Badge>}
+      title={<Badge size="lg">Invite other user to workspace</Badge>}
     >
       <Popover
         opened={popoverOpened}
@@ -150,12 +139,10 @@ const ShareModal = (props: IShareModalProps) => {
           {searchResult.length > 0 ? (
             searchResult.map((user) => (
               <>
-                <UserInformation
+                <MemberItem
                   {...user}
                   onAddTeammate={handleAddTeammate}
-                  isSearching={
-                    !teammates.find((teammate) => teammate.id === user.id)
-                  }
+                  isSearching={!members.find((member) => member.id === user.id)}
                 />
                 <Divider my="xs" />
               </>
@@ -176,25 +163,24 @@ const ShareModal = (props: IShareModalProps) => {
       <Divider my="md" />
 
       <Stack h={300}>
-        {teammates.length > 0 ? (
-          teammates.map((user) => (
-            <UserInformation
+        {loading ? (
+          <Skeleton width="100%" height={50} />
+        ) : members.length > 0 ? (
+          members.map((user) => (
+            <MemberItem
               {...user}
-              onAddTeammate={handleAddTeammate}
-              isSelectingRole={user.id !== currentUser.id}
-              onChangeRole={(role: UserRole) => {
-                const tempTeammates = teammates.map((teammate) => {
-                  return teammate.id === user.id
-                    ? { ...teammate, role: role }
-                    : teammate;
+              isSelectingRole={true}
+              onChangePermission={(value: string) => {
+                setAssignPermissions({
+                  ...assignPermissions,
+                  [user.id]: value,
                 });
-                setTeammates(tempTeammates);
               }}
             />
           ))
         ) : (
           <Flex justify="center">
-            <Skeleton width="100%" height={50} />
+            <EmptyRender text="No members found" />
           </Flex>
         )}
       </Stack>
@@ -205,10 +191,10 @@ const ShareModal = (props: IShareModalProps) => {
         <Button variant="outline" onClick={handleCancel}>
           Cancel
         </Button>
-        <Button onClick={handleShare}>Save</Button>
+        <Button onClick={handleInvite}>Save</Button>
       </Group>
     </Modal>
   );
 };
 
-export default ShareModal;
+export default InviteModal;

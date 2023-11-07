@@ -2,36 +2,32 @@ import workspaceApi from "@/api/workspace";
 import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
 import useNotification from "@/hooks/useNotification";
 import { IWorkspace } from "@/interfaces/workspaces";
-import { getCurrentUser, getPinnedWorkspace } from "@/redux/selectors";
+import { getCurrentUser } from "@/redux/selectors";
 import { pinnedWorkspaceActions, workspaceActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import {
   Accordion,
   ActionIcon,
   Avatar,
-  Divider,
   Flex,
   Grid,
   Group,
-  Input,
   Text,
-  TextInput,
   Tooltip,
 } from "@mantine/core";
-import { openConfirmModal } from "@mantine/modals";
 import { ReactComponent as IconAbc } from "@tabler/icons/icons/abc.svg";
 import { ReactComponent as IconFilePlus } from "@tabler/icons/icons/file-arrow-left.svg";
 import { ReactComponent as IconFolder } from "@tabler/icons/icons/folder.svg";
 import { ReactComponent as IStar } from "@tabler/icons/icons/star.svg";
 import { ReactComponent as IconTrash } from "@tabler/icons/icons/trash.svg";
 import { ReactComponent as IconUserShare } from "@tabler/icons/icons/user-plus.svg";
-import { RefObject, useRef, useState } from "react";
+import { RefObject, useState } from "react";
 import { useSelector } from "react-redux";
 import DropdownMenu from "../DropdownMenu";
 import { IDropdownMenuContent } from "../DropdownMenu/DropdownMenu";
-import { useWorkspaceItemStyle } from "./WorkspaceItem.style";
-import UserInformation from "../UserInformation";
 import { DeleteModal, RenameModal, ShareModal } from "../Modal";
+import UserInformation from "../UserInformation";
+import { useWorkspaceItemStyle } from "./WorkspaceItem.style";
 
 const WorkspaceItem = (props: IWorkspace) => {
   const { classes } = useWorkspaceItemStyle();
@@ -48,13 +44,11 @@ const WorkspaceItem = (props: IWorkspace) => {
     ownerEmail,
     ownerName,
   } = props;
-  const nameInputRef = useRef<HTMLInputElement>(null);
   const [renderName, setRenderName] = useState<string | undefined>();
 
   const [openShareModal, setOpenShareModal] = useState(false);
   const [openRenameModal, setOpenRenameModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [openCreateModal, setOpenCreateModal] = useState(false);
 
   const formatTimestamp = (date: Date | string) => {
     function convertUTCDateToLocalDate(date: Date) {
@@ -219,10 +213,7 @@ const WorkspaceItem = (props: IWorkspace) => {
     {
       icon: <IconUserShare className={classes.dropdownMenuIcon} />,
       children: "Share",
-      onClick: () => {
-        console.log("Open Share modal");
-      },
-      disabled: true,
+      onClick: onOpenShareModal,
     },
     {
       icon: <IconAbc className={classes.dropdownMenuIcon} />,
@@ -265,6 +256,7 @@ const WorkspaceItem = (props: IWorkspace) => {
             opened={openDeleteModal}
             onClose={() => setOpenDeleteModal(false)}
             title="Delete this workspace"
+            message="Are you sure you want to delete this workspace?"
             onDelete={onDeleteWorkspace}
           />
 

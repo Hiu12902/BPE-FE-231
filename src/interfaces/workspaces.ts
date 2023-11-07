@@ -17,3 +17,14 @@ export interface IWorkspace {
     isPinned?: boolean;
     offset: number; // USED FOR KEEPING ORDER OF WORKSPACES FROM REUTRNED FROM BE
 }
+
+export interface IMembers {
+    name?: string;
+    email?: string;
+    avatar?: string;
+    memberId: number;
+    workspaceId?: number;
+    joinedAt?: string;
+    permission?: string;
+    offset: number; // USED FOR KEEPING ORDER OF MEMBERS FROM REUTRNED FROM BE
+}

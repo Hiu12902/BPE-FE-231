@@ -28,7 +28,7 @@
     "bpmnlint": "^8.1.1",
     "canvg": "^4.0.1",
     "lodash": "^4.17.21",
-    "mantine-datatable": "^2.2.9",
+    "mantine-datatable": "^2.9.14",
     "min-dash": "^4.0.0",
     "query-string": "^8.1.0",
     "react": "^18.2.0",

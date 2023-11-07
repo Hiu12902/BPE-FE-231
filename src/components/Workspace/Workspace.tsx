@@ -7,6 +7,7 @@ import { projectActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import {
   Accordion,
+  ActionIcon,
   Button,
   Container,
   Divider,
@@ -14,6 +15,7 @@ import {
   Pagination,
   Skeleton,
   Title,
+  Tooltip,
 } from "@mantine/core";
 import { createFormContext } from "@mantine/form";
 import { useDocumentTitle } from "@mantine/hooks";
@@ -24,6 +26,8 @@ import EmptyRender from "../EmptyRender/EmptyRender";
 import { SearchInput } from "../SearchInput";
 import { useWorkspaceStyle } from "./Workspace.style";
 import { Header, List } from "./components";
+import { ReactComponent as IconSetting } from "@tabler/icons/icons/settings.svg";
+import { ReactComponent as IconInformation } from "@tabler/icons/icons/info-circle.svg";
 
 export interface ISearchValue {
   searchValue: string;
@@ -81,6 +85,7 @@ const Workspace = () => {
       projectActions.setProject({
         ...project,
         offset: -1,
+        createAt: new Date(),
         role: project.ownerId === currentUser.id ? 0 : undefined,
       })
     );
@@ -144,7 +149,28 @@ const Workspace = () => {
 
   return (
     <Container size="xl">
-      <Title order={2}>{workspaceName}</Title>
+      <Group align="center" spacing={10}>
+        <Title order={2}>{workspaceName}</Title>
+        <Group spacing={5}>
+          <Tooltip label="Workspace information">
+            <ActionIcon>
+              <IconInformation width={20} height={20} color="#111" />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip
+            label="Workspace management"
+            display={currentUser.role === 0 ? "flex" : "none"}
+          >
+            <ActionIcon
+              onClick={() => {
+                navigate(`/management/members/${workspaceName}/${workspaceId}`);
+              }}
+            >
+              <IconSetting width={20} height={20} color="#111" />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
+      </Group>
 
       <Group position="apart" className={classes.searchGroup}>
         <ProjectFormProvider form={form}>
