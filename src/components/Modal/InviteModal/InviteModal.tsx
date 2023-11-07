@@ -5,6 +5,7 @@ import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
 import { IUser } from "@/interfaces/user";
 import {
   Badge,
+  Box,
   Button,
   Center,
   Divider,
@@ -17,8 +18,9 @@ import {
   Stack,
   Text,
   TextInput,
+  Tooltip,
 } from "@mantine/core";
-import { useDebouncedValue } from "@mantine/hooks";
+import { useDebouncedValue, useFocusTrap } from "@mantine/hooks";
 import { ReactComponent as IconUserOff } from "@tabler/icons/icons/user-off.svg";
 import { useEffect, useState } from "react";
 import { MemberItem } from "./components";
@@ -46,6 +48,8 @@ const InviteModal = ({
   const [popoverOpened, setPopoverOpened] = useState<boolean>(false);
   const [assignPermissions, setAssignPermissions] =
     useState<IAssignPermissions>({});
+
+  const focusTrapRef = useFocusTrap();
 
   const searchUsers = async () => {
     try {
@@ -92,6 +96,7 @@ const InviteModal = ({
     setLoading(true);
     setSearchResult([]);
     setPopoverOpened(false);
+    setAssignPermissions({});
     onClose?.();
   };
 
@@ -126,8 +131,9 @@ const InviteModal = ({
         onClose={() => setPopoverOpened(false)}
       >
         <Popover.Target>
-          <div onFocusCapture={() => setPopoverOpened(true)}>
+          <div onFocusCapture={() => setPopoverOpened(true)} ref={focusTrapRef}>
             <TextInput
+              data-autofocus
               label="Search the users that you want to share this project with"
               placeholder="Input their email here"
               value={input}
@@ -191,7 +197,32 @@ const InviteModal = ({
         <Button variant="outline" onClick={handleCancel}>
           Cancel
         </Button>
-        <Button onClick={handleInvite}>Save</Button>
+        <Tooltip
+          label={
+            Object.keys(assignPermissions).length > 0
+              ? "Save changes"
+              : "Please select permission!"
+          }
+          position="top"
+        >
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "auto",
+            }}
+          >
+            <Button
+              onClick={handleInvite}
+              disabled={
+                Object.keys(assignPermissions).length > 0 ? false : true
+              }
+            >
+              Save
+            </Button>
+          </Box>
+        </Tooltip>
       </Group>
     </Modal>
   );
