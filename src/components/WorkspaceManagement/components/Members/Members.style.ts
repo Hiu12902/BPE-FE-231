@@ -12,8 +12,10 @@ export const useMembersStyle = createStyles(() => ({
         height: rem(15),
     },
     select: {
+        '.mantine-Select-root': {
+            width: 'auto'
+        },
         '.mantine-Select-input': {
-            borderRadius: '30px',
             textAlign: 'center',
         }
     },

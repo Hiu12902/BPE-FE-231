@@ -298,7 +298,7 @@ const Members = () => {
 
   return (
     <Container size="xl">
-      <Title order={1}>Members in workspace</Title>
+      <Title order={1}>Members management</Title>
       <Group spacing={10} align="center" position="apart" mt={20}>
         <MembersFormProvider form={form}>
           <form
@@ -319,16 +319,6 @@ const Members = () => {
             />
           </form>
         </MembersFormProvider>
-        <Group>
-          <Filter onQueryFilter={onQueryFilter} />
-          <Button
-            display="flex"
-            leftIcon={<IconPlus className={classes.buttonIcon} />}
-            onClick={() => setOpenShareModal(true)}
-            children="Invite"
-            className={classes.button}
-          />
-        </Group>
       </Group>
 
       <Group my={20} position="apart">
@@ -347,14 +337,13 @@ const Members = () => {
           objectIdList={selectedRecords.map((record) => record.memberId)}
           onDelete={onDeleteSelectedMembers}
         />
-
-        <Group spacing={10} w="auto">
+        <Group spacing={15}>
           <Button
             leftIcon={<IconDelete className={classes.buttonIcon} />}
             onClick={() => setOpenDeleteModal(true)}
             color="red"
             variant="outline"
-            disabled={selectedRecords?.length === 0}
+            display={selectedRecords?.length === 0 ? "none" : "flex"}
             children="Delete"
           />
           <Tooltip label="Change permission of selected members">
@@ -363,11 +352,11 @@ const Members = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                width: "40%",
+                width: "30%",
               }}
             >
               <Select
-                disabled={selectedRecords?.length === 0}
+                display={selectedRecords?.length === 0 ? "none" : "flex"}
                 rightSection={
                   <IconSelect width={20} height={20} color="#ccc" />
                 }
@@ -381,15 +370,25 @@ const Members = () => {
               />
             </Box>
           </Tooltip>
+          <Button
+            display={selectedRecords?.length === 0 ? "none" : "flex"}
+            leftIcon={<IconSave className={classes.buttonIcon} />}
+            onClick={() => onChangeSelectedMembersPermission()}
+            className={classes.button}
+            children="Save"
+          />
         </Group>
 
-        <Button
-          display={selectedRecords?.length === 0 ? "none" : "flex"}
-          leftIcon={<IconSave className={classes.buttonIcon} />}
-          onClick={() => onChangeSelectedMembersPermission()}
-          className={classes.button}
-          children="Save"
-        />
+        <Group>
+          <Button
+            display="flex"
+            leftIcon={<IconPlus className={classes.buttonIcon} />}
+            onClick={() => setOpenShareModal(true)}
+            children="Invite"
+            className={classes.button}
+          />
+          <Filter onQueryFilter={onQueryFilter} />
+        </Group>
       </Group>
 
       <Table
