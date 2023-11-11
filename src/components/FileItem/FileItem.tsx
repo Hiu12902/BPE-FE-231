@@ -197,6 +197,11 @@ const FileItem = (props: IFile) => {
       });
       if (res) {
         onDeleteFile?.(id);
+        notify({
+          title: "Success!",
+          message: "Delete process successfully!",
+          type: "success",
+        });
       }
     } catch (err) {
       console.error(err);
@@ -223,15 +228,17 @@ const FileItem = (props: IFile) => {
   const onRenameFile = async () => {
     try {
       if (nameInputRef.current && projectId && id) {
+        const updatedName = nameInputRef.current.value;
         const res = await projectApi.renameProcess(
-          { name: nameInputRef.current.value },
+          { name: updatedName },
           {
             projectId: projectId,
             processId: id,
           }
         );
         if (res) {
-          setFileNameRendered(nameInputRef.current.value);
+          console.log(res);
+          setFileNameRendered(updatedName);
           notify({
             title: "Success!",
             message: "Rename process successfully!",

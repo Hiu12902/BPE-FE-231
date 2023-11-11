@@ -98,7 +98,7 @@ const ProjectItem = (props: IProject) => {
 
   const onOpenProject = (e: MouseEvent) => {
     e.stopPropagation();
-    window.open(`/${name}/${id}`, "_self");
+    // window.open(`/${name}/${id}`, "_self");
   };
 
   const onOpenRenameModal = (e: MouseEvent) => {
@@ -155,12 +155,17 @@ const ProjectItem = (props: IProject) => {
     setOpenDeleteModal(true);
   };
 
-  const onDeleteProject = async (id: number) => {
+  const onDeleteProject = async (id?: number, idList?: number[]) => {
     try {
       if (id) {
         const res = await projectApi.deleteProject(id);
         if (res) {
           dispatch(projectActions.deleteProject(id));
+          notify({
+            title: "Success!",
+            message: "Delete project successfully!",
+            type: "success",
+          });
         }
       }
     } catch (err) {
@@ -197,6 +202,11 @@ const ProjectItem = (props: IProject) => {
           const tempFiles = [...files];
           tempFiles.splice(files.length - 1, 0, res);
           setFiles(() => tempFiles);
+          notify({
+            title: "Success!",
+            message: "Create new process successfully!",
+            type: "success",
+          });
         }
       }
     } catch (err) {
@@ -263,6 +273,7 @@ const ProjectItem = (props: IProject) => {
             opened={openDeleteModal}
             onClose={() => setOpenDeleteModal(false)}
             title="Delete this project"
+            message="Are you sure you want to delete this project?"
             onDelete={onDeleteProject}
           />
 
