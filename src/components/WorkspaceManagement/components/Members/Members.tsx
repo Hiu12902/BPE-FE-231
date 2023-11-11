@@ -346,30 +346,26 @@ const Members = () => {
             display={selectedRecords?.length === 0 ? "none" : "flex"}
             children="Delete"
           />
-          <Tooltip label="Change permission of selected members">
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "30%",
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "30%",
+            }}
+          >
+            <Select
+              display={selectedRecords?.length === 0 ? "none" : "flex"}
+              rightSection={<IconSelect width={20} height={20} color="#ccc" />}
+              className={classes.select}
+              data={permissions}
+              placeholder={"Permission"}
+              value={selectionPermission}
+              onChange={(value: string) => {
+                setSelectionPermission(value);
               }}
-            >
-              <Select
-                display={selectedRecords?.length === 0 ? "none" : "flex"}
-                rightSection={
-                  <IconSelect width={20} height={20} color="#ccc" />
-                }
-                className={classes.select}
-                data={permissions}
-                placeholder={"Permission"}
-                value={selectionPermission}
-                onChange={(value: string) => {
-                  setSelectionPermission(value);
-                }}
-              />
-            </Box>
-          </Tooltip>
+            />
+          </Box>
           <Button
             display={selectedRecords?.length === 0 ? "none" : "flex"}
             leftIcon={<IconSave className={classes.buttonIcon} />}

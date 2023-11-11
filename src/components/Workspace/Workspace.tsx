@@ -2,7 +2,7 @@ import projectApi from "@/api/project";
 import CreateProjectButton from "@/components/CreateProjectButton";
 import { IPagination, IQueryParams } from "@/interfaces/common";
 import { IProject } from "@/interfaces/projects";
-import { getCurrentUser, getProject } from "@/redux/selectors";
+import { getCurrentUser, getProject, getWorkspace } from "@/redux/selectors";
 import { projectActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import {
@@ -157,11 +157,9 @@ const Workspace = () => {
               <IconInformation width={20} height={20} color="#111" />
             </ActionIcon>
           </Tooltip>
-          <Tooltip
-            label="Workspace management"
-            display={currentUser.role === 0 ? "flex" : "none"}
-          >
+          <Tooltip label="Workspace management">
             <ActionIcon
+              // display={currentUser.role === 0 ? "flex" : "none"}
               onClick={() => {
                 navigate(`/management/members/${workspaceName}/${workspaceId}`);
               }}
