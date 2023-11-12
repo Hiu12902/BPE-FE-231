@@ -10,7 +10,9 @@ import { Provider } from 'react-redux';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <Provider store={store}>
-    <MantineProvider withNormalizeCSS withGlobalStyles>
+    <MantineProvider withNormalizeCSS withGlobalStyles theme={{
+      fontFamily: 'Trebuchet MS, sans-serif'
+    }}>
       <Notifications />
       <ModalsProvider>
         <RouterProvider router={router} />
