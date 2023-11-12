@@ -5,6 +5,7 @@ import membersSlice from './members';
 import modelSlice from './model';
 import pinnedWorkspaceSlice from './pinnedWorkspace';
 import projectSlice from './project';
+import requestsSlice from './requests';
 import tabsSlice from './tabs';
 import toolSlice from './tool';
 import userSlice from './user';
@@ -21,6 +22,7 @@ const projectActions = projectSlice.actions;
 const workspaceActions = workspaceSlice.actions;
 const pinnedWorkspaceActions = pinnedWorkspaceSlice.actions;
 const membersActions = membersSlice.actions;
+const requestsActions = requestsSlice.actions;
 
 export {
   toolSliceActions,
@@ -45,4 +47,6 @@ export {
   pinnedWorkspaceActions,
   membersSlice,
   membersActions,
+  requestsSlice,
+  requestsActions,
 };

@@ -15,7 +15,7 @@ export interface IWorkspace {
     openedAt?: string;
     isHided?: boolean;
     isPinned?: boolean;
-    offset: number; // USED FOR KEEPING ORDER OF WORKSPACES FROM REUTRNED FROM BE
+    offset: number; // USED FOR KEEPING ORDER OF WORKSPACES FROM RETURNED FROM BE
 }
 
 export interface IMembers {
@@ -26,5 +26,21 @@ export interface IMembers {
     workspaceId?: number;
     joinedAt?: string;
     permission?: string;
-    offset: number; // USED FOR KEEPING ORDER OF MEMBERS FROM REUTRNED FROM BE
+    offset: number; // USED FOR KEEPING ORDER OF MEMBERS FROM RETURNED FROM BE
+}
+
+export interface IRequests {
+    id: number;
+    content?: string;
+    createdAt?: string;
+    frPermission?: string;
+    toPermission?: string;
+    rcpPermission?: string;
+    handlerId?: number;
+    recipientId?: number;
+    senderId?: number;
+    status?: string;
+    type?: string;
+    workspaceId?: number;
+    offset: number; // USED FOR KEEPING ORDER OF MEMBERS FROM RETURNED FROM BE
 }
