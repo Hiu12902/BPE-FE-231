@@ -9,15 +9,10 @@ export const useWorkspaceNavbarStyle = createStyles(() => ({
                 transition: "transform 300ms ease",
             },
             display: 'none'
-        }
-    },
-    control: {
-        padding: "0px 10px",
-        backgroundColor: PRIMARY_COLOR[1],
-        ":hover": {
-            backgroundColor: PRIMARY_COLOR[0],
-            borderRadius: "5px",
         },
+        '.mantine-Accordion-item': {
+            borderRadius: "5px",
+        }
     },
     item: {
         border: "none",
@@ -26,13 +21,13 @@ export const useWorkspaceNavbarStyle = createStyles(() => ({
             borderRadius: "5px",
         },
     },
-    activeControl: {
-        padding: "0px 10px",
-        backgroundColor: PRIMARY_COLOR[0],
+    control: {
+        padding: '0 15px',
+        color: PRIMARY_COLOR[3],
+        backgroundColor: PRIMARY_COLOR[1],
         borderRadius: "5px",
-    },
-    activeItem: {
-        backgroundColor: PRIMARY_COLOR[0],
-        borderRadius: "5px",
+        ":hover": {
+            backgroundColor: PRIMARY_COLOR[0],
+        },
     },
 }));

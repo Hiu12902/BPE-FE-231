@@ -2,9 +2,10 @@ import { Accordion, AccordionProps, Box, Group, Text } from "@mantine/core";
 import { ReactComponent as IconRequest } from "@tabler/icons/icons/git-pull-request.svg";
 import { ReactComponent as IconCustomization } from "@tabler/icons/icons/triangle-square-circle.svg";
 import { ReactComponent as IconMember } from "@tabler/icons/icons/user-circle.svg";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useWorkspaceNavbarStyle } from "./WorkspaceNavbar.style";
 import BackButton from "@/components/BackButton";
+import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
 
 interface IProps extends Partial<AccordionProps> {}
 
@@ -12,28 +13,44 @@ const WorkspaceNavbar = (props: IProps) => {
   const { workspaceId, workspaceName } = useParams();
   const { classes } = useWorkspaceNavbarStyle();
   const navigate = useNavigate();
+  const location = useLocation().pathname.split("/")[2];
 
   const NavbarContent = [
     {
       title: "Members management",
       description: "Manage your workspace members",
-      bullet: <IconMember width={20} height={20} color="#eee" />,
+      bullet: <IconMember width={20} height={20} />,
       action: () =>
         navigate(`/management/members/${workspaceName}/${workspaceId}`),
+      style: location === "members" && {
+        backgroundColor: PRIMARY_COLOR[0],
+        color: PRIMARY_COLOR[3],
+        fontWeight: 600,
+      },
     },
     {
       title: "Requests",
       description: "Manage requests from other users",
-      bullet: <IconRequest width={20} height={20} color="#eee" />,
+      bullet: <IconRequest width={20} height={20} />,
       action: () =>
         navigate(`/management/requests/${workspaceName}/${workspaceId}`),
+      style: location === "requests" && {
+        backgroundColor: PRIMARY_COLOR[0],
+        color: PRIMARY_COLOR[3],
+        fontWeight: 600,
+      },
     },
     {
       title: "Customization",
       description: "Customize your workspace appearance",
-      bullet: <IconCustomization width={20} height={20} color="#eee" />,
+      bullet: <IconCustomization width={20} height={20} />,
       action: () =>
         navigate(`/management/customization/${workspaceName}/${workspaceId}`),
+      style: location === "customization" && {
+        backgroundColor: PRIMARY_COLOR[0],
+        color: PRIMARY_COLOR[3],
+        fontWeight: 600,
+      },
     },
   ];
 
@@ -55,22 +72,12 @@ const WorkspaceNavbar = (props: IProps) => {
             >
               <Accordion.Control
                 key={index}
-                style={{
-                  cursor: "pointer",
-                }}
+                style={item.style || undefined}
                 className={classes.control}
               >
                 <Group spacing={5}>
                   {item.bullet}
-                  <Text
-                    color="#eee"
-                    size={15}
-                    style={{
-                      fontWeight: 600,
-                    }}
-                  >
-                    {item.title}
-                  </Text>
+                  {item.title}
                 </Group>
               </Accordion.Control>
             </Accordion.Item>
