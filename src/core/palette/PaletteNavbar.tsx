@@ -11,17 +11,21 @@ import {
   Text,
   Tooltip,
   Transition,
-} from '@mantine/core';
-import { assign } from 'min-dash';
+} from "@mantine/core";
+import { assign } from "min-dash";
 //@ts-ignore
-import { getDi } from 'bpmn-js/lib/util/ModelUtil';
+import { getDi } from "bpmn-js/lib/util/ModelUtil";
 //@ts-ignore
-import { hasEventDefinition } from 'bpmn-js/lib/util/DiUtil';
-import { getCurrentModeler, selectToolbarMode } from '@/redux/selectors';
-import { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { PALETTE_WIDTH } from '@/constants/theme/themeConstants';
-import { usePaletteNavbarStyles } from './PaletteNavbar.style';
+import { hasEventDefinition } from "bpmn-js/lib/util/DiUtil";
+import { getCurrentModeler, selectToolbarMode } from "@/redux/selectors";
+import { useCallback, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import {
+  APP_PALETTE_WIDTH,
+  PALETTE_WIDTH,
+  PRIMARY_COLOR,
+} from "@/constants/theme/themeConstants";
+import { usePaletteNavbarStyles } from "./PaletteNavbar.style";
 import {
   artifactSymbols,
   dataSymbols,
@@ -30,14 +34,14 @@ import {
   participantsSymbols,
   subProcessSymbols,
   taskSymbols,
-} from './utils/symbols';
-import { useBeforeUnload } from 'react-router-dom';
-import useGetModelerModules from '@/core/hooks/useGetModelerModule';
-import BackButton from '@/components/BackButton';
-import { ReactComponent as IconChevronsLeft } from '@tabler/icons/icons/chevrons-left.svg';
-import { ReactComponent as IconChevronRight } from '@tabler/icons/icons/chevron-right.svg';
-import { TOOLBAR_MODE } from '@/constants/toolbar';
-import Logo from '@/components/Logo';
+} from "./utils/symbols";
+import { useBeforeUnload } from "react-router-dom";
+import useGetModelerModules from "@/core/hooks/useGetModelerModule";
+import BackButton from "@/components/BackButton";
+import { ReactComponent as IconChevronsLeft } from "@tabler/icons/icons/chevrons-left.svg";
+import { ReactComponent as IconChevronRight } from "@tabler/icons/icons/chevron-right.svg";
+import { TOOLBAR_MODE } from "@/constants/toolbar";
+import Logo from "@/components/Logo";
 
 export function PaletteNavbar({
   isNavbarCollapsed,
@@ -48,20 +52,22 @@ export function PaletteNavbar({
 }) {
   const { classes } = usePaletteNavbarStyles();
   const modeler = useSelector(getCurrentModeler)?.modeler;
-  const [eventBus, modeling] = useGetModelerModules(['eventBus', 'modeling']);
+  const [eventBus, modeling] = useGetModelerModules(["eventBus", "modeling"]);
   const toolbarMode = useSelector(selectToolbarMode);
 
   const handleGateway = (
-    event: React.DragEvent<HTMLButtonElement> | React.MouseEvent<HTMLButtonElement>,
+    event:
+      | React.DragEvent<HTMLButtonElement>
+      | React.MouseEvent<HTMLButtonElement>,
     type: string,
     options?: { isExpanded: boolean }
   ) => {
     event.stopPropagation();
     if (modeler) {
       //@ts-ignore
-      const elementFactory = modeler.get('elementFactory');
+      const elementFactory = modeler.get("elementFactory");
       //@ts-ignore
-      const create = modeler.get('create');
+      const create = modeler.get("create");
 
       var shape = elementFactory.createShape(assign({ type: type }, options));
       if (options) {
@@ -69,7 +75,7 @@ export function PaletteNavbar({
         di.isExpanded = options.isExpanded;
       }
 
-      if (type === 'bpmn:Participant') {
+      if (type === "bpmn:Participant") {
         create.start(event, elementFactory.createParticipantShape());
       } else {
         create.start(event, shape);
@@ -79,10 +85,10 @@ export function PaletteNavbar({
 
   const onCreateConditionalEvent = (ctx: any) => {
     const { context } = ctx;
-    if (hasEventDefinition(context.shape, 'bpmn:ConditionalEventDefinition')) {
+    if (hasEventDefinition(context.shape, "bpmn:ConditionalEventDefinition")) {
       modeling.updateProperties(context.shape, {
         percentage: 0.5,
-        condition: 'Default percentage for a conditional event is 50%',
+        condition: "Default percentage for a conditional event is 50%",
       });
     }
   };
@@ -91,15 +97,21 @@ export function PaletteNavbar({
     if (!eventBus) {
       return;
     }
-    eventBus?.on('commandStack.shape.create.postExecuted', onCreateConditionalEvent);
+    eventBus?.on(
+      "commandStack.shape.create.postExecuted",
+      onCreateConditionalEvent
+    );
     return () => {
-      eventBus?.off('commandStack.shape.create.postExecuted', onCreateConditionalEvent);
+      eventBus?.off(
+        "commandStack.shape.create.postExecuted",
+        onCreateConditionalEvent
+      );
     };
   }, [eventBus]);
 
   useBeforeUnload(
     useCallback(() => {
-      localStorage.setItem('elementNavbarToggle', isNavbarCollapsed.toString());
+      localStorage.setItem("elementNavbarToggle", isNavbarCollapsed.toString());
     }, [isNavbarCollapsed])
   );
 
@@ -117,13 +129,15 @@ export function PaletteNavbar({
             width={{ base: 20 }}
             p="sm"
             sx={(theme) => ({
-              backgroundColor: theme.fn.variant({ variant: 'filled', color: theme.primaryColor })
-                .background,
+              backgroundColor: theme.fn.variant({
+                variant: "filled",
+                color: theme.primaryColor,
+              }).background,
               top: 0,
-              cursor: 'pointer',
-              '&:hover': {
+              cursor: "pointer",
+              "&:hover": {
                 boxShadow:
-                  'rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px',
+                  "rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px",
               },
             })}
             style={styles}
@@ -153,8 +167,10 @@ export function PaletteNavbar({
             width={{ base: PALETTE_WIDTH }}
             p="sm"
             sx={(theme) => ({
-              backgroundColor: theme.fn.variant({ variant: 'filled', color: theme.primaryColor })
-                .background,
+              backgroundColor: theme.fn.variant({
+                variant: "filled",
+                color: theme.primaryColor,
+              }).background,
               top: 0,
             })}
             style={styles}
@@ -163,10 +179,10 @@ export function PaletteNavbar({
               <Logo fullReload={false} />
               <Divider my="sm" />
               <Flex align="center" justify="center" gap={5}>
-                <BackButton fullWidth={false} />
+                <BackButton />
                 <Tooltip label="Collapse">
                   <Button
-                    style={{ backgroundColor: 'white', color: 'black' }}
+                    style={{ backgroundColor: "white", color: "black" }}
                     pr={5}
                     pl={5}
                     onClick={() => setIsNavbarCollapsed(true)}
@@ -177,7 +193,13 @@ export function PaletteNavbar({
               </Flex>
             </Navbar.Section>
 
-            <Navbar.Section grow component={ScrollArea} mx="-xs" px="xs" mt={20}>
+            <Navbar.Section
+              grow
+              component={ScrollArea}
+              mx="-xs"
+              px="xs"
+              mt={20}
+            >
               {(!modeler || toolbarMode !== TOOLBAR_MODE.DEFAULT) && (
                 <Overlay color="#000" opacity={0.25} mr={2} />
               )}
@@ -204,7 +226,7 @@ export function PaletteNavbar({
                           onDragStart={(e) => handleGateway(e, symbol.tagName)}
                           draggable="true"
                         >
-                          {' '}
+                          {" "}
                           {symbol.name}
                         </button>
                       ))}
@@ -227,7 +249,7 @@ export function PaletteNavbar({
                           onDragStart={(e) => handleGateway(e, symbol.tagName)}
                           draggable="true"
                         >
-                          {' '}
+                          {" "}
                           {symbol.name}
                         </button>
                       ))}
@@ -250,7 +272,7 @@ export function PaletteNavbar({
                           onDragStart={(e) => handleGateway(e, symbol.tagName)}
                           draggable="true"
                         >
-                          {' '}
+                          {" "}
                           {symbol.name}
                         </button>
                       ))}
@@ -273,7 +295,7 @@ export function PaletteNavbar({
                           onDragStart={(e) => handleGateway(e, symbol.tagName)}
                           draggable="true"
                         >
-                          {' '}
+                          {" "}
                           {symbol.name}
                         </button>
                       ))}
@@ -292,11 +314,15 @@ export function PaletteNavbar({
                       {subProcessSymbols.map((symbol) => (
                         <button
                           className={symbol.className}
-                          onClick={(e) => handleGateway(e, symbol.tagName, symbol.option)}
-                          onDragStart={(e) => handleGateway(e, symbol.tagName, symbol.option)}
+                          onClick={(e) =>
+                            handleGateway(e, symbol.tagName, symbol.option)
+                          }
+                          onDragStart={(e) =>
+                            handleGateway(e, symbol.tagName, symbol.option)
+                          }
                           draggable="true"
                         >
-                          {' '}
+                          {" "}
                           {symbol.name}
                         </button>
                       ))}
@@ -319,7 +345,7 @@ export function PaletteNavbar({
                           onDragStart={(e) => handleGateway(e, symbol.tagName)}
                           draggable="true"
                         >
-                          {' '}
+                          {" "}
                           {symbol.name}
                         </button>
                       ))}
@@ -342,7 +368,7 @@ export function PaletteNavbar({
                           onDragStart={(e) => handleGateway(e, symbol.tagName)}
                           draggable="true"
                         >
-                          {' '}
+                          {" "}
                           {symbol.name}
                         </button>
                       ))}

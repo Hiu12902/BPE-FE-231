@@ -13,9 +13,19 @@ const BackButton = ({ route, fullWidth = true }: IButton) => {
   return (
     <Button
       fullWidth={fullWidth}
-      style={{ backgroundColor: "#fff", color: PRIMARY_COLOR[1] }}
-      color="blue"
-      variant="light"
+      variant="outline"
+      styles={{
+        root: {
+          backgroundColor: PRIMARY_COLOR[1],
+          border: "1px solid white",
+          "&:hover": {
+            backgroundColor: "#1980D9",
+          },
+        },
+        inner: {
+          color: "#fff",
+        },
+      }}
       leftIcon={<IconArrowLeft />}
       onClick={() => navigate(route ? route : "/")}
       pr={3}
