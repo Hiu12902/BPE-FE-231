@@ -5,11 +5,12 @@ import { useWorkspaceFormContext } from "../DefaultHomepage/DefaultHomepage";
 import { useProjectFormContext } from "../Workspace/Workspace";
 import { useSearchInputStyle } from "./SearchInput.style";
 import { useMembersFormContext } from "../WorkspaceManagement/components/Members/Members";
+import { useRequestsFormContext } from "../WorkspaceManagement/components/Requests/Requests";
 
 export interface ISearchInput {
   onCancel?: () => void;
   placeholder?: string;
-  context?: "workspace" | "project" | "process" | "members";
+  context?: string;
 }
 
 const SearchInput = ({ onCancel, placeholder, context }: ISearchInput) => {
@@ -21,7 +22,11 @@ const SearchInput = ({ onCancel, placeholder, context }: ISearchInput) => {
       ? useProjectFormContext()
       : context === "members"
       ? useMembersFormContext()
-      : null;
+      : context === "requests"
+      ? useRequestsFormContext()
+      : // : context === "notification"
+        // ? useNotificationFormContext()
+        null;
   return (
     <Input
       variant="filled"

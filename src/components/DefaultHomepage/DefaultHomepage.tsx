@@ -86,7 +86,11 @@ const DefaultHomepage = () => {
         <CreateWorkspaceButton
           onCreateWorkspace={(workspace) => {
             dispatch(
-              workspaceActions.setWorkspace({ ...workspace, offset: -1 })
+              workspaceActions.setWorkspace({
+                ...workspace,
+                offset: -1,
+                permission: "owner",
+              })
             );
           }}
         />

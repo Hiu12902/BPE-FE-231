@@ -1,20 +1,12 @@
-import { membersApi } from "@/api/index";
+import { membersApi, userApi } from "@/api/index";
 import { DeleteModal, InviteModal } from "@/components/Modal";
 import { SearchInput } from "@/components/SearchInput";
 import useNotification from "@/hooks/useNotification";
 import { IMembers, IPagination, IQueryParams } from "@/interfaces/index";
 import { getWorkspaceMembers } from "@/redux/selectors";
-import { membersActions } from "@/redux/slices";
+import { membersActions, userActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
-import {
-  Box,
-  Button,
-  Container,
-  Group,
-  Select,
-  Title,
-  Tooltip,
-} from "@mantine/core";
+import { Box, Button, Container, Group, Select, Title } from "@mantine/core";
 import { createFormContext } from "@mantine/form";
 import { ReactComponent as IconSave } from "@tabler/icons/icons/check.svg";
 import { ReactComponent as IconSelect } from "@tabler/icons/icons/chevron-down.svg";
@@ -22,7 +14,7 @@ import { ReactComponent as IconPlus } from "@tabler/icons/icons/plus.svg";
 import { ReactComponent as IconDelete } from "@tabler/icons/icons/trash.svg";
 import { useEffect, useState } from "react";
 import { batch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMembersStyle } from "./Members.style";
 import { Filter, Table } from "./components";
 
@@ -42,6 +34,7 @@ const Members = () => {
   const notify = useNotification();
   const { workspaceId } = useParams();
   const { classes } = useMembersStyle();
+  const [result, setResult] = useState(true);
   const [loading, setLoading] = useState<boolean>(true);
   const [openShareModal, setOpenShareModal] = useState<boolean>(false);
   const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
@@ -227,7 +220,7 @@ const Members = () => {
           }
           notify({
             type: "success",
-            message: result.message,
+            message: "Members deleted successfully",
             title: "Success",
           });
         }
@@ -265,13 +258,16 @@ const Members = () => {
                   offset: -1,
                 })
               );
-            } else return;
+            } else {
+              setResult(false);
+            }
           });
-          notify({
-            title: "Success!",
-            message: "Invite user to workspace successfully!",
-            type: "success",
-          });
+          if (result)
+            notify({
+              title: "Success!",
+              message: "Invite user to workspace successfully!",
+              type: "success",
+            });
         }
       } else {
         notify({
@@ -295,6 +291,33 @@ const Members = () => {
       getAllWorkspaceMembers();
     }
   }, [isSearching, searchLoading, pagination.page]);
+
+  const [permission, setPermission] = useState<string>("");
+  const navigate = useNavigate();
+
+  const getUser = async (workspaceId: number) => {
+    try {
+      const res = await userApi.getMe(workspaceId);
+      if (res) {
+        dispatch(userActions.setUser(res));
+        setPermission(res.permission);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (workspaceId) {
+      getUser(Number(workspaceId));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (permission !== "owner") {
+      navigate("/");
+    }
+  }, [permission]);
 
   return (
     <Container size="xl">

@@ -107,7 +107,6 @@ const Table = ({
       width: 250,
       textAlignment: "center" as DataTableColumnTextAlignment,
       render: (record: IMembers) => {
-        const [value, setValue] = useState(String(record.permission));
         return (
           <Box
             sx={{
@@ -158,6 +157,7 @@ const Table = ({
     <DataGrid
       columns={columns}
       rows={rows ? rows : []}
+      idAccessor="memberId"
       isLoading={isLoading}
       pagination={pagination}
       onPageChange={onPageChange}
@@ -166,6 +166,7 @@ const Table = ({
       highlight={true}
       selectedRecords={selectedRecords}
       setSelectedRecords={setSelectedRecords}
+      isRecordSelectable={(record) => record.permission !== "owner"}
     />
   );
 };

@@ -20,8 +20,12 @@ class UserApi {
     return Client.post(`/user/signin`, user);
   }
 
-  public getMe(): Promise<any> {
-    return Client.get(`/user`);
+  public getMe(workspaceId?: number): Promise<any> {
+    return Client.get(`/user`, {
+      params: {
+        workspaceId: workspaceId,
+      }
+    });
   }
 
   public resendVerificationEmail(payload: { email: string }): Promise<any> {
