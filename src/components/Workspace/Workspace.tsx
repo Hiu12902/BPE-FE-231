@@ -178,7 +178,7 @@ const Workspace = () => {
             <ActionIcon
               display={currentUser.permission === "owner" ? "flex" : "none"}
               onClick={() => {
-                navigate(`/management/members/${workspaceName}/${workspaceId}`);
+                navigate(`/management/${workspaceName}/${workspaceId}`);
               }}
             >
               <IconSetting width={20} height={20} color="#111" />

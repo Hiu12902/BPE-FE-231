@@ -1,30 +1,20 @@
-import { requestsApi, userApi } from "@/api/index";
-import { DeleteModal, InviteModal, RequestModal } from "@/components/Modal";
+import { requestsApi } from "@/api/index";
+import { DeleteModal, RequestModal } from "@/components/Modal";
 import { SearchInput } from "@/components/SearchInput";
 import useNotification from "@/hooks/useNotification";
-import { IRequests, IPagination, IQueryParams } from "@/interfaces/index";
-import { getWorkspaceRequests } from "@/redux/selectors";
-import { requestsActions, userActions } from "@/redux/slices";
+import { IPagination, IQueryParams, IRequests } from "@/interfaces/index";
+import { getCurrentUser, getWorkspaceRequests } from "@/redux/selectors";
+import { requestsActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
-import {
-  Box,
-  Button,
-  Container,
-  Group,
-  Select,
-  Title,
-  Tooltip,
-} from "@mantine/core";
+import { Box, Button, Container, Group, Title } from "@mantine/core";
 import { createFormContext } from "@mantine/form";
-import { ReactComponent as IconSave } from "@tabler/icons/icons/check.svg";
-import { ReactComponent as IconSelect } from "@tabler/icons/icons/chevron-down.svg";
-import { ReactComponent as IconPlus } from "@tabler/icons/icons/plus.svg";
 import { ReactComponent as IconDelete } from "@tabler/icons/icons/trash.svg";
 import { useEffect, useState } from "react";
 import { batch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRequestsStyle } from "./Requests.style";
 import { Filter, Table } from "./components";
+import WorkspaceNavbar from "@/components/Layouts/Workspace/components/WorkspaceNavbar";
 
 interface ISearchValue {
   searchValue: string;
@@ -40,7 +30,7 @@ export const [RequestsFormProvider, useRequestsFormContext, useForm] =
 const Requests = () => {
   const dispatch = useAppDispatch();
   const notify = useNotification();
-  const { workspaceId } = useParams();
+  const { workspaceId, workspaceName } = useParams();
   const { classes } = useRequestsStyle();
   const [loading, setLoading] = useState<boolean>(true);
   const [searchLoading, setSearchLoading] = useState<boolean>(true);
@@ -69,6 +59,18 @@ const Requests = () => {
     },
   });
   const searchValue = form.values.searchValue;
+
+  const currentUser = useSelector(getCurrentUser);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate(`/management/${workspaceName}/${workspaceId}`);
+    }
+    if (currentUser && currentUser.permission !== "owner") {
+      navigate(`/404`);
+    }
+  }, []);
 
   const onCancelSearchRequests = () => {
     form.reset();
@@ -259,33 +261,6 @@ const Requests = () => {
       getAllWorkspaceRequests();
     }
   }, [isSearching, searchLoading, pagination.page]);
-
-  const [permission, setPermission] = useState<string>("");
-  const navigate = useNavigate();
-
-  const getUser = async (workspaceId: number) => {
-    try {
-      const res = await userApi.getMe(workspaceId);
-      if (res) {
-        dispatch(userActions.setUser(res));
-        setPermission(res.permission);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    if (workspaceId) {
-      getUser(Number(workspaceId));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (permission !== "owner") {
-      navigate("/");
-    }
-  }, [permission]);
 
   return (
     <Container size="xl">
