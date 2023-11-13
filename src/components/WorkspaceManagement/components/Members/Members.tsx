@@ -1,10 +1,10 @@
-import { membersApi, userApi } from "@/api/index";
+import { membersApi } from "@/api/index";
 import { DeleteModal, InviteModal } from "@/components/Modal";
 import { SearchInput } from "@/components/SearchInput";
 import useNotification from "@/hooks/useNotification";
 import { IMembers, IPagination, IQueryParams } from "@/interfaces/index";
-import { getWorkspaceMembers } from "@/redux/selectors";
-import { membersActions, userActions } from "@/redux/slices";
+import { getCurrentUser, getWorkspaceMembers } from "@/redux/selectors";
+import { membersActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import { Box, Button, Container, Group, Select, Title } from "@mantine/core";
 import { createFormContext } from "@mantine/form";
@@ -32,7 +32,7 @@ export const [MembersFormProvider, useMembersFormContext, useForm] =
 const Members = () => {
   const dispatch = useAppDispatch();
   const notify = useNotification();
-  const { workspaceId } = useParams();
+  const { workspaceId, workspaceName } = useParams();
   const { classes } = useMembersStyle();
   const [result, setResult] = useState(true);
   const [loading, setLoading] = useState<boolean>(true);
@@ -74,6 +74,18 @@ const Members = () => {
     },
   });
   const searchValue = form.values.searchValue;
+
+  const currentUser = useSelector(getCurrentUser);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate(`/management/${workspaceName}/${workspaceId}`);
+    }
+    if (currentUser && currentUser.permission !== "owner") {
+      navigate(`/404`);
+    }
+  }, []);
 
   const onCancelSearchMembers = () => {
     form.reset();
@@ -291,33 +303,6 @@ const Members = () => {
       getAllWorkspaceMembers();
     }
   }, [isSearching, searchLoading, pagination.page]);
-
-  const [permission, setPermission] = useState<string>("");
-  const navigate = useNavigate();
-
-  const getUser = async (workspaceId: number) => {
-    try {
-      const res = await userApi.getMe(workspaceId);
-      if (res) {
-        dispatch(userActions.setUser(res));
-        setPermission(res.permission);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    if (workspaceId) {
-      getUser(Number(workspaceId));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (permission !== "owner") {
-      navigate("/");
-    }
-  }, [permission]);
 
   return (
     <Container size="xl">

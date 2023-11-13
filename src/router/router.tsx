@@ -38,6 +38,11 @@ const router = createBrowserRouter(
         </Route>
         <Route element={<WorkspaceLayout showNavbar={true} />}>
           <Route
+            path="/management/:workspaceName/:workspaceId"
+            element={<WorkspaceManagement />}
+          />
+
+          <Route
             path="/management/members/:workspaceName/:workspaceId"
             element={<Members />}
           />
