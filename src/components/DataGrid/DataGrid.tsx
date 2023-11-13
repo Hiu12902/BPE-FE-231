@@ -1,13 +1,12 @@
 import { IEmptyRender } from "@/components/EmptyRender/EmptyRender";
-import { IMembers } from "@/interfaces/workspaces";
 import { DataTable, DataTableColumn } from "mantine-datatable";
-import { useState } from "react";
 
 interface IDataGrid {
-  columns: DataTableColumn<IMembers>[];
-  rows: IMembers[];
+  columns: DataTableColumn<any>[];
+  rows: any[];
   emptyRender?: IEmptyRender;
   isLoading?: boolean;
+  idAccessor?: string;
 
   showBorder?: boolean;
   striped?: boolean;
@@ -22,10 +21,12 @@ interface IDataGrid {
 
   pagination?: any;
   onPageChange?: (p: any) => void;
-  onHandleMultipleSelections?: (selectionRecords?: IMembers[]) => void;
+  onHandleMultipleSelections?: (selectionRecords?: any[]) => void;
 
-  selectedRecords?: IMembers[];
-  setSelectedRecords?: (selectedRecords: IMembers[]) => void;
+  selectedRecords?: any[];
+  setSelectedRecords?: (selectedRecords: any[]) => void;
+  isRecordSelectable?: (record: any) => boolean;
+  onRowClick?: (row: any) => void;
 }
 
 const DataGrid = ({
@@ -35,6 +36,7 @@ const DataGrid = ({
   onPageChange,
   emptyRender,
   isLoading,
+  idAccessor,
 
   showBorder = false,
   striped,
@@ -47,13 +49,15 @@ const DataGrid = ({
   verticalAlignment = "center",
 
   selectedRecords,
+  isRecordSelectable,
   setSelectedRecords,
+  onRowClick,
 }: IDataGrid) => {
   return (
     <DataTable
       minHeight={400}
       columns={columns}
-      idAccessor="memberId"
+      idAccessor={idAccessor}
       records={rows}
       withBorder={showBorder}
       striped={striped}
@@ -75,7 +79,8 @@ const DataGrid = ({
       loaderVariant="dots"
       loaderSize="lg"
       loaderBackgroundBlur={5}
-      isRecordSelectable={(record) => record.permission !== "owner"}
+      isRecordSelectable={isRecordSelectable}
+      onRowClick={onRowClick}
     />
   );
 };

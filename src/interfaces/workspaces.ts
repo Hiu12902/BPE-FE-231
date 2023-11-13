@@ -3,16 +3,16 @@ export interface IWorkspace {
     name?: string;
     description?: string;
     createdAt?: Date | string;
-    deleteAt?: Date | string;
+    openedAt?: string;
     ownerId?: number;
     ownerAvatar?: string;
     ownerName?: string;
     ownerEmail?: string;
+    permission?: string;
     background?: string;
     icon?: string;
     isPersonal?: boolean;
     isDeleted?: boolean;
-    openedAt?: string;
     isHided?: boolean;
     isPinned?: boolean;
     offset: number; // USED FOR KEEPING ORDER OF WORKSPACES FROM RETURNED FROM BE

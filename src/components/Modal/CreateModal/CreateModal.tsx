@@ -17,7 +17,6 @@ interface ICreateModalProps extends ModalProps {
 const CreateModal = (props: ICreateModalProps) => {
   const { opened, onClose, title, onCreate } = props;
   const nameInputRef = useRef<HTMLInputElement>(null);
-  const descriptionInputRef = useRef<HTMLInputElement>(null);
   const handleCancel = () => {
     onClose?.();
   };

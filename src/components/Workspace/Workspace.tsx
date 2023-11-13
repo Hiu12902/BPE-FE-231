@@ -2,8 +2,8 @@ import projectApi from "@/api/project";
 import CreateProjectButton from "@/components/CreateProjectButton";
 import { IPagination, IQueryParams } from "@/interfaces/common";
 import { IProject } from "@/interfaces/projects";
-import { getCurrentUser, getProject, getWorkspace } from "@/redux/selectors";
-import { projectActions } from "@/redux/slices";
+import { getCurrentUser, getProject } from "@/redux/selectors";
+import { projectActions, userActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import {
   Accordion,
@@ -19,6 +19,8 @@ import {
 } from "@mantine/core";
 import { createFormContext } from "@mantine/form";
 import { useDocumentTitle } from "@mantine/hooks";
+import { ReactComponent as IconInformation } from "@tabler/icons/icons/info-circle.svg";
+import { ReactComponent as IconSetting } from "@tabler/icons/icons/settings.svg";
 import { useEffect, useState } from "react";
 import { batch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -26,8 +28,7 @@ import EmptyRender from "../EmptyRender/EmptyRender";
 import { SearchInput } from "../SearchInput";
 import { useWorkspaceStyle } from "./Workspace.style";
 import { Header, List } from "./components";
-import { ReactComponent as IconSetting } from "@tabler/icons/icons/settings.svg";
-import { ReactComponent as IconInformation } from "@tabler/icons/icons/info-circle.svg";
+import { userApi } from "@/api/index";
 
 export interface ISearchValue {
   searchValue: string;
@@ -140,6 +141,22 @@ const Workspace = () => {
       console.log(error);
     }
   };
+  const getUser = async (workspaceId: number) => {
+    try {
+      const res = await userApi.getMe(workspaceId);
+      if (res) {
+        dispatch(userActions.setUser(res));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (!currentUser.permission) {
+      getUser(Number(workspaceId));
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     if (searchLoading) {
@@ -159,7 +176,7 @@ const Workspace = () => {
           </Tooltip>
           <Tooltip label="Workspace management">
             <ActionIcon
-              // display={currentUser.role === 0 ? "flex" : "none"}
+              display={currentUser.permission === "owner" ? "flex" : "none"}
               onClick={() => {
                 navigate(`/management/members/${workspaceName}/${workspaceId}`);
               }}

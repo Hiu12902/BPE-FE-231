@@ -43,7 +43,7 @@ const WorkspaceLayout = ({ showNavbar }: IWorkspaceLayout) => {
       localStorage.removeItem("resetToken");
     }
   }, [currentUser]);
-
+  
   return (
     <AppShell
       navbar={

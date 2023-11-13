@@ -1,15 +1,15 @@
-import { APP_PALETTE_WIDTH } from '@/constants/theme/themeConstants';
-import { AppShell, Box, Header, Navbar } from '@mantine/core';
-import { Outlet } from 'react-router-dom';
-import AppHeader from './components/AppHeader';
-import AppNavbar from './components/AppNavbar';
-import { useEffect } from 'react';
-import userApi from '@/api/user';
-import { useAppDispatch } from '@/redux/store';
-import { useSelector } from 'react-redux';
-import { getCurrentUser } from '@/redux/selectors';
-import { userActions } from '@/redux/slices';
-import Logo from '@/components/Logo';
+import userApi from "@/api/user";
+import Logo from "@/components/Logo";
+import { APP_PALETTE_WIDTH } from "@/constants/theme/themeConstants";
+import { getCurrentUser } from "@/redux/selectors";
+import { userActions } from "@/redux/slices";
+import { useAppDispatch } from "@/redux/store";
+import { AppShell, Box, Header, Navbar } from "@mantine/core";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Outlet } from "react-router-dom";
+import AppHeader from "./components/AppHeader";
+import AppNavbar from "./components/AppNavbar";
 
 const AppLayout = () => {
   const dispatch = useAppDispatch();
@@ -30,8 +30,8 @@ const AppLayout = () => {
     if (!currentUser.email) {
       getUser();
     }
-    if (!!localStorage.getItem('resetToken')) {
-      localStorage.removeItem('resetToken');
+    if (!!localStorage.getItem("resetToken")) {
+      localStorage.removeItem("resetToken");
     }
   }, [currentUser]);
 
@@ -43,8 +43,10 @@ const AppLayout = () => {
           width={{ base: APP_PALETTE_WIDTH }}
           p="sm"
           sx={(theme) => ({
-            backgroundColor: theme.fn.variant({ variant: 'filled', color: theme.primaryColor })
-              .background,
+            backgroundColor: theme.fn.variant({
+              variant: "filled",
+              color: theme.primaryColor,
+            }).background,
             top: 0,
           })}
         >
