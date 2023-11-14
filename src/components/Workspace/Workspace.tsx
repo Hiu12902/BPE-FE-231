@@ -1,4 +1,4 @@
-import { IProject, IWorkspace } from '@/interfaces/projects';
+import { IProject, IWorkspace } from "@/interfaces/projects";
 import {
   Accordion,
   Box,
@@ -11,20 +11,35 @@ import {
   Stack,
   Text,
   Title,
-} from '@mantine/core';
-import ProjectItem from '@/components/ProjectItem';
-import { ReactComponent as IconChevronRight } from '@tabler/icons/icons/chevron-right.svg';
-import { useEffect, useState } from 'react';
-import projectApi from '@/api/project';
-import CreateProjectButton from '@/components/CreateProjectButton';
-import noProjects from '@/assets/no-projects.svg';
-import { useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '@/redux/store';
-import { projectActions } from '@/redux/slices';
-import { batch, useSelector } from 'react-redux';
-import { getProject } from '@/redux/selectors';
-
+} from "@mantine/core";
+import ProjectItem from "@/components/ProjectItem";
+import { ReactComponent as IconChevronRight } from "@tabler/icons/icons/chevron-right.svg";
+import { useEffect, useState } from "react";
+import projectApi from "@/api/project";
+import CreateProjectButton from "@/components/CreateProjectButton";
+import noProjects from "@/assets/no-projects.svg";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@/redux/store";
+import { projectActions } from "@/redux/slices";
+import { batch, useSelector } from "react-redux";
+import { getProject } from "@/redux/selectors";
+import { io } from "socket.io-client";
 const Workspace = (workspace: IWorkspace) => {
+  // Test socket connection
+  const socket = io("http://localhost:8000");
+  socket.on("connect", () => {
+    console.log("Socket connected");
+  });
+  socket.on("disconnect", () => {
+    console.log("Socket disconnected");
+  });
+  socket.on("message", (message) => {
+    console.log(message);
+  });
+  socket.on("workspace_changes", (message) => {
+    console.log(message);
+  });
+
   const dispatch = useAppDispatch();
   const projects = useSelector(getProject);
   const projectsMap = Object.keys(projects).map(function (key) {
@@ -39,7 +54,9 @@ const Workspace = (workspace: IWorkspace) => {
       const projects = await projectApi.getAllProjects();
       if (projects) {
         batch(() => {
-          projects.map((project: IProject) => dispatch(projectActions.setProject(project)));
+          projects.map((project: IProject) =>
+            dispatch(projectActions.setProject(project))
+          );
         });
       }
     } catch (err) {
@@ -60,7 +77,8 @@ const Workspace = (workspace: IWorkspace) => {
           <Image src={noProjects} width={120} opacity={0.7} />
         </Center>
         <Text align="center" color="dimmed">
-          You don't have any projects yet! You can start right now by creating a new project.
+          You don't have any projects yet! You can start right now by creating a
+          new project.
         </Text>
         <Center>
           <CreateProjectButton onCreateProject={onCreateNewProject} />
@@ -87,7 +105,7 @@ const Workspace = (workspace: IWorkspace) => {
         <Title order={3}>{name} Workspace</Title>
         {!isOpenFromEditor && (
           <Group>
-            <Button variant="outline" onClick={() => navigate('/editor')}>
+            <Button variant="outline" onClick={() => navigate("/editor")}>
               Open Editor
             </Button>
             <CreateProjectButton onCreateProject={onCreateNewProject} />
@@ -102,8 +120,8 @@ const Workspace = (workspace: IWorkspace) => {
           chevron={<IconChevronRight color="#868e96" />}
           styles={{
             chevron: {
-              '&[data-rotate]': {
-                transform: 'rotate(90deg)',
+              "&[data-rotate]": {
+                transform: "rotate(90deg)",
               },
             },
           }}
