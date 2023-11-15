@@ -178,7 +178,10 @@ const Workspace = () => {
             <ActionIcon
               display={currentUser.permission === "owner" ? "flex" : "none"}
               onClick={() => {
-                navigate(`/management/${workspaceName}/${workspaceId}`);
+                window.open(
+                  `/management/members/${workspaceName}/${workspaceId}`,
+                  "_blank"
+                );
               }}
             >
               <IconSetting width={20} height={20} color="#111" />

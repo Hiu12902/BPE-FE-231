@@ -14,8 +14,6 @@ import { batch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRequestsStyle } from "./Requests.style";
 import { Filter, Table } from "./components";
-import WorkspaceNavbar from "@/components/Layouts/Workspace/components/WorkspaceNavbar";
-
 interface ISearchValue {
   searchValue: string;
 }
@@ -60,17 +58,16 @@ const Requests = () => {
   });
   const searchValue = form.values.searchValue;
 
-  const currentUser = useSelector(getCurrentUser);
-  const navigate = useNavigate();
+  // const currentUser = useSelector(getCurrentUser);
+  // const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!currentUser) {
-      navigate(`/management/${workspaceName}/${workspaceId}`);
-    }
-    if (currentUser && currentUser.permission !== "owner") {
-      navigate(`/404`);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (
+  //     currentUser.permission !== undefined &&
+  //     currentUser.permission !== "owner"
+  //   )
+  //     navigate(`/404`);
+  // }, [currentUser]);
 
   const onCancelSearchRequests = () => {
     form.reset();
