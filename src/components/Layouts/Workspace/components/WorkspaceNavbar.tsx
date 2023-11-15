@@ -24,7 +24,7 @@ const WorkspaceNavbar = (props: IProps) => {
         navigate(`/management/members/${workspaceName}/${workspaceId}`),
       style: location === "members" && {
         backgroundColor: PRIMARY_COLOR[0],
-        color: PRIMARY_COLOR[3],
+        color: "white",
         fontWeight: 600,
       },
     },
@@ -36,7 +36,7 @@ const WorkspaceNavbar = (props: IProps) => {
         navigate(`/management/requests/${workspaceName}/${workspaceId}`),
       style: location === "requests" && {
         backgroundColor: PRIMARY_COLOR[0],
-        color: PRIMARY_COLOR[3],
+        color: "white",
         fontWeight: 600,
       },
     },
@@ -48,7 +48,7 @@ const WorkspaceNavbar = (props: IProps) => {
         navigate(`/management/customization/${workspaceName}/${workspaceId}`),
       style: location === "customization" && {
         backgroundColor: PRIMARY_COLOR[0],
-        color: PRIMARY_COLOR[3],
+        color: "white",
         fontWeight: 600,
       },
     },

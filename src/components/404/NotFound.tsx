@@ -1,42 +1,53 @@
-import { createStyles, Title, Text, Button, Container, Group, rem } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import {
+  createStyles,
+  Title,
+  Text,
+  Button,
+  Container,
+  Group,
+  rem,
+} from "@mantine/core";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = createStyles((theme) => ({
   root: {
     paddingTop: rem(80),
     paddingBottom: rem(120),
-    backgroundColor: theme.fn.variant({ variant: 'filled', color: theme.primaryColor }).background,
-    height: '100vh',
+    backgroundColor: theme.fn.variant({
+      variant: "filled",
+      color: theme.primaryColor,
+    }).background,
+    height: "100vh",
   },
 
   label: {
-    textAlign: 'center',
+    textAlign: "center",
     fontWeight: 900,
     fontSize: rem(120),
     lineHeight: 1,
     marginBottom: `calc(${theme.spacing.xl} * 1.5)`,
     color: theme.colors[theme.primaryColor][3],
 
-    [theme.fn.smallerThan('sm')]: {
+    [theme.fn.smallerThan("sm")]: {
       fontSize: rem(120),
     },
   },
 
   title: {
     fontFamily: `Greycliff CF, ${theme.fontFamily}`,
-    textAlign: 'center',
+    textAlign: "center",
     fontWeight: 900,
     fontSize: rem(38),
     color: theme.white,
 
-    [theme.fn.smallerThan('sm')]: {
+    [theme.fn.smallerThan("sm")]: {
       fontSize: rem(32),
     },
   },
 
   description: {
     maxWidth: rem(540),
-    margin: 'auto',
+    margin: "auto",
     marginTop: theme.spacing.xl,
     marginBottom: `calc(${theme.spacing.xl} * 1.5)`,
     color: theme.colors[theme.primaryColor][1],
@@ -56,7 +67,11 @@ const NotFound = () => {
           The page you want to visit does not exist!
         </Text>
         <Group position="center">
-          <Button variant="white" size="md" onClick={() => navigate('/', { replace: true })}>
+          <Button
+            variant="white"
+            size="md"
+            onClick={() => window.open("/", "_self")}
+          >
             Back to Home page
           </Button>
         </Group>

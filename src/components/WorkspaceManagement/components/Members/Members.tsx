@@ -75,17 +75,16 @@ const Members = () => {
   });
   const searchValue = form.values.searchValue;
 
-  const currentUser = useSelector(getCurrentUser);
-  const navigate = useNavigate();
+  // const currentUser = useSelector(getCurrentUser);
+  // const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!currentUser) {
-      navigate(`/management/${workspaceName}/${workspaceId}`);
-    }
-    if (currentUser && currentUser.permission !== "owner") {
-      navigate(`/404`);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (
+  //     currentUser.permission !== undefined &&
+  //     currentUser.permission !== "owner"
+  //   )
+  //     navigate(`/404`);
+  // }, [currentUser]);
 
   const onCancelSearchMembers = () => {
     form.reset();
