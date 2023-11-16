@@ -1,7 +1,6 @@
 import { IRequests } from "@/interfaces/workspaces";
 import {
   Badge,
-  Box,
   Button,
   Divider,
   Group,
@@ -11,7 +10,6 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { useRef } from "react";
 import { ReactComponent as IconArrow } from "@tabler/icons/icons/arrow-right-circle.svg";
 
 interface IRequestModal extends ModalProps {
@@ -22,10 +20,8 @@ const RequestModal = ({
   opened,
   onClose,
   title,
-  request,
-  ...others
+  request
 }: IRequestModal) => {
-  const nameInputRef = useRef<HTMLInputElement>(null);
   const handleCancel = () => {
     onClose?.();
   };

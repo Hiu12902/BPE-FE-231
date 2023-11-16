@@ -2,21 +2,17 @@ import { getCurrentUser, getModelers } from "@/redux/selectors";
 import { pinnedWorkspaceActions, workspaceActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import { Container, Group, Tabs, Title } from "@mantine/core";
-import { createFormContext } from "@mantine/form";
 import { useDocumentTitle } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import CreateWorkspaceButton from "../CreateWorkspaceButton";
-import { SearchInput } from "../SearchInput";
+import {
+  WorkspacesFormProvider,
+  useWorkspacesForm,
+} from "../FormContext/WorkspacesForm";
 import { useDefaultHomepageStyle } from "./DefaultHomepage.style";
 import { Pinned, RecentlyOpened } from "./components";
-
-export interface ISearchValue {
-  searchValue: string;
-}
-
-export const [WorkspaceFormProvider, useWorkspaceFormContext, useForm] =
-  createFormContext<ISearchValue>();
+import ContextForm from "./components/ContextForm/ContextForm";
 
 const DefaultHomepage = () => {
   useDocumentTitle("Home | BPSky");
@@ -30,7 +26,7 @@ const DefaultHomepage = () => {
   const [searchLoading, setSearchLoading] = useState<Boolean>(true);
   const [isSearching, setIsSearching] = useState<Boolean>(false);
 
-  const form = useForm({
+  const form = useWorkspacesForm({
     initialValues: {
       searchValue: "",
     },
@@ -64,7 +60,7 @@ const DefaultHomepage = () => {
       <Title order={2}>Welcome, {currentUser.name}!</Title>
 
       <Group position="apart" className={classes.searchGroup}>
-        <WorkspaceFormProvider form={form}>
+        <WorkspacesFormProvider form={form}>
           <form
             onSubmit={form.onSubmit(() => {
               if (searchValue.length === 0) {
@@ -76,13 +72,12 @@ const DefaultHomepage = () => {
             })}
             className={classes.form}
           >
-            <SearchInput
+            <ContextForm
               onCancel={onCancelSearchWorkspaces}
               placeholder="Search workspace name, owner name, etc."
-              context="workspace"
             />
           </form>
-        </WorkspaceFormProvider>
+        </WorkspacesFormProvider>
         <CreateWorkspaceButton
           onCreateWorkspace={(workspace) => {
             dispatch(

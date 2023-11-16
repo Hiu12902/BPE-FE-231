@@ -1,6 +1,6 @@
 import { createStyles, rem } from "@mantine/core";
 
-export const useSearchInputStyle = createStyles(() => ({
+export const useContextFormStyle = createStyles(() => ({
     searchIcon: {
         width: rem(15),
         height: rem(15),
