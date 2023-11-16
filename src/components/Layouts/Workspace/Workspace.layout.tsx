@@ -62,15 +62,17 @@ const WorkspaceLayout = ({ showNavbar }: IWorkspaceLayout) => {
   }, [currentUser]);
 
   useEffect(() => {
-    if (wsPermission !== "owner" && showNavbar && !loading) {
+    if (showNavbar && wsPermission !== "owner" && !loading) {
       navigate("/404");
     }
   }, [wsPermission, showNavbar]);
 
-  if ((!showNavbar && loading) || (showNavbar && !wsPermission)) {
+  if (
+    (!showNavbar && loading) ||
+    (showNavbar && (loading || wsPermission !== "owner"))
+  ) {
     return <LoadingOverlay visible overlayColor="rgba(255, 255, 255, 0.5)" />;
   } else {
-    console.log("loading overlay: ", showNavbar, loading, !wsPermission);
     return (
       <AppShell
         navbar={
