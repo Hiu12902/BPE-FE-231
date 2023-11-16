@@ -1,51 +1,47 @@
 import { membersApi } from "@/api/index";
+import {
+  MembersFormProvider,
+  useMembersForm,
+} from "@/components/FormContext/MembersForm";
 import { DeleteModal, InviteModal } from "@/components/Modal";
-import { SearchInput } from "@/components/SearchInput";
 import useNotification from "@/hooks/useNotification";
 import { IMembers, IPagination, IQueryParams } from "@/interfaces/index";
-import { getCurrentUser, getWorkspaceMembers } from "@/redux/selectors";
+import { getWorkspaceMembers } from "@/redux/selectors";
 import { membersActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import { Box, Button, Container, Group, Select, Title } from "@mantine/core";
-import { createFormContext } from "@mantine/form";
 import { ReactComponent as IconSave } from "@tabler/icons/icons/check.svg";
 import { ReactComponent as IconSelect } from "@tabler/icons/icons/chevron-down.svg";
 import { ReactComponent as IconPlus } from "@tabler/icons/icons/plus.svg";
 import { ReactComponent as IconDelete } from "@tabler/icons/icons/trash.svg";
 import { useEffect, useState } from "react";
 import { batch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useMembersStyle } from "./Members.style";
 import { Filter, Table } from "./components";
-
-interface ISearchValue {
-  searchValue: string;
-}
+import ContextForm from "./components/ContextForm/ContextForm";
 
 interface IAssignPermissions {
   [id: number]: string;
 }
 
-export const [MembersFormProvider, useMembersFormContext, useForm] =
-  createFormContext<ISearchValue>();
-
 const Members = () => {
-  const dispatch = useAppDispatch();
   const notify = useNotification();
-  const { workspaceId, workspaceName } = useParams();
+  const dispatch = useAppDispatch();
   const { classes } = useMembersStyle();
   const [result, setResult] = useState(true);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [openShareModal, setOpenShareModal] = useState<boolean>(false);
-  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
-  const [searchLoading, setSearchLoading] = useState<boolean>(true);
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [selectionPermission, setSelectionPermission] = useState<string>();
-  const [selectedRecords, setSelectedRecords] = useState<IMembers[]>([]);
-
   const members = useSelector(getWorkspaceMembers);
+  const { workspaceId, workspaceName } = useParams();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [searchLoading, setSearchLoading] = useState<boolean>(true);
+  const [openShareModal, setOpenShareModal] = useState<boolean>(false);
+  const [selectedRecords, setSelectedRecords] = useState<IMembers[]>([]);
+  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
   const membersMap = Object.values(members).sort((a, b) => a.offset - b.offset);
-
+  const [selectionPermission, setSelectionPermission] = useState<string | null>(
+    ""
+  );
   const permissions = [
     {
       value: "editor",
@@ -60,31 +56,18 @@ const Members = () => {
       label: "Can view",
     },
   ];
-
   const [pagination, setPagination] = useState<IPagination>({
     page: 1,
     limit: 10,
     total: 30,
   });
   const [queryParams, setQueryParams] = useState<IQueryParams>({});
-
-  const form = useForm({
+  const form = useMembersForm({
     initialValues: {
       searchValue: "",
     },
   });
   const searchValue = form.values.searchValue;
-
-  // const currentUser = useSelector(getCurrentUser);
-  // const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   if (
-  //     currentUser.permission !== undefined &&
-  //     currentUser.permission !== "owner"
-  //   )
-  //     navigate(`/404`);
-  // }, [currentUser]);
 
   const onCancelSearchMembers = () => {
     form.reset();
@@ -319,10 +302,9 @@ const Members = () => {
             })}
             className={classes.form}
           >
-            <SearchInput
+            <ContextForm
               onCancel={onCancelSearchMembers}
               placeholder="Search members name, etc."
-              context="members"
             />
           </form>
         </MembersFormProvider>
@@ -368,9 +350,7 @@ const Members = () => {
               data={permissions}
               placeholder={"Permission"}
               value={selectionPermission}
-              onChange={(value: string) => {
-                setSelectionPermission(value);
-              }}
+              onChange={setSelectionPermission}
             />
           </Box>
           <Button

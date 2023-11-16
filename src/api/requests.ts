@@ -54,8 +54,8 @@ class RequestsApi {
             senderId: senderId?.toString(),
             recipientId: recipientId?.toString(),
             rcpPermission: rcpPermission ? rcpPermission : null,
-            to_permission: toPermission ? toPermission : null,
-            fr_permission: frPermission ? frPermission : null,
+            toPermission: toPermission ? toPermission : null,
+            frPermission: frPermission ? frPermission : null,
         });
     }
 

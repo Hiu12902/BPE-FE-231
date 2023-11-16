@@ -6,7 +6,6 @@ import {
   DataTableColumn,
   DataTableColumnTextAlignment,
 } from "mantine-datatable";
-import { useState } from "react";
 
 interface ITableProps {
   rows?: IMembers[];

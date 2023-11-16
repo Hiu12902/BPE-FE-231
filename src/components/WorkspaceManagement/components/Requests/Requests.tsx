@@ -1,29 +1,27 @@
 import { requestsApi } from "@/api/index";
+import {
+  RequestsFormProvider,
+  useRequestsForm,
+} from "@/components/FormContext/RequestsForm";
 import { DeleteModal, RequestModal } from "@/components/Modal";
-import { SearchInput } from "@/components/SearchInput";
 import useNotification from "@/hooks/useNotification";
 import { IPagination, IQueryParams, IRequests } from "@/interfaces/index";
-import { getCurrentUser, getWorkspaceRequests } from "@/redux/selectors";
+import { getWorkspaceRequests } from "@/redux/selectors";
 import { requestsActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import { Box, Button, Container, Group, Title } from "@mantine/core";
-import { createFormContext } from "@mantine/form";
 import { ReactComponent as IconDelete } from "@tabler/icons/icons/trash.svg";
 import { useEffect, useState } from "react";
 import { batch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { io } from "socket.io-client";
 import { useRequestsStyle } from "./Requests.style";
 import { Filter, Table } from "./components";
-interface ISearchValue {
-  searchValue: string;
-}
+import ContextForm from "./components/ContextForm/ContextForm";
 
 interface IAssignPermissions {
   [id: number]: string;
 }
-
-export const [RequestsFormProvider, useRequestsFormContext, useForm] =
-  createFormContext<ISearchValue>();
 
 const Requests = () => {
   const dispatch = useAppDispatch();
@@ -39,6 +37,12 @@ const Requests = () => {
   const [openRequestModal, setOpenRequestModal] = useState<boolean>(false);
   const [selectedRow, setSelecterdRow] = useState<IRequests>();
 
+  // Test socket connection
+  const socket = io("https://bpe.onrender.com");
+
+  const requestsSelector = useSelector(getWorkspaceRequests);
+  console.log(requestsSelector);
+
   const requests = useSelector(getWorkspaceRequests);
   const requestsMap = Object.values(requests).sort(
     (a, b) => a.offset - b.offset
@@ -51,7 +55,7 @@ const Requests = () => {
   });
   const [queryParams, setQueryParams] = useState<IQueryParams>({});
 
-  const form = useForm({
+  const form = useRequestsForm({
     initialValues: {
       searchValue: "",
     },
@@ -254,6 +258,26 @@ const Requests = () => {
   };
 
   useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Socket connected");
+    });
+    socket.on("disconnect", () => {
+      console.log("Socket disconnected");
+    });
+    socket.on("message", (message) => {
+      console.log(message);
+    });
+    socket.on("insertNewRequest", (message) => {
+      dispatch(
+        requestsActions.setRequests({
+          ...JSON.parse(message),
+          offset: -1,
+        })
+      );
+    });
+  }, [socket]);
+
+  useEffect(() => {
     if (searchLoading) {
       getAllWorkspaceRequests();
     }
@@ -275,10 +299,9 @@ const Requests = () => {
             })}
             className={classes.form}
           >
-            <SearchInput
+            <ContextForm
               onCancel={onCancelSearchRequests}
-              placeholder="Search Requests by name, etc."
-              context="requests"
+              placeholder="Search requests name, etc."
             />
           </form>
         </RequestsFormProvider>

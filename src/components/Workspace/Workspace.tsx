@@ -1,3 +1,4 @@
+import { userApi } from "@/api/index";
 import projectApi from "@/api/project";
 import CreateProjectButton from "@/components/CreateProjectButton";
 import { IPagination, IQueryParams } from "@/interfaces/common";
@@ -17,7 +18,6 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
-import { createFormContext } from "@mantine/form";
 import { useDocumentTitle } from "@mantine/hooks";
 import { ReactComponent as IconInformation } from "@tabler/icons/icons/info-circle.svg";
 import { ReactComponent as IconSetting } from "@tabler/icons/icons/settings.svg";
@@ -25,17 +25,10 @@ import { useEffect, useState } from "react";
 import { batch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import EmptyRender from "../EmptyRender/EmptyRender";
-import { SearchInput } from "../SearchInput";
+import { ProjectsFormProvider, useProjectsForm } from "../FormContext/ProjectsForm";
 import { useWorkspaceStyle } from "./Workspace.style";
 import { Header, List } from "./components";
-import { userApi } from "@/api/index";
-
-export interface ISearchValue {
-  searchValue: string;
-}
-
-export const [ProjectFormProvider, useProjectFormContext, useForm] =
-  createFormContext<ISearchValue>();
+import ContextForm from "./components/ContextForm/ContextForm";
 
 const Workspace = () => {
   useDocumentTitle("Workspace | BKSky");
@@ -60,7 +53,7 @@ const Workspace = () => {
   });
   const [queryParams, setQueryParams] = useState<IQueryParams>({});
 
-  const form = useForm({
+  const form = useProjectsForm({
     initialValues: {
       searchValue: "",
     },
@@ -191,7 +184,7 @@ const Workspace = () => {
       </Group>
 
       <Group position="apart" className={classes.searchGroup}>
-        <ProjectFormProvider form={form}>
+        <ProjectsFormProvider form={form}>
           <form
             onSubmit={form.onSubmit(() => {
               if (searchValue.length === 0) {
@@ -203,13 +196,12 @@ const Workspace = () => {
             })}
             className={classes.form}
           >
-            <SearchInput
+            <ContextForm
               onCancel={onCancelSearchProjects}
-              placeholder="Search project name, owner name, etc."
-              context="project"
+              placeholder="Search projects name, etc."
             />
           </form>
-        </ProjectFormProvider>
+        </ProjectsFormProvider>
         <Group>
           <Button variant="outline" onClick={() => navigate("/editor")}>
             Open Editor
