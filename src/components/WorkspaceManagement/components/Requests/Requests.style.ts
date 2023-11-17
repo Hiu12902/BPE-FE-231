@@ -7,10 +7,6 @@ export const useRequestsStyle = createStyles(() => ({
     button: {
         minWidth: rem(100),
     },
-    buttonIcon: {
-        width: rem(15),
-        height: rem(15),
-    },
     select: {
         '.mantine-Select-root': {
             width: 'auto'

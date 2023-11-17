@@ -27,7 +27,7 @@ import { MemberItem } from "./components";
 import useNotification from "@/hooks/useNotification";
 
 interface IInviteModalProps extends ModalProps {
-  permission: string;
+  permission?: string;
   workspaceId: number;
   onInvite: (assignPermissions: IAssignPermissions) => void;
   onSendInviteRequest?: (assignPermissions: IAssignPermissions) => void;
@@ -131,7 +131,7 @@ const InviteModal = ({
 
   const validateInvitedPermission = (invitedPermission: string) => {
     const convertedPermission = convertPermission(invitedPermission);
-    const convertedUserPermission = convertPermission(permission);
+    const convertedUserPermission = convertPermission(permission || "");
     if (convertedUserPermission && convertedPermission) {
       return convertedUserPermission <= convertedPermission;
     }

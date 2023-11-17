@@ -3,50 +3,60 @@ import {
   RequestsFormProvider,
   useRequestsForm,
 } from "@/components/FormContext/RequestsForm";
-import { DeleteModal, RequestModal } from "@/components/Modal";
 import useNotification from "@/hooks/useNotification";
 import { IPagination, IQueryParams, IRequests } from "@/interfaces/index";
 import { getWorkspaceRequests } from "@/redux/selectors";
 import { requestsActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
-import { Box, Button, Container, Group, Title } from "@mantine/core";
-import { ReactComponent as IconDelete } from "@tabler/icons/icons/trash.svg";
+import { Container, Group, Title } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { batch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import { useRequestsStyle } from "./Requests.style";
-import { Filter, Table } from "./components";
-import ContextForm from "./components/ContextForm/ContextForm";
+import { ButtonGroup, ContextForm, Filter, Modal, Table } from "./components";
 
 const Requests = () => {
-  const dispatch = useAppDispatch();
   const notify = useNotification();
-  const { workspaceId, workspaceName } = useParams();
+  const dispatch = useAppDispatch();
   const { classes } = useRequestsStyle();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [searchLoading, setSearchLoading] = useState<boolean>(true);
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
-  const [selectedRecords, setSelectedRecords] = useState<IRequests[]>([]);
-  const [openRequestModal, setOpenRequestModal] = useState<boolean>(false);
-  const [selectedRow, setSelecterdRow] = useState<IRequests>();
-
-  // Test socket connection
   const socket = io("https://bpe.onrender.com");
-
   const requests = useSelector(getWorkspaceRequests);
+  const { workspaceId } = useParams();
+
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedRow, setSelecterdRow] = useState<IRequests>();
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [queryParams, setQueryParams] = useState<IQueryParams>({});
+  const [searchLoading, setSearchLoading] = useState<boolean>(true);
+  const [selectedRecords, setSelectedRecords] = useState<IRequests[]>([]);
+
+  const initialModalState = {
+    delete: false,
+    request: false,
+  };
+  const [open, setOpen] = useState(initialModalState);
+  const modalHandler = ({
+    modal,
+    state,
+  }: {
+    modal: string;
+    state: boolean;
+  }) => {
+    setOpen({
+      ...initialModalState,
+      [modal]: state,
+    });
+  };
+
   const requestsMap = Object.values(requests).sort(
     (a, b) => a.offset - b.offset
   );
-
   const [pagination, setPagination] = useState<IPagination>({
     page: 1,
     limit: 10,
     total: 30,
   });
-  const [queryParams, setQueryParams] = useState<IQueryParams>({});
-
   const form = useRequestsForm({
     initialValues: {
       searchValue: "",
@@ -178,60 +188,7 @@ const Requests = () => {
       setSelectedRecords([]);
     }
   };
-
-  const onOpenRequestModal = (row: IRequests) => {
-    setOpenRequestModal(true);
-    setSelecterdRow(row);
-  };
-
-  const onDeleteSelectedMembers = async (id?: number, idList?: number[]) => {
-    try {
-      if ((id || idList) && workspaceId) {
-        const result = await requestsApi.deleteRequests({
-          workspaceId: workspaceId.toString(),
-          requestIdList: idList
-            ? idList.map((id) => id.toString())
-            : id
-            ? [id.toString()]
-            : [],
-        });
-        if (result) {
-          if (id) {
-            dispatch(
-              requestsActions.deleteRequests({
-                id: id,
-              })
-            );
-          } else if (idList) {
-            batch(() => {
-              idList.map((id) =>
-                dispatch(
-                  requestsActions.deleteRequests({
-                    id: id,
-                  })
-                )
-              );
-            });
-          }
-          notify({
-            type: "success",
-            message: "Members deleted successfully",
-            title: "Success",
-          });
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      notify({
-        type: "error",
-        message: "Something went wrong while deleting selected members",
-        title: "Error",
-      });
-    } finally {
-      setSelectedRecords([]);
-    }
-  };
-
+  
   useEffect(() => {
     socket.on("connect", () => {
       console.log("Socket connected");
@@ -283,62 +240,18 @@ const Requests = () => {
       </Group>
 
       <Group my={20} position="apart" h={35}>
-        {selectedRow && (
-          <RequestModal
-            opened={openRequestModal}
-            onClose={() => setOpenRequestModal(false)}
-            title="Request detail"
-            request={selectedRow}
-          />
-        )}
-
-        <DeleteModal
-          title="Delete requests from workspace"
-          message="Are you sure you want to delete selected requests from workspace?"
-          opened={openDeleteModal as boolean}
-          onClose={() => setOpenDeleteModal(false)}
-          objectIdList={selectedRecords.map((record) => record.id)}
-          onDelete={onDeleteSelectedMembers}
+        <Modal
+          open={open}
+          stateHandler={modalHandler}
+          selectedRow={selectedRow}
+          selectedRecords={selectedRecords}
+          setSelectedRecords={setSelectedRecords}
         />
-        <Group>
-          <Box
-            display={selectedRecords?.length === 0 ? "none" : "flex"}
-            sx={{
-              gap: 10,
-            }}
-          >
-            <Button
-              w={100}
-              color="teal"
-              variant="outline"
-              children="Approve"
-              onClick={() =>
-                onChangeSelectedRequestsStatus({
-                  status: "approved",
-                })
-              }
-            />
-            <Button
-              w={100}
-              color="red"
-              variant="outline"
-              children="Decline"
-              onClick={() =>
-                onChangeSelectedRequestsStatus({
-                  status: "declined",
-                })
-              }
-            />
-            <Button
-              leftIcon={<IconDelete className={classes.buttonIcon} />}
-              onClick={() => setOpenDeleteModal(true)}
-              color="red"
-              variant="outline"
-              display={selectedRecords?.length === 0 ? "none" : "flex"}
-              children="Delete"
-            />
-          </Box>
-        </Group>
+        <ButtonGroup
+          selectedRecords={selectedRecords}
+          onChangeSelectedRequestsStatus={onChangeSelectedRequestsStatus}
+          stateHandler={modalHandler}
+        />
         <Filter onQueryFilter={onQueryFilter} />
       </Group>
 
@@ -353,7 +266,8 @@ const Requests = () => {
         onPageChange={handlePageChange}
         onChangeStatus={onChangeSelectedRequestsStatus}
         onRowClick={(row: IRequests) => {
-          onOpenRequestModal(row);
+          modalHandler({ modal: "request", state: true });
+          setSelecterdRow(row);
         }}
       />
     </Container>

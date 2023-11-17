@@ -22,7 +22,7 @@ import { Filter, Table } from "./components";
 import ContextForm from "./components/ContextForm/ContextForm";
 
 interface IAssignPermissions {
-  [id: number]: string;
+  [id: number]: { permission: string; name: string };
 }
 
 const Members = () => {
@@ -236,7 +236,7 @@ const Members = () => {
       if (Object.keys(assignPermissions).length > 0) {
         const payload = Object.keys(assignPermissions).map((id) => ({
           memberId: Number(id),
-          permission: assignPermissions[Number(id)],
+          permission: assignPermissions[Number(id)].permission,
         }));
         if (payload && workspaceId) {
           payload.map(async (item) => {
@@ -316,6 +316,7 @@ const Members = () => {
           onClose={() => setOpenShareModal(false)}
           workspaceId={Number(workspaceId)}
           onInvite={onInvite}
+          permission=""
         />
 
         <DeleteModal
