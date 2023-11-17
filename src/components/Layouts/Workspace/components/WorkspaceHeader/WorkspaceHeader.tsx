@@ -12,6 +12,7 @@ import {
   Badge,
   Container,
   Group,
+  Header,
   Menu,
   Tabs,
 } from "@mantine/core";
@@ -22,7 +23,11 @@ import { ReactComponent as IconSetting } from "@tabler/icons/icons/settings.svg"
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const WorkspaceHeader = ({ showNavBar }: { showNavBar: boolean }) => {
+interface IWorkspaceHeader {
+  isWorkspaceManagement?: boolean;
+}
+
+const WorkspaceHeader = ({ isWorkspaceManagement }: IWorkspaceHeader) => {
   const currentUser = useSelector(getCurrentUser);
   const notify = useNotification();
   const navigate = useNavigate();
@@ -79,55 +84,54 @@ const WorkspaceHeader = ({ showNavBar }: { showNavBar: boolean }) => {
   };
 
   return (
-    <Group
-      position="apart"
-      align="center"
-      style={{
-        backgroundColor: showNavBar ? "white" : PRIMARY_COLOR[1],
-        height: "100%",
-        padding: 0,
-      }}
-    >
-      <Logo />
-      <Group mr={20}>
-        {/* onClick: Navigate tới trang Workspace management */}
-        <ActionIcon>
-          <IconSetting
-            width={25}
-            height={25}
-            color={showNavBar ? "#999" : "#fff"}
-          />
-        </ActionIcon>
+    <Header height={60} fixed={false}>
+      <Group
+        position="apart"
+        align="center"
+        style={{
+          backgroundColor: isWorkspaceManagement ? "white" : PRIMARY_COLOR[1],
+          height: "100%",
+          padding: 0,
+        }}
+      >
+        <Logo />
+        <Group mr={20}>
+          <ActionIcon>
+            <IconSetting
+              width={25}
+              height={25}
+              color={isWorkspaceManagement ? "#999" : "#fff"}
+            />
+          </ActionIcon>
 
-        {/* onClick: Navigate tới trang Notification */}
-        <ActionIcon>
-          <IconNotification
-            width={25}
-            height={25}
-            color={showNavBar ? "#999" : "#fff"}
-          />
-        </ActionIcon>
+          <ActionIcon>
+            <IconNotification
+              width={25}
+              height={25}
+              color={isWorkspaceManagement ? "#999" : "#fff"}
+            />
+          </ActionIcon>
 
-        {/* onClick: Open modal User Information */}
-        <Menu>
-          <Menu.Target>
-            <ActionIcon>
-              <Avatar src={currentUser.avatar} radius="xl" />
-            </ActionIcon>
-          </Menu.Target>
+          <Menu>
+            <Menu.Target>
+              <ActionIcon>
+                <Avatar src={currentUser.avatar} radius="xl" />
+              </ActionIcon>
+            </Menu.Target>
 
-          <Menu.Dropdown>
-            <Menu.Item onClick={openUserInfoModal}>
-              <UserInformation isProfile />
-            </Menu.Item>
-            <Menu.Divider />
-            <Menu.Item color="red" icon={<IconSignOut />} onClick={onSignOut}>
-              Sign Out
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
+            <Menu.Dropdown>
+              <Menu.Item onClick={openUserInfoModal}>
+                <UserInformation isProfile />
+              </Menu.Item>
+              <Menu.Divider />
+              <Menu.Item color="red" icon={<IconSignOut />} onClick={onSignOut}>
+                Sign Out
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        </Group>
       </Group>
-    </Group>
+    </Header>
   );
 };
 

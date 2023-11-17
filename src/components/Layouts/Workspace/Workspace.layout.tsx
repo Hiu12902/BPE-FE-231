@@ -1,30 +1,32 @@
 import userApi from "@/api/user";
 import Logo from "@/components/Logo";
-import {
-  APP_PALETTE_WIDTH,
-  PRIMARY_COLOR,
-} from "@/constants/theme/themeConstants";
+import { APP_PALETTE_WIDTH } from "@/constants/theme/themeConstants";
 import { getCurrentUser } from "@/redux/selectors";
 import { userActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
-import { AppShell, Box, Header, LoadingOverlay, Navbar } from "@mantine/core";
+import { AppShell, Box, LoadingOverlay, Navbar } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { useWorkspaceLayoutStyle } from "./Workspace.style";
 import { WorkspaceHeader } from "./components";
-import WorkspaceNavbar from "./components/WorkspaceNavbar";
+import WorkspaceNavbar from "./components/WorkspaceNavbar/WorkspaceNavbar";
 
 export interface IWorkspaceLayout {
-  showNavbar?: Boolean;
+  isWorkspaceManagement?: Boolean;
 }
 
-const WorkspaceLayout = ({ showNavbar }: IWorkspaceLayout) => {
-  const dispatch = useAppDispatch();
-  const currentUser = useSelector(getCurrentUser);
-  const { workspaceId } = useParams();
-  const [wsPermission, setWsPermission] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(true);
+const WorkspaceLayout = ({ isWorkspaceManagement }: IWorkspaceLayout) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { workspaceId } = useParams();
+  const currentUser = useSelector(getCurrentUser);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [workspaceManagement, setWorkspaceManagement] = useState<string>(
+    currentUser.permission as string
+  );
+
+  const { classes } = useWorkspaceLayoutStyle();
 
   const getUser = async (workspaceId?: number) => {
     try {
@@ -33,7 +35,7 @@ const WorkspaceLayout = ({ showNavbar }: IWorkspaceLayout) => {
         if (res) {
           dispatch(userActions.setUser(res));
           if (res.permission) {
-            setWsPermission(res.permission);
+            setWorkspaceManagement(res.permission);
           }
         }
       } else {
@@ -62,59 +64,40 @@ const WorkspaceLayout = ({ showNavbar }: IWorkspaceLayout) => {
   }, [currentUser]);
 
   useEffect(() => {
-    if (showNavbar && wsPermission !== "owner" && !loading) {
+    if (isWorkspaceManagement && workspaceManagement !== "owner" && !loading) {
       navigate("/404");
     }
-  }, [wsPermission, showNavbar]);
+  }, [workspaceManagement, isWorkspaceManagement]);
 
   if (
-    (!showNavbar && loading) ||
-    (showNavbar && (loading || wsPermission !== "owner"))
+    // !isWorkspaceManagement && loading: Normal route
+    (!isWorkspaceManagement && loading) ||
+    // isWorkspaceManagement && (loading || isWorkspaceManagement): Management route
+    (isWorkspaceManagement && (loading || workspaceManagement !== "owner"))
   ) {
     return <LoadingOverlay visible overlayColor="rgba(255, 255, 255, 0.5)" />;
   } else {
-    return (
+    return isWorkspaceManagement ? (
       <AppShell
         navbar={
-          showNavbar && (
-            <Navbar
-              height="100vh"
-              width={{ base: APP_PALETTE_WIDTH }}
-              p="sm"
-              sx={(theme) => ({
-                backgroundColor: theme.fn.variant({
-                  variant: "filled",
-                  color: theme.primaryColor,
-                }).background,
-                top: 0,
-              })}
-              style={{
-                backgroundColor: PRIMARY_COLOR[1],
-              }}
-            >
-              <Logo />
-              <WorkspaceNavbar mt={35} />
-            </Navbar>
-          )
+          <Navbar className={classes.navbar}>
+            <Logo />
+            <WorkspaceNavbar mt={35} />
+          </Navbar>
         }
-        header={
-          <Header height={60} fixed={false}>
-            <WorkspaceHeader showNavBar={showNavbar as boolean} />
-          </Header>
-        }
-        styles={{
-          main: {
-            padding: 10,
-          },
-        }}
+        header={<WorkspaceHeader isWorkspaceManagement={true} />}
+        className={classes.appshell}
       >
-        <Box
-          style={{
-            marginLeft: showNavbar ? APP_PALETTE_WIDTH + 10 : 10,
-            marginTop: 70,
-            height: "90%",
-          }}
-        >
+        <Box ml={APP_PALETTE_WIDTH + 10} className={classes.outlet}>
+          <Outlet />
+        </Box>
+      </AppShell>
+    ) : (
+      <AppShell
+        header={<WorkspaceHeader isWorkspaceManagement={false} />}
+        className={classes.appshell}
+      >
+        <Box ml={10} className={classes.outlet}>
           <Outlet />
         </Box>
       </AppShell>
