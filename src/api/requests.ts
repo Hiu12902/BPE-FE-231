@@ -72,26 +72,28 @@ class RequestsApi {
 
     public approveRequests({
         workspaceId,
-        requestId,
-        status,
+        requestIdList,
     }: {
         workspaceId: string;
-        requestId: string[];
-        status: string;
+        requestIdList: string[];
     }): Promise<any> {
-        return Client.post(``);
+        return Client.post(`/request/approve`, {
+            workspaceId: workspaceId,
+            requestIdList: requestIdList,
+        });
     }
 
     public declineRequests({
         workspaceId,
-        requestId,
-        status,
+        requestIdList,
     }: {
         workspaceId: string;
-        requestId: string[];
-        status: string;
+        requestIdList: string[];
     }): Promise<any> {
-        return Client.post(``);
+        return Client.post(`/request/decline`, {
+            workspaceId: workspaceId,
+            requestIdList: requestIdList,
+        });
     }
 }
 

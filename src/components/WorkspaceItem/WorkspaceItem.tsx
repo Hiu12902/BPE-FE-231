@@ -7,7 +7,7 @@ import { getCurrentUser } from "@/redux/selectors";
 import {
   membersActions,
   pinnedWorkspaceActions,
-  workspaceActions
+  workspaceActions,
 } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import {
@@ -21,12 +21,12 @@ import {
   Text,
   Tooltip,
 } from "@mantine/core";
-import { ReactComponent as IconAbc } from "@tabler/icons/icons/abc.svg";
-import { ReactComponent as IconFilePlus } from "@tabler/icons/icons/file-arrow-left.svg";
+import { ReactComponent as IconRename } from "@tabler/icons/icons/cursor-text.svg";
+import { ReactComponent as IconFilePlus } from "@tabler/icons/icons/folder.svg";
 import { ReactComponent as IconFolder } from "@tabler/icons/icons/folder.svg";
 import { ReactComponent as IStar } from "@tabler/icons/icons/star.svg";
 import { ReactComponent as IconTrash } from "@tabler/icons/icons/trash.svg";
-import { ReactComponent as IconUserShare } from "@tabler/icons/icons/user-plus.svg";
+import { ReactComponent as IconUserShare } from "@tabler/icons/icons/user-circle.svg";
 import { RefObject, useState } from "react";
 import { useSelector } from "react-redux";
 import DropdownMenu from "../DropdownMenu";
@@ -37,8 +37,15 @@ import UserInformation from "../UserInformation";
 import { useWorkspaceItemStyle } from "./WorkspaceItem.style";
 
 interface IAssignPermissions {
-  [id: number]: string;
+  [id: number]: { permission: string; name: string };
 }
+
+const initialModalState = {
+  invite: false,
+  rename: false,
+  delete: false,
+  assignPermission: false,
+};
 
 const WorkspaceItem = (props: IWorkspace) => {
   const { classes } = useWorkspaceItemStyle();
@@ -56,14 +63,13 @@ const WorkspaceItem = (props: IWorkspace) => {
     ownerName,
     permission,
   } = props;
-  const [renderName, setRenderName] = useState<string | undefined>();
-  const [openShareModal, setOpenShareModal] = useState(false);
-  const [openAssignPermissionModal, setOpenAssignPermissionModal] =
-    useState(false);
-  const [openRenameModal, setOpenRenameModal] = useState(false);
-  const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [toPermission, setToPermission] = useState<string>("");
+  const [open, setOpen] = useState(initialModalState);
+  const modalHandler = (modalName: string, state: boolean) => {
+    setOpen({ ...initialModalState, [modalName]: state });
+  };
   const [result, setResult] = useState<boolean>(true);
+  const [toPermission, setToPermission] = useState<string>("");
+  const [renderName, setRenderName] = useState<string | undefined>(name);
 
   const formatTimestamp = (date: Date | string) => {
     function convertUTCDateToLocalDate(date: Date) {
@@ -80,7 +86,7 @@ const WorkspaceItem = (props: IWorkspace) => {
     return convertUTCDateToLocalDate(new Date(date)).toLocaleString();
   };
 
-  const togglePin = async () => {
+  const onPinWorkspace = async () => {
     try {
       if (isPinned) {
         const res = await workspaceApi.pinWorkspace(id);
@@ -120,12 +126,10 @@ const WorkspaceItem = (props: IWorkspace) => {
     }
   };
 
-  const onOpenWorkspace = async (e: any) => {
+  const onOpenWorkspace = async () => {
     try {
       const res = await workspaceApi.openWorkspace(id);
-
       if (res) {
-        e.stopPropagation();
         window.open(`workspace/${name}/${id}`, "_self");
       }
     } catch (error) {
@@ -143,10 +147,23 @@ const WorkspaceItem = (props: IWorkspace) => {
     e.stopPropagation();
     if (permission && (permission === "sharer" || permission === "viewer")) {
       setToPermission("editor");
-      onOpenAssignPermissionModal();
+      modalHandler("assignPermission", true);
     } else {
-      setOpenRenameModal(true);
+      modalHandler("rename", true);
     }
+  };
+
+  const onOpenDeleteModal = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (currentUser.id && currentUser.id !== ownerId) {
+      return;
+    }
+    modalHandler("delete", true);
+  };
+
+  const onOpenInviteModal = (e: MouseEvent) => {
+    e.stopPropagation();
+    modalHandler("invite", true);
   };
 
   const onRenameWorkspace = async (
@@ -192,14 +209,6 @@ const WorkspaceItem = (props: IWorkspace) => {
     }
   };
 
-  const onOpenDeleteModal = (e: MouseEvent) => {
-    e.stopPropagation();
-    if (currentUser.id && currentUser.id !== ownerId) {
-      return;
-    }
-    setOpenDeleteModal(true);
-  };
-
   const onDeleteWorkspace = async () => {
     try {
       if (id) {
@@ -225,22 +234,12 @@ const WorkspaceItem = (props: IWorkspace) => {
     }
   };
 
-  const onOpenShareModal = async (e: MouseEvent) => {
-    e.stopPropagation();
-    if (permission && permission === "viewer") {
-      setToPermission("sharer");
-      onOpenAssignPermissionModal();
-    } else {
-      setOpenShareModal(true);
-    }
-  };
-
   const onInvite = async (assignPermissions: IAssignPermissions) => {
     try {
       if (Object.keys(assignPermissions).length > 0) {
         const payload = Object.keys(assignPermissions).map((id) => ({
           memberId: Number(id),
-          permission: assignPermissions[Number(id)],
+          permission: assignPermissions[Number(id)].permission,
         }));
         if (payload && id) {
           payload.map(async (item) => {
@@ -284,8 +283,61 @@ const WorkspaceItem = (props: IWorkspace) => {
     }
   };
 
-  const onOpenAssignPermissionModal = () => {
-    setOpenAssignPermissionModal(true);
+  const onSendInviteRequest = async (assignPermissions: IAssignPermissions) => {
+    try {
+      if (Object.keys(assignPermissions).length > 0) {
+        const payload = Object.keys(assignPermissions).map((id) => ({
+          memberId: Number(id),
+          memberName: assignPermissions[Number(id)].name,
+          permission: assignPermissions[Number(id)].permission,
+        }));
+
+        if (payload && currentUser.id && id) {
+          payload.map(async (item) => {
+            const request = await requestsApi.sendRequest({
+              workspaceId: id,
+              content: `User ${currentUser.name} has invited ${item.memberName} to join workspace ${name}`,
+              type: "invitation",
+              rcpPermission: permission,
+              recipientId: item.memberId,
+              senderId: Number(currentUser.id),
+            });
+
+            if (request === "Duplicate request") {
+              notify({
+                title: "Error!",
+                message:
+                  "Send request to workspace owner failed due to duplication!",
+                type: "error",
+              });
+            } else if (!request) {
+              setResult(false);
+            } else {
+              notify({
+                title: "Success!",
+                message: `Send request to invite ${item.memberName} to our workspace successfully!`,
+                type: "success",
+              });
+            }
+          });
+        }
+      } else {
+        notify({
+          title: "Error!",
+          message: "Permission is required!",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      notify({
+        title: "Invite user failed!",
+        message:
+          "An error has occurred while trying to invite user. Please try again",
+        type: "error",
+      });
+    } finally {
+    }
   };
 
   const onSendAssignPerrmissionRequest = async (content: string) => {
@@ -330,10 +382,10 @@ const WorkspaceItem = (props: IWorkspace) => {
     {
       icon: <IconUserShare className={classes.dropdownMenuIcon} />,
       children: "Share",
-      onClick: onOpenShareModal,
+      onClick: onOpenInviteModal,
     },
     {
-      icon: <IconAbc className={classes.dropdownMenuIcon} />,
+      icon: <IconRename className={classes.dropdownMenuIcon} />,
       children: "Rename",
       onClick: onOpenRenameModal,
     },
@@ -353,44 +405,50 @@ const WorkspaceItem = (props: IWorkspace) => {
 
   return (
     <Accordion.Item value={id.toString()}>
-      <Accordion.Control onDoubleClick={(e) => onOpenWorkspace(e)}>
+      <Accordion.Control onDoubleClick={onOpenWorkspace}>
         <Grid align="center" justify="center">
-          {permission && currentUser?.name && (
-            <AssignPermissionModal
-              opened={openAssignPermissionModal}
-              onClose={() => setOpenAssignPermissionModal(false)}
-              title="Send request to adjust permission"
-              userName={currentUser.name}
-              frPermission={permission}
-              toPermission={toPermission}
-              onSendRequest={(content: string) =>
-                onSendAssignPerrmissionRequest(content)
-              }
-            />
+          {permission && (
+            <>
+              {currentUser?.name && (
+                <AssignPermissionModal
+                  frPermission={permission}
+                  toPermission={toPermission}
+                  userName={currentUser.name}
+                  onSendRequest={(content: string) =>
+                    onSendAssignPerrmissionRequest(content)
+                  }
+                  opened={open.assignPermission}
+                  title="Send request to adjust permission"
+                  onClose={() => modalHandler("assignPermission", false)}
+                />
+              )}
+
+              <InviteModal
+                workspaceId={id}
+                onInvite={onInvite}
+                permission={permission}
+                opened={open.invite}
+                onClose={() => modalHandler("invite", false)}
+                onSendInviteRequest={onSendInviteRequest}
+              />
+            </>
           )}
 
-          <InviteModal
-            opened={openShareModal}
-            onClose={() => setOpenShareModal(false)}
-            workspaceId={id}
-            onInvite={onInvite}
-          />
-
           <RenameModal
-            opened={openRenameModal}
-            onClose={() => setOpenRenameModal(false)}
-            title="Rename workspace"
             nameRender={renderName}
+            title="Rename workspace"
+            opened={open.rename}
             onRename={onRenameWorkspace}
+            onClose={() => modalHandler("rename", false)}
           />
 
           <DeleteModal
             objectId={id}
-            opened={openDeleteModal}
-            onClose={() => setOpenDeleteModal(false)}
-            title="Delete this workspace"
-            message="Are you sure you want to delete this workspace?"
+            opened={open.delete}
             onDelete={onDeleteWorkspace}
+            title="Delete this workspace"
+            onClose={() => modalHandler("delete", false)}
+            message="Are you sure you want to delete this workspace?"
           />
 
           {/* Project name */}
@@ -456,7 +514,11 @@ const WorkspaceItem = (props: IWorkspace) => {
           {/* Dropdown menu */}
           <Grid.Col span={1}>
             <Flex justify="flex-end" gap={10}>
-              <ActionIcon onClick={togglePin} variant="subtle" color="blue">
+              <ActionIcon
+                onClick={onPinWorkspace}
+                variant="subtle"
+                color="blue"
+              >
                 <IStar
                   width={20}
                   height={20}
