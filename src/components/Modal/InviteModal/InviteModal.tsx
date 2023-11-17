@@ -24,32 +24,37 @@ import { useDebouncedValue, useFocusTrap } from "@mantine/hooks";
 import { ReactComponent as IconUserOff } from "@tabler/icons/icons/user-off.svg";
 import { useEffect, useState } from "react";
 import { MemberItem } from "./components";
+import useNotification from "@/hooks/useNotification";
 
 interface IInviteModalProps extends ModalProps {
+  permission: string;
   workspaceId: number;
   onInvite: (assignPermissions: IAssignPermissions) => void;
+  onSendInviteRequest?: (assignPermissions: IAssignPermissions) => void;
 }
 
 interface IAssignPermissions {
-  [id: number]: string;
+  [id: number]: { permission: string; name: string };
 }
 
 const InviteModal = ({
   opened,
   onClose,
-  workspaceId,
   onInvite,
+  permission,
+  workspaceId,
+  onSendInviteRequest,
 }: IInviteModalProps) => {
+  const notify = useNotification();
+  const focusTrapRef = useFocusTrap();
   const [input, setInput] = useState<string>("");
   const [searchValue] = useDebouncedValue(input, 500);
-  const [loading, setLoading] = useState<boolean>(true);
   const [members, setMembers] = useState<IUser[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [searchResult, setSearchResult] = useState<IUser[]>([]);
   const [popoverOpened, setPopoverOpened] = useState<boolean>(false);
   const [assignPermissions, setAssignPermissions] =
     useState<IAssignPermissions>({});
-
-  const focusTrapRef = useFocusTrap();
 
   const searchUsers = async () => {
     try {
@@ -70,11 +75,6 @@ const InviteModal = ({
     }
   };
 
-  const handleAddTeammate = (user: IUser) => {
-    setMembers([...members, user]);
-    setPopoverOpened(false);
-  };
-
   const getMembers = async () => {
     try {
       const members = await membersApi.getAllWorkspaceMembers(
@@ -90,6 +90,11 @@ const InviteModal = ({
     }
   };
 
+  const handleAddTeammate = (user: IUser) => {
+    setMembers([...members, user]);
+    setPopoverOpened(false);
+  };
+
   const handleCancel = () => {
     setInput("");
     setMembers([]);
@@ -101,8 +106,35 @@ const InviteModal = ({
   };
 
   const handleInvite = () => {
-    onInvite(assignPermissions);
-    onClose?.();
+    if (permission === "viewer") {
+      onSendInviteRequest?.(assignPermissions);
+    } else {
+      onInvite(assignPermissions);
+    }
+    handleCancel();
+  };
+
+  const convertPermission = (permission: string) => {
+    switch (permission) {
+      case "owner":
+        return 0;
+      case "editor":
+        return 1;
+      case "sharer":
+        return 2;
+      case "viewer":
+        return 3;
+      default:
+        return undefined;
+    }
+  };
+
+  const validateInvitedPermission = (invitedPermission: string) => {
+    const convertedPermission = convertPermission(invitedPermission);
+    const convertedUserPermission = convertPermission(permission);
+    if (convertedUserPermission && convertedPermission) {
+      return convertedUserPermission <= convertedPermission;
+    }
   };
 
   useEffect(() => {
@@ -177,10 +209,20 @@ const InviteModal = ({
               {...user}
               isSelectingRole={true}
               onChangePermission={(value: string) => {
-                setAssignPermissions({
-                  ...assignPermissions,
-                  [user.id]: value,
-                });
+                if (validateInvitedPermission(value)) {
+                  setAssignPermissions({
+                    ...assignPermissions,
+                    [user.id]: {
+                      permission: value,
+                      name: user.name as string,
+                    },
+                  });
+                } else {
+                  notify({
+                    message: "You can't assign permission higher than yours!",
+                    type: "error",
+                  });
+                }
               }}
             />
           ))
@@ -200,8 +242,10 @@ const InviteModal = ({
         <Tooltip
           label={
             Object.keys(assignPermissions).length > 0
-              ? "Save changes"
-              : "Please select permission!"
+              ? permission === "viewer"
+                ? "This invitation need to be approved by the workspace owner."
+                : "Save changes"
+              : "Please select valid permission!"
           }
           position="top"
         >

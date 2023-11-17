@@ -19,10 +19,6 @@ import { useRequestsStyle } from "./Requests.style";
 import { Filter, Table } from "./components";
 import ContextForm from "./components/ContextForm/ContextForm";
 
-interface IAssignPermissions {
-  [id: number]: string;
-}
-
 const Requests = () => {
   const dispatch = useAppDispatch();
   const notify = useNotification();
@@ -32,16 +28,12 @@ const Requests = () => {
   const [searchLoading, setSearchLoading] = useState<boolean>(true);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
-  const [selectionStatus, setSelectionStatus] = useState<string>("");
   const [selectedRecords, setSelectedRecords] = useState<IRequests[]>([]);
   const [openRequestModal, setOpenRequestModal] = useState<boolean>(false);
   const [selectedRow, setSelecterdRow] = useState<IRequests>();
 
   // Test socket connection
   const socket = io("https://bpe.onrender.com");
-
-  const requestsSelector = useSelector(getWorkspaceRequests);
-  console.log(requestsSelector);
 
   const requests = useSelector(getWorkspaceRequests);
   const requestsMap = Object.values(requests).sort(
@@ -61,17 +53,6 @@ const Requests = () => {
     },
   });
   const searchValue = form.values.searchValue;
-
-  // const currentUser = useSelector(getCurrentUser);
-  // const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   if (
-  //     currentUser.permission !== undefined &&
-  //     currentUser.permission !== "owner"
-  //   )
-  //     navigate(`/404`);
-  // }, [currentUser]);
 
   const onCancelSearchRequests = () => {
     form.reset();
@@ -140,68 +121,62 @@ const Requests = () => {
     }
   };
 
-  const onChangeSelectedRequestsStatus = () => {
-    // async ({
-    //   status,
-    //   requestId,
-    // }: {
-    //   status: string;
-    //   requestId?: number;
-    // }) => {
-    //   try {
-    //     if (status && workspaceId && (selectedRecords.length > 0 || requestId)) {
-    //       if (status === "approve") {
-    //         const result =
-    //           status === "approve"
-    //             ? await requestsApi.approveRequests({
-    //                 workspaceId: workspaceId.toString(),
-    //                 status: status,
-    //                 requestId: selectedRecords.map((record) =>
-    //                   record.id.toString()
-    //                 ),
-    //               })
-    //             : await requestsApi.declineRequests({
-    //                 workspaceId: workspaceId.toString(),
-    //                 status: status,
-    //                 requestId: selectedRecords.map((record) =>
-    //                   record.id.toString()
-    //                 ),
-    //               });
-    //         if (result) {
-    //           result.map((item: IRequests, index: number) => {
-    //             dispatch(
-    //               requestsActions.setRequests({
-    //                 ...item,
-    //                 offset: -1 - index,
-    //               })
-    //             );
-    //           });
-    //           notify({
-    //             type: "success",
-    //             message:
-    //               "Selected Requests have been changed status successfully",
-    //             title: "Success",
-    //           });
-    //         }
-    //       }
-    //     } else {
-    //       notify({
-    //         type: "error",
-    //         message: "Please select status for selected Requests",
-    //         title: "Error",
-    //       });
-    //     }
-    //   } catch (error) {
-    //     console.log(error);
-    //     notify({
-    //       type: "error",
-    //       message:
-    //         "Something went wrong while changing status of selected Requests",
-    //       title: "Error",
-    //     });
-    //   } finally {
-    //     setSelectedRecords([]);
-    //   }
+  const onChangeSelectedRequestsStatus = async ({
+    status,
+    requestId,
+  }: {
+    status: string;
+    requestId?: number;
+  }) => {
+    try {
+      if (status && workspaceId && (selectedRecords.length > 0 || requestId)) {
+        const result =
+          status === "approved"
+            ? await requestsApi.approveRequests({
+                workspaceId: workspaceId.toString(),
+                requestIdList: requestId
+                  ? [requestId.toString()]
+                  : selectedRecords.map((record) => record.id.toString()),
+              })
+            : await requestsApi.declineRequests({
+                workspaceId: workspaceId.toString(),
+                requestIdList: requestId
+                  ? [requestId.toString()]
+                  : selectedRecords.map((record) => record.id.toString()),
+              });
+        if (result) {
+          result.map((item: IRequests, index: number) => {
+            dispatch(
+              requestsActions.setRequests({
+                ...item,
+                offset: -1 - index,
+              })
+            );
+          });
+          notify({
+            type: "success",
+            message: "Selected Requests have been changed status successfully",
+            title: "Success",
+          });
+        }
+      } else {
+        notify({
+          type: "error",
+          message: "Please select status for selected Requests",
+          title: "Error",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      notify({
+        type: "error",
+        message:
+          "Something went wrong while changing status of selected Requests",
+        title: "Error",
+      });
+    } finally {
+      setSelectedRecords([]);
+    }
   };
 
   const onOpenRequestModal = (row: IRequests) => {
@@ -337,24 +312,22 @@ const Requests = () => {
               color="teal"
               variant="outline"
               children="Approve"
-              // onClick={
-              //   () =>
-              //   onChangeSelectedRequestsStatus({
-              //     status: "approve",
-              //   })
-              // }
+              onClick={() =>
+                onChangeSelectedRequestsStatus({
+                  status: "approved",
+                })
+              }
             />
             <Button
               w={100}
               color="red"
               variant="outline"
               children="Decline"
-              // onClick={
-              //   () =>
-              //   onChangeSelectedRequestsStatus({
-              //     status: "decline",
-              //   })
-              // }
+              onClick={() =>
+                onChangeSelectedRequestsStatus({
+                  status: "declined",
+                })
+              }
             />
             <Button
               leftIcon={<IconDelete className={classes.buttonIcon} />}

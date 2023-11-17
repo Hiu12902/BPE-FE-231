@@ -14,7 +14,7 @@ interface ITableProps {
   isLoading?: boolean;
   pagination?: IPagination;
   onPageChange?: (page: number) => void;
-  onChangeStatus?: ({
+  onChangeStatus: ({
     status,
     requestId,
   }: {
@@ -158,12 +158,13 @@ const Table = ({
                   variant={record.status === "approved" ? "filled" : "outline"}
                   disabled={record.status === "declined"}
                   children="Approved"
-                  // onClick={() =>
-                  //   onChangeStatus?.({
-                  //     status: "approve",
-                  //     requestId: record.requestId,
-                  //   })
-                  // }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChangeStatus({
+                      status: "approved",
+                      requestId: record.id,
+                    });
+                  }}
                 />
 
                 <Button
@@ -172,12 +173,13 @@ const Table = ({
                   variant={record.status === "declined" ? "filled" : "outline"}
                   disabled={record.status === "approved"}
                   children="Declined"
-                  // onClick={() =>
-                  //   onChangeStatus?.({
-                  //     status: "decline",
-                  //     requestId: record.requestId,
-                  //   })
-                  // }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChangeStatus({
+                      status: "declined",
+                      requestId: record.id,
+                    });
+                  }}
                 />
               </>
             ) : (
@@ -211,7 +213,7 @@ const Table = ({
       selectedRecords={selectedRecords}
       setSelectedRecords={setSelectedRecords}
       onRowClick={onRowClick}
-      isRecordSelectable={(record) => record.status === "pending"}
+      // isRecordSelectable={(record) => record.status === "pending"}
     />
   );
 };
