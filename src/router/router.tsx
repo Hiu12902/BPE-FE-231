@@ -29,14 +29,14 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route element={<ProtectedRoute />} errorElement={<CrashComponent />}>
-        <Route element={<WorkspaceLayout showNavbar={false} />}>
+        <Route element={<WorkspaceLayout isWorkspaceManagement={false} />}>
           <Route path="/" element={<DefaultHomepage />} />
           <Route
             path="workspace/:workspaceName/:workspaceId"
             element={<Workspace />}
           />
         </Route>
-        <Route element={<WorkspaceLayout showNavbar={true} />}>
+        <Route element={<WorkspaceLayout isWorkspaceManagement={true} />}>
           <Route
             path="/management/:workspaceName/:workspaceId"
             element={<WorkspaceManagement />}
