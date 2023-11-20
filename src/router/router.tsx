@@ -12,6 +12,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Register from "@/components/Register";
 import ResetPassword from "@/components/ResetPassword";
 import Workspace from "@/components/Workspace";
+import Notification from "@/components/Notification";
 import {
   Customization,
   Members,
@@ -32,9 +33,10 @@ const router = createBrowserRouter(
         <Route element={<WorkspaceLayout isWorkspaceManagement={false} />}>
           <Route path="/" element={<DefaultHomepage />} />
           <Route
-            path="workspace/:workspaceName/:workspaceId"
+            path="/workspace/:workspaceName/:workspaceId"
             element={<Workspace />}
           />
+          <Route path="/notification" element={<Notification />} />
         </Route>
         <Route element={<WorkspaceLayout isWorkspaceManagement={true} />}>
           <Route

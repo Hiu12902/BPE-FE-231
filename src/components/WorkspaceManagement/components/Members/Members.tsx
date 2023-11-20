@@ -1,4 +1,4 @@
-import { membersApi } from "@/api/index";
+import { membersApi, notificationApi } from "@/api/index";
 import {
   MembersFormProvider,
   useMembersForm,
@@ -6,8 +6,8 @@ import {
 import { DeleteModal, InviteModal } from "@/components/Modal";
 import useNotification from "@/hooks/useNotification";
 import { IMembers, IPagination, IQueryParams } from "@/interfaces/index";
-import { getWorkspaceMembers } from "@/redux/selectors";
-import { membersActions } from "@/redux/slices";
+import { getCurrentUser, getWorkspaceMembers } from "@/redux/selectors";
+import { membersActions, notificationActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import { Box, Button, Container, Group, Select, Title } from "@mantine/core";
 import { ReactComponent as IconSave } from "@tabler/icons/icons/check.svg";
@@ -30,6 +30,7 @@ const Members = () => {
   const dispatch = useAppDispatch();
   const { classes } = useMembersStyle();
   const [result, setResult] = useState(true);
+  const currentUser = useSelector(getCurrentUser);
   const members = useSelector(getWorkspaceMembers);
   const { workspaceId, workspaceName } = useParams();
   const [loading, setLoading] = useState<boolean>(true);
@@ -231,7 +232,9 @@ const Members = () => {
     }
   };
 
-  const onInvite = async (assignPermissions: IAssignPermissions) => {
+  const onSendInviteNotification = async (
+    assignPermissions: IAssignPermissions
+  ) => {
     try {
       if (Object.keys(assignPermissions).length > 0) {
         const payload = Object.keys(assignPermissions).map((id) => ({
@@ -240,14 +243,15 @@ const Members = () => {
         }));
         if (payload && workspaceId) {
           payload.map(async (item) => {
-            const result = await membersApi.inviteUserToWorkspace({
-              workspaceId: workspaceId.toString(),
-              memberId: item.memberId.toString(),
+            const result = await notificationApi.sendInvitationNotification({
+              workspaceId: Number(workspaceId),
+              content: `User ${currentUser.name} has invited you to join workspace ${workspaceName} with permission ${item.permission}`,
+              id: item.memberId,
               permission: item.permission,
             });
             if (result) {
               dispatch(
-                membersActions.setMembers({
+                notificationActions.setNotification({
                   ...result,
                   offset: -1,
                 })
@@ -315,8 +319,8 @@ const Members = () => {
           opened={openShareModal as boolean}
           onClose={() => setOpenShareModal(false)}
           workspaceId={Number(workspaceId)}
-          onInvite={onInvite}
-          permission=""
+          onInvite={onSendInviteNotification}
+          permission={"owner"}
         />
 
         <DeleteModal

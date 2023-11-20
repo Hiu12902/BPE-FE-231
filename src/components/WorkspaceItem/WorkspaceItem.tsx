@@ -1,13 +1,13 @@
-import { membersApi, requestsApi } from "@/api/index";
+import { notificationApi, requestsApi } from "@/api/index";
 import workspaceApi from "@/api/workspace";
 import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
 import useNotification from "@/hooks/useNotification";
 import { IWorkspace } from "@/interfaces/workspaces";
 import { getCurrentUser } from "@/redux/selectors";
 import {
-  membersActions,
+  notificationActions,
   pinnedWorkspaceActions,
-  workspaceActions,
+  workspaceActions
 } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import {
@@ -22,8 +22,7 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { ReactComponent as IconRename } from "@tabler/icons/icons/cursor-text.svg";
-import { ReactComponent as IconFilePlus } from "@tabler/icons/icons/folder.svg";
-import { ReactComponent as IconFolder } from "@tabler/icons/icons/folder.svg";
+import { ReactComponent as IconFilePlus, ReactComponent as IconFolder } from "@tabler/icons/icons/folder.svg";
 import { ReactComponent as IStar } from "@tabler/icons/icons/star.svg";
 import { ReactComponent as IconTrash } from "@tabler/icons/icons/trash.svg";
 import { ReactComponent as IconUserShare } from "@tabler/icons/icons/user-circle.svg";
@@ -69,7 +68,7 @@ const WorkspaceItem = (props: IWorkspace) => {
   };
   const [result, setResult] = useState<boolean>(true);
   const [toPermission, setToPermission] = useState<string>("");
-  const [renderName, setRenderName] = useState<string | undefined>(name);
+  const [renderName, setRenderName] = useState<string | undefined>();
 
   const formatTimestamp = (date: Date | string) => {
     function convertUTCDateToLocalDate(date: Date) {
@@ -234,7 +233,9 @@ const WorkspaceItem = (props: IWorkspace) => {
     }
   };
 
-  const onInvite = async (assignPermissions: IAssignPermissions) => {
+  const onSendInviteNotification = async (
+    assignPermissions: IAssignPermissions
+  ) => {
     try {
       if (Object.keys(assignPermissions).length > 0) {
         const payload = Object.keys(assignPermissions).map((id) => ({
@@ -243,14 +244,15 @@ const WorkspaceItem = (props: IWorkspace) => {
         }));
         if (payload && id) {
           payload.map(async (item) => {
-            const result = await membersApi.inviteUserToWorkspace({
-              workspaceId: id.toString(),
-              memberId: item.memberId.toString(),
+            const result = await notificationApi.sendInvitationNotification({
+              workspaceId: id,
+              content: `User ${currentUser.name} has invited you to join workspace ${name} with permission ${item.permission}`,
+              id: item.memberId,
               permission: item.permission,
             });
             if (result) {
               dispatch(
-                membersActions.setMembers({
+                notificationActions.setNotification({
                   ...result,
                   offset: -1,
                 })
@@ -425,11 +427,11 @@ const WorkspaceItem = (props: IWorkspace) => {
 
               <InviteModal
                 workspaceId={id}
-                onInvite={onInvite}
-                permission={permission}
                 opened={open.invite}
-                onClose={() => modalHandler("invite", false)}
+                permission={permission}
+                onInvite={onSendInviteNotification}
                 onSendInviteRequest={onSendInviteRequest}
+                onClose={() => modalHandler("invite", false)}
               />
             </>
           )}

@@ -188,7 +188,7 @@ const Requests = () => {
       setSelectedRecords([]);
     }
   };
-  
+
   useEffect(() => {
     socket.on("connect", () => {
       console.log("Socket connected");

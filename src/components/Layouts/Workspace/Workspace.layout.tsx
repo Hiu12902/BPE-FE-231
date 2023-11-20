@@ -11,6 +11,8 @@ import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { useWorkspaceLayoutStyle } from "./Workspace.style";
 import { WorkspaceHeader } from "./components";
 import WorkspaceNavbar from "./components/WorkspaceNavbar/WorkspaceNavbar";
+import { io } from "socket.io-client";
+import useNotification from "@/hooks/useNotification";
 
 export interface IWorkspaceLayout {
   isWorkspaceManagement?: Boolean;
@@ -68,6 +70,20 @@ const WorkspaceLayout = ({ isWorkspaceManagement }: IWorkspaceLayout) => {
       navigate("/404");
     }
   }, [workspaceManagement, isWorkspaceManagement]);
+
+  const socket = io("https://bpe.onrender.com");
+  const notify = useNotification();
+  useEffect(() => {
+    if (currentUser && currentUser.id) {
+      socket.on(`insertNewNotification_${currentUser?.id}`, (message) => {
+        notify({
+          type: "notification",
+          message: JSON.parse(message).content,
+          title: "New notification!",
+        });
+      });
+    }
+  }, [socket]);
 
   if (
     // !isWorkspaceManagement && loading: Normal route

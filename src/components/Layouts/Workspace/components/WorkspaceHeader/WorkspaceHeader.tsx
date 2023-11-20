@@ -95,20 +95,35 @@ const WorkspaceHeader = ({ isWorkspaceManagement }: IWorkspaceHeader) => {
         }}
       >
         <Logo />
-        <Group mr={20}>
-          <ActionIcon>
+        <Group mr={20} spacing={15}>
+          <ActionIcon
+            style={{
+              backgroundColor: "white",
+              borderRadius: 50,
+              width: 35,
+              height: 35,
+            }}
+          >
             <IconSetting
               width={25}
               height={25}
-              color={isWorkspaceManagement ? "#999" : "#fff"}
+              color={isWorkspaceManagement ? "#999" : PRIMARY_COLOR[1]}
             />
           </ActionIcon>
 
-          <ActionIcon>
+          <ActionIcon
+            onClick={() => navigate("/notification")}
+            style={{
+              backgroundColor: "white",
+              borderRadius: 50,
+              width: 35,
+              height: 35,
+            }}
+          >
             <IconNotification
               width={25}
               height={25}
-              color={isWorkspaceManagement ? "#999" : "#fff"}
+              color={isWorkspaceManagement ? "#999" : PRIMARY_COLOR[1]}
             />
           </ActionIcon>
 
