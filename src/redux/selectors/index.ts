@@ -9,3 +9,4 @@ export * from './projectSelector';
 export * from './workspaceSelector';
 export * from './membersSelector';
 export * from './requestsSelector';
+export * from './notificationSelector';

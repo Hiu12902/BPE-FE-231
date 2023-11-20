@@ -132,9 +132,15 @@ const InviteModal = ({
   const validateInvitedPermission = (invitedPermission: string) => {
     const convertedPermission = convertPermission(invitedPermission);
     const convertedUserPermission = convertPermission(permission || "");
-    if (convertedUserPermission && convertedPermission) {
-      return convertedUserPermission <= convertedPermission;
+    if (
+      convertedUserPermission !== undefined &&
+      convertedPermission !== undefined
+    ) {
+      if (convertedUserPermission <= convertedPermission) {
+        return true;
+      } else return false;
     }
+    return false;
   };
 
   useEffect(() => {
@@ -209,7 +215,8 @@ const InviteModal = ({
               {...user}
               isSelectingRole={true}
               onChangePermission={(value: string) => {
-                if (validateInvitedPermission(value)) {
+                const validPermission = validateInvitedPermission(value);
+                if (validPermission) {
                   setAssignPermissions({
                     ...assignPermissions,
                     [user.id]: {

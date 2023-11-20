@@ -5,6 +5,7 @@ import {
   lintingSlice,
   membersSlice,
   modelSlice,
+  notificationSlice,
   pinnedWorkspaceSlice,
   projectSlice,
   requestsSlice,
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   [pinnedWorkspaceSlice.name]: pinnedWorkspaceSlice.reducer,
   [membersSlice.name]: membersSlice.reducer,
   [requestsSlice.name]: requestsSlice.reducer,
+  [notificationSlice.name]: notificationSlice.reducer,
 });
 
 export default rootReducer;

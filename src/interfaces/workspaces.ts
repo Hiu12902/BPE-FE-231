@@ -44,3 +44,17 @@ export interface IRequests {
     workspaceId?: number;
     offset: number; // USED FOR KEEPING ORDER OF MEMBERS FROM RETURNED FROM BE
 }
+
+export interface INotification {
+    content?: string;
+    createdAt?: string;
+    id: number;
+    isRead?: boolean;
+    isStarred?: boolean;
+    notificationType?: string;
+    permission?: string;
+    status?: string;
+    userId: number;
+    workspaceId?: number;
+    offset: number; // USED FOR KEEPING ORDER OF MEMBERS FROM RETURNED FROM BE
+}

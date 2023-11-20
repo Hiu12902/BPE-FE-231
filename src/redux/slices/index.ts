@@ -3,6 +3,7 @@ import evaluatedResultSlice from './evaluateResult';
 import lintingSlice from './linting';
 import membersSlice from './members';
 import modelSlice from './model';
+import notificationSlice from './notifications';
 import pinnedWorkspaceSlice from './pinnedWorkspace';
 import projectSlice from './project';
 import requestsSlice from './requests';
@@ -23,6 +24,7 @@ const workspaceActions = workspaceSlice.actions;
 const pinnedWorkspaceActions = pinnedWorkspaceSlice.actions;
 const membersActions = membersSlice.actions;
 const requestsActions = requestsSlice.actions;
+const notificationActions = notificationSlice.actions;
 
 export {
   toolSliceActions,
@@ -49,4 +51,6 @@ export {
   membersActions,
   requestsSlice,
   requestsActions,
+  notificationSlice,
+  notificationActions,
 };
