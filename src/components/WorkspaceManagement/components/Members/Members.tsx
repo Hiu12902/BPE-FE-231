@@ -160,7 +160,7 @@ const Members = () => {
           });
           notify({
             type: "success",
-            message: result.message,
+            message: "Successfully changed selected members permission!",
             title: "Success",
           });
         }
@@ -181,6 +181,7 @@ const Members = () => {
       });
     } finally {
       setSelectedRecords([]);
+      setSelectionPermission("");
     }
   };
 

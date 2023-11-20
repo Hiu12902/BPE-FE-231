@@ -7,7 +7,7 @@ import { getCurrentUser } from "@/redux/selectors";
 import {
   notificationActions,
   pinnedWorkspaceActions,
-  workspaceActions
+  workspaceActions,
 } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import {
@@ -22,7 +22,10 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { ReactComponent as IconRename } from "@tabler/icons/icons/cursor-text.svg";
-import { ReactComponent as IconFilePlus, ReactComponent as IconFolder } from "@tabler/icons/icons/folder.svg";
+import {
+  ReactComponent as IconFilePlus,
+  ReactComponent as IconFolder,
+} from "@tabler/icons/icons/folder.svg";
 import { ReactComponent as IStar } from "@tabler/icons/icons/star.svg";
 import { ReactComponent as IconTrash } from "@tabler/icons/icons/trash.svg";
 import { ReactComponent as IconUserShare } from "@tabler/icons/icons/user-circle.svg";
