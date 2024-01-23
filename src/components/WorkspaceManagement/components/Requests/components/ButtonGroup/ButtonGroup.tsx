@@ -27,7 +27,7 @@ const ButtonGroup = (props: IButtonGroupProps) => {
           gap: 10,
         }}
       >
-        <Button
+        {/* <Button
           w={100}
           color="teal"
           variant="outline"
@@ -48,7 +48,7 @@ const ButtonGroup = (props: IButtonGroupProps) => {
               status: "declined",
             })
           }
-        />
+        /> */}
         <Button
           color="red"
           children="Delete"
