@@ -157,6 +157,10 @@ const InviteModal = ({
     <Modal
       size="lg"
       centered
+      overlayProps={{
+        blur: 3,
+        opacity: 0.55,
+      }}
       opened={opened}
       onClose={handleCancel}
       title={<Badge size="lg">Invite other user to workspace</Badge>}

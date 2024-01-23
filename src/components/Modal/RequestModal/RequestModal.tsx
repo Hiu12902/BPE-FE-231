@@ -44,6 +44,10 @@ const RequestModal = ({
   return (
     <Modal
       centered
+      overlayProps={{
+        blur: 3,
+        opacity: 0.55,
+      }}
       opened={opened}
       onClose={handleCancel}
       title={
