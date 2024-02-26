@@ -65,7 +65,8 @@ const MiscGroup = () => {
         title={<Badge size="lg">Open models from your workspace</Badge>}
         size="xl"
       >
-        <Workspace name="Personal" isOpenFromEditor />
+        {/* <Workspace name="Personal" isOpenFromEditor /> */}
+        <Workspace />
       </Modal>
     );
   };

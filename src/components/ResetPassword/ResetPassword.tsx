@@ -62,7 +62,7 @@ const ResetPassword = () => {
       </Text>
 
       <Paper withBorder shadow="md" p={30} radius="md" mt="xl" w={460}>
-        <ChangePasswordForm hideCancelButton />
+        {/* <ChangePasswordForm hideCancelButton /> */}
       </Paper>
     </Container>
   );
