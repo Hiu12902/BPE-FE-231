@@ -165,7 +165,12 @@ const WorkspaceItem = (props: IWorkspace) => {
 
   const onOpenInviteModal = (e: MouseEvent) => {
     e.stopPropagation();
-    modalHandler("invite", true);
+    if (permission && permission === "viewer") {
+      setToPermission("sharer");
+      modalHandler("assignPermission", true);
+    } else {
+      modalHandler("invite", true);
+    }
   };
 
   const onRenameWorkspace = async (

@@ -143,20 +143,21 @@ const RecentlyOpened = ({
         ) : workspacesMap.length === 0 ? (
           emptyRender
         ) : (
-          <List workspaces={workspacesMap} />
-        )}
-
-        <Accordion.Item value="pagination">
-          <Accordion.Control
-            children={
-              <Pagination
-                value={pagination.page}
-                total={Math.ceil(pagination.total / pagination.limit)}
-                onChange={handlePageChange}
+          <>
+            <List workspaces={workspacesMap} />
+            <Accordion.Item value="pagination">
+              <Accordion.Control
+                children={
+                  <Pagination
+                    value={pagination.page}
+                    total={Math.ceil(pagination.total / pagination.limit)}
+                    onChange={handlePageChange}
+                  />
+                }
               />
-            }
-          />
-        </Accordion.Item>
+            </Accordion.Item>
+          </>
+        )}
       </Accordion>
     </>
   );
