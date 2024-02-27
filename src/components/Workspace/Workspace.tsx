@@ -1,6 +1,7 @@
-import { userApi } from "@/api/index";
+import { requestsApi, userApi } from "@/api/index";
 import projectApi from "@/api/project";
 import CreateProjectButton from "@/components/CreateProjectButton";
+import useNotification from "@/hooks/useNotification";
 import { IPagination, IQueryParams } from "@/interfaces/common";
 import { IProject } from "@/interfaces/projects";
 import { getCurrentUser, getProject } from "@/redux/selectors";
@@ -20,15 +21,24 @@ import {
 } from "@mantine/core";
 import { useDocumentTitle } from "@mantine/hooks";
 import { ReactComponent as IconInformation } from "@tabler/icons/icons/info-circle.svg";
+import { ReactComponent as IconPlus } from "@tabler/icons/icons/plus.svg";
 import { ReactComponent as IconSetting } from "@tabler/icons/icons/settings.svg";
 import { useEffect, useState } from "react";
 import { batch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import EmptyRender from "../EmptyRender/EmptyRender";
-import { ProjectsFormProvider, useProjectsForm } from "../FormContext/ProjectsForm";
+import {
+  ProjectsFormProvider,
+  useProjectsForm,
+} from "../FormContext/ProjectsForm";
+import { AssignPermissionModal } from "../Modal/AssignPermissionModal";
 import { useWorkspaceStyle } from "./Workspace.style";
 import { Header, List } from "./components";
 import ContextForm from "./components/ContextForm/ContextForm";
+
+const initialModalState = {
+  assignPermission: false,
+};
 
 const Workspace = () => {
   useDocumentTitle("Workspace | BKSky");
@@ -40,11 +50,20 @@ const Workspace = () => {
     (a, b) => a.offset - b.offset
   );
   const { workspaceId, workspaceName } = useParams();
+  const [toPermission, setToPermission] = useState<string>("");
+  const [open, setOpen] = useState(initialModalState);
+  const modalHandler = (modal: string, value: boolean) => {
+    setOpen({
+      ...initialModalState,
+      [modal]: value,
+    });
+  };
   const currentUser = useSelector(getCurrentUser);
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
+  const notify = useNotification();
 
   const [pagination, setPagination] = useState<IPagination>({
     page: 1,
@@ -60,6 +79,7 @@ const Workspace = () => {
   });
 
   const searchValue = form.values.searchValue;
+  const permission = currentUser.permission || "";
 
   const onCancelSearchProjects = () => {
     form.reset();
@@ -80,7 +100,7 @@ const Workspace = () => {
         ...project,
         offset: -1,
         createAt: new Date(),
-        role: project.ownerId === currentUser.id ? 0 : undefined,
+        role: 0,
       })
     );
 
@@ -124,6 +144,44 @@ const Workspace = () => {
     }
   };
 
+  const onSendAssignPerrmissionRequest = async (content: string) => {
+    try {
+      if (currentUser.id && permission) {
+        const request = await requestsApi.sendRequest({
+          workspaceId: Number(workspaceId),
+          type: "adjust permission",
+          senderId: currentUser.id,
+          recipientId: currentUser.id,
+          content: content,
+          frPermission: permission,
+          toPermission: toPermission,
+        });
+        if (request === "Duplicate request") {
+          notify({
+            title: "Error!",
+            message:
+              "Send request to workspace owner failed due to duplication!",
+            type: "error",
+          });
+        } else if (request) {
+          notify({
+            title: "Success!",
+            message: "Send request to workspace owner successfully!",
+            type: "success",
+          });
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      notify({
+        title: "Error!",
+        message: "Can not send request to workspace owner",
+        type: "error",
+      });
+    } finally {
+    }
+  };
+
   const onQueryFilter = async (queryFilter: IQueryParams) => {
     try {
       setLoading(true);
@@ -146,7 +204,7 @@ const Workspace = () => {
   };
 
   useEffect(() => {
-    if (!currentUser.permission) {
+    if (!permission) {
       getUser(Number(workspaceId));
     }
   }, [currentUser]);
@@ -206,10 +264,22 @@ const Workspace = () => {
           <Button variant="outline" onClick={() => navigate("/editor")}>
             Open Editor
           </Button>
-          <CreateProjectButton
-            workspaceId={Number(workspaceId)}
-            onCreateProject={onCreateNewProject}
-          />
+          {permission && !["owner", "editor"].includes(permission) ? (
+            <Button
+              leftIcon={<IconPlus />}
+              onClick={() => {
+                setToPermission("editor");
+                modalHandler("assignPermission", true);
+              }}
+            >
+              Create New Project
+            </Button>
+          ) : (
+            <CreateProjectButton
+              workspaceId={Number(workspaceId)}
+              onCreateProject={onCreateNewProject}
+            />
+          )}
         </Group>
       </Group>
 
@@ -220,6 +290,21 @@ const Workspace = () => {
             children={<Header onQueryFilter={onQueryFilter} />}
           />
         </Accordion.Item>
+
+        {currentUser?.name && permission && (
+          <AssignPermissionModal
+            frPermission={permission}
+            toPermission={toPermission}
+            userName={currentUser.name}
+            onSendRequest={(content: string) =>
+              onSendAssignPerrmissionRequest(content)
+            }
+            opened={open.assignPermission}
+            title="Send request to adjust permission"
+            onClose={() => modalHandler("assignPermission", false)}
+          />
+        )}
+
         <List projects={projectsMap} />
         {loading || searchLoading ? (
           <Skeleton height={50} mt={10} />
@@ -231,7 +316,7 @@ const Workspace = () => {
           ) : (
             EmptyRender({
               text: "You don't have any projects yet! You can start right now by creating a new project.",
-              action: (
+              action: ["owner", "editor"].includes(permission) && (
                 <CreateProjectButton
                   workspaceId={Number(workspaceId)}
                   onCreateProject={onCreateNewProject}

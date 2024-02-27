@@ -147,7 +147,7 @@ const WorkspaceItem = (props: IWorkspace) => {
 
   const onOpenRenameModal = (e: MouseEvent) => {
     e.stopPropagation();
-    if (permission && (permission === "sharer" || permission === "viewer")) {
+    if (permission && ["viewer", "sharer"].includes(permission)) {
       setToPermission("editor");
       modalHandler("assignPermission", true);
     } else {
@@ -165,7 +165,12 @@ const WorkspaceItem = (props: IWorkspace) => {
 
   const onOpenInviteModal = (e: MouseEvent) => {
     e.stopPropagation();
-    modalHandler("invite", true);
+    if (permission && ["viewer"].includes(permission)) {
+      setToPermission("sharer");
+      modalHandler("assignPermission", true);
+    } else {
+      modalHandler("invite", true);
+    }
   };
 
   const onRenameWorkspace = async (
