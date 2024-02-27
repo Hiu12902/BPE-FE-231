@@ -299,7 +299,9 @@ const FileItem = (props: IFile) => {
       children: "Rename",
       onClick: openRenameModal,
       disabled:
-        !isProcess || !["Owner", "Can Edit"].includes(UserRoleText[role]),
+        !isProcess ||
+        (role !== undefined &&
+          !["Owner", "Can Edit"].includes(UserRoleText[role])),
       display: isProcess,
     },
     {
@@ -309,7 +311,8 @@ const FileItem = (props: IFile) => {
       onClick: openDeleteModal,
       disabled:
         isOpeningInEditor ||
-        !["Owner", "Can Edit"].includes(UserRoleText[role]),
+        (role !== undefined &&
+          !["Owner", "Can Edit"].includes(UserRoleText[role])),
     },
   ];
 

@@ -1,6 +1,6 @@
-import projectApi from '@/api/project';
-import FileItem from '@/components/FileItem';
-import { IFile } from '@/interfaces/projects';
+import projectApi from "@/api/project";
+import FileItem from "@/components/FileItem";
+import { IFile } from "@/interfaces/projects";
 import {
   Accordion,
   ActionIcon,
@@ -10,13 +10,13 @@ import {
   Space,
   Stack,
   Title,
-} from '@mantine/core';
-import { useDocumentTitle } from '@mantine/hooks';
-import { ReactComponent as IconInfoCircleFilled } from '@tabler/icons/icons/info-circle-filled.svg';
-import { ReactComponent as IconUserShare } from '@tabler/icons/icons/user-plus.svg';
-import { useEffect, useState } from 'react';
-import { unstable_batchedUpdates } from 'react-dom';
-import { useParams } from 'react-router-dom';
+} from "@mantine/core";
+import { useDocumentTitle } from "@mantine/hooks";
+import { ReactComponent as IconInfoCircleFilled } from "@tabler/icons/icons/info-circle-filled.svg";
+import { ReactComponent as IconUserShare } from "@tabler/icons/icons/user-plus.svg";
+import { useEffect, useState } from "react";
+import { unstable_batchedUpdates } from "react-dom";
+import { useParams } from "react-router-dom";
 
 const Project = () => {
   const { projectName, projectId } = useParams();
@@ -31,7 +31,9 @@ const Project = () => {
   const getBpmnVerions = async () => {
     try {
       if (projectId) {
-        const response = await projectApi.getProcessesByProject(parseInt(projectId));
+        const response = await projectApi.getProcessesByProject(
+          parseInt(projectId)
+        );
         setBpmnVerions(() => response);
       }
     } catch (err) {
@@ -42,7 +44,9 @@ const Project = () => {
   const getDocument = async () => {
     try {
       if (projectId) {
-        const response = await projectApi.getProjectDocument(parseInt(projectId));
+        const response = await projectApi.getProjectDocument(
+          parseInt(projectId)
+        );
         setDocument(response);
       }
     } catch (err) {
@@ -93,7 +97,9 @@ const Project = () => {
                 projectId={parseInt(projectId as string)}
                 canDelete={bpmmnVerions.length > 1}
                 onDeleteFile={(fileLink) => {
-                  const tempFiles = bpmmnVerions.filter((file) => file.xmlFileLink !== fileLink);
+                  const tempFiles = bpmmnVerions.filter(
+                    (file) => file.xmlFileLink !== fileLink
+                  );
                   setBpmnVerions(tempFiles);
                 }}
               />
@@ -102,7 +108,9 @@ const Project = () => {
         )}
         <Space h="md" />
         <Accordion.Item value="document">
-          <Accordion.Control onClick={() => setOpenDocument((o) => !o)}>Document</Accordion.Control>
+          <Accordion.Control onClick={() => setOpenDocument((o) => !o)}>
+            Document
+          </Accordion.Control>
         </Accordion.Item>
         {openDocument && (
           <Stack mt={20}>
