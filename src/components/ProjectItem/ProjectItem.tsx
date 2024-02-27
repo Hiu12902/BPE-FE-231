@@ -219,16 +219,23 @@ const ProjectItem = (props: IProject) => {
       icon: <IconUserShare className={classes.dropdownMenuIcon} />,
       children: "Share",
       onClick: onOpenShareModal,
+      disabled: !["Owner", "Can Edit", "Can Share"].includes(
+        UserRoleText[role]
+      ),
     },
     {
       icon: <IconAbc className={classes.dropdownMenuIcon} />,
       children: "Rename",
       onClick: onOpenRenameModal,
+      disabled: !["Owner", "Can Edit"].includes(UserRoleText[role]),
     },
     {
       icon: <IconFilePlus className={classes.dropdownMenuIcon} />,
       children: "New Process",
       onClick: onOpenCreateModal,
+      disabled: !["Owner", "Can Edit", "Can Share"].includes(
+        UserRoleText[role]
+      ),
     },
     {
       icon: <IconTrash className={classes.dropdownMenuIcon} />,
@@ -244,6 +251,7 @@ const ProjectItem = (props: IProject) => {
         />
       ),
       onClick: onOpenDeleteModal,
+      disabled: !["Owner", "Can Edit"].includes(UserRoleText[role]),
     },
   ];
 
@@ -258,6 +266,7 @@ const ProjectItem = (props: IProject) => {
             opened={openShareModal}
             onClose={() => setOpenShareModal(false)}
             projectId={id}
+            role={UserRoleText[role]}
           />
 
           <RenameModal
@@ -333,9 +342,7 @@ const ProjectItem = (props: IProject) => {
           {/* Role */}
           <Grid.Col span={2}>
             <Flex justify="center" align="center" gap={10}>
-              {role !== undefined && (
-                <Badge size="md">{UserRoleText[role]}</Badge>
-              )}
+              <Badge size="md">{UserRoleText[role]}</Badge>
             </Flex>
           </Grid.Col>
 

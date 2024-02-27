@@ -26,8 +26,9 @@ export interface IUserInfoProps extends Partial<IUser> {
   onClick?: MouseEventHandler<Element>;
   onAddTeammate?: (user: IUser) => void;
   isSearching?: boolean;
-  isSelectingRole?: boolean;
+  // isSelectingRole?: boolean;
   isProfile?: boolean;
   onChangeRole?: (role: UserRole) => void;
   onChangePermission?: (permission: string) => void;
+  isOwner?: boolean;
 }
