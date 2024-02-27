@@ -1,3 +1,4 @@
+import { UserRole, UserRoleText } from "@/constants/project";
 import { IUser, IUserInfoProps } from "@/interfaces/user";
 import { getCurrentUser } from "@/redux/selectors";
 import {
@@ -10,10 +11,9 @@ import {
   Text,
   createStyles,
 } from "@mantine/core";
+import { ReactComponent as IconUserPlus } from "@tabler/icons/icons/user-plus.svg";
 import { forwardRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { ReactComponent as IconUserPlus } from "@tabler/icons/icons/user-plus.svg";
-import { UserRole } from "@/constants/project";
 
 const useStyles = createStyles((theme) => ({
   user: {
@@ -36,9 +36,10 @@ const UserInformation = forwardRef<HTMLDivElement, IUserInfoProps>(
       onClick,
       onAddTeammate,
       isSearching,
-      isSelectingRole,
+      // isSelectingRole,
       isProfile,
       onChangeRole,
+      isOwner,
     } = props;
     const [role, setRole] = useState(userRole);
 
@@ -66,44 +67,49 @@ const UserInformation = forwardRef<HTMLDivElement, IUserInfoProps>(
               </Text>
             </div>
           </Group>
-          {!isProfile &&
-            (isSearching ? (
-              <Button
-                leftIcon={<IconUserPlus width={15} height={15} />}
-                size="xs"
-                onClick={() =>
-                  onAddTeammate?.({ id, name, email, avatar } as IUser)
-                }
-              >
-                Add
-              </Button>
-            ) : (
-              isSelectingRole &&
-              (userRole === UserRole.OWNER ? (
-                <Badge>Owner</Badge>
-              ) : (
-                <Select
-                  data={[
-                    //@ts-ignore
-                    { value: UserRole.CAN_EDIT, label: "Editor" },
-                    //@ts-ignore
-                    { value: UserRole.CAN_SHARE, label: "Sharer" },
-                    //@ts-ignore
-                    { value: UserRole.CAN_VIEW, label: "Viewer" },
-                    //@ts-ignore
-                    // { value: UserRole.OWNER, label: 'Owner' },
-                  ]}
-                  variant="filled"
+
+          <Group w={100} position="center">
+            {!isProfile &&
+              (isSearching ? (
+                <Button
+                  leftIcon={<IconUserPlus width={15} height={15} />}
                   size="xs"
-                  w={100}
-                  dropdownPosition="bottom"
-                  //@ts-ignore
-                  value={role}
-                  //@ts-ignore
-                  onChange={onChange}
-                />
-              ))
-            ))}
+                  onClick={() =>
+                    onAddTeammate?.({ id, name, email, avatar } as IUser)
+                  }
+                >
+                  Add
+                </Button>
+              ) : isOwner ? (
+                userRole !== 0 && ( // Khi người dùng là owner, chỉ hiện select role đối với những item không phải owner
+                  <Select
+                    data={[
+                      //@ts-ignore
+                      { value: UserRole.CAN_EDIT, label: "Editor" },
+                      //@ts-ignore
+                      { value: UserRole.CAN_SHARE, label: "Sharer" },
+                      //@ts-ignore
+                      { value: UserRole.CAN_VIEW, label: "Viewer" },
+                      //@ts-ignore
+                      // { value: UserRole.OWNER, label: "Owner" },
+                    ]}
+                    variant="filled"
+                    size="xs"
+                    w={100}
+                    dropdownPosition="bottom"
+                    //@ts-ignore
+                    value={role}
+                    //@ts-ignore
+                    onChange={onChange}
+                  />
+                )
+              ) : (
+                // Khi người dùng không phải owner, hiện badge role của item
+                userRole !== undefined && (
+                  <Badge>{UserRoleText[userRole]}</Badge>
+                )
+              ))}
+          </Group>
         </Group>
       </Box>
     );

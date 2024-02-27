@@ -20,7 +20,7 @@ export interface IFile {
   processId?: number;
   num?: number;
   processName?: string;
-  role?: UserRole;
+  role: UserRole;
 }
 
 export interface IProject {
@@ -35,7 +35,7 @@ export interface IProject {
   onDeleteProject?: (projectId: number) => void;
   shouldGetDocuments?: boolean;
   processesCount?: number;
-  role?: UserRole;
+  role: UserRole;
   showExtraInfo?: boolean;
   workspaceId?: number;
   offset: number; // USED FOR KEEPING ORDER OF WORKSPACES FROM REUTRNED FROM BE

@@ -28,10 +28,11 @@ import { useSelector } from "react-redux";
 
 interface IShareModalProps extends ModalProps {
   projectId: number;
+  role: string;
 }
 
 const ShareModal = (props: IShareModalProps) => {
-  const { opened, onClose, projectId } = props;
+  const { opened, onClose, projectId, role } = props;
   const [input, setInput] = useState<string>("");
   const [searchValue] = useDebouncedValue(input, 500);
   const [popoverOpened, setPopoverOpened] = useState(false);
@@ -185,7 +186,8 @@ const ShareModal = (props: IShareModalProps) => {
             <UserInformation
               {...user}
               onAddTeammate={handleAddTeammate}
-              isSelectingRole={user.id !== currentUser.id}
+              isOwner={role === "Owner"}
+              // isSelectingRole={user.id !== currentUser.id}
               onChangeRole={(role: UserRole) => {
                 const tempTeammates = teammates.map((teammate) => {
                   return teammate.id === user.id

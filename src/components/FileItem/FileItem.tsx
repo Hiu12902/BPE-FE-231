@@ -1,5 +1,5 @@
 import projectApi from "@/api/project";
-import { UserRole } from "@/constants/project";
+import { UserRoleText } from "@/constants/project";
 import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
 import { TOOLBAR_MODE } from "@/constants/toolbar";
 import useDetachModel from "@/core/hooks/useDetachModel";
@@ -298,7 +298,8 @@ const FileItem = (props: IFile) => {
       icon: <IconAbc />,
       children: "Rename",
       onClick: openRenameModal,
-      disabled: !isProcess || role !== UserRole.OWNER,
+      disabled:
+        !isProcess || !["Owner", "Can Edit"].includes(UserRoleText[role]),
       display: isProcess,
     },
     {
@@ -306,7 +307,9 @@ const FileItem = (props: IFile) => {
       children: "Delete",
       color: "red",
       onClick: openDeleteModal,
-      disabled: isOpeningInEditor || role !== UserRole.OWNER,
+      disabled:
+        isOpeningInEditor ||
+        !["Owner", "Can Edit"].includes(UserRoleText[role]),
     },
   ];
 
