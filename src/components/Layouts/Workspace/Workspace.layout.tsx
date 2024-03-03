@@ -52,9 +52,9 @@ const WorkspaceLayout = ({ isWorkspaceManagement }: IWorkspaceLayout) => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
-    if (!currentUser.email) {
+    // Kể cả có thông tin về currentUser cũng gọi lại vì tránh trường hợp navigate(-1) thì page không reload để setLoading(false)
+    if (loading) {
       getUser();
     }
     if (!currentUser.permission && workspaceId && !loading) {

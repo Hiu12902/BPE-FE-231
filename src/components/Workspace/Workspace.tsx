@@ -1,11 +1,11 @@
-import { requestsApi, userApi } from "@/api/index";
+import { requestsApi } from "@/api/index";
 import projectApi from "@/api/project";
 import CreateProjectButton from "@/components/CreateProjectButton";
 import useNotification from "@/hooks/useNotification";
 import { IPagination, IQueryParams } from "@/interfaces/common";
 import { IProject } from "@/interfaces/projects";
 import { getCurrentUser, getProject } from "@/redux/selectors";
-import { projectActions, userActions } from "@/redux/slices";
+import { projectActions } from "@/redux/slices";
 import { useAppDispatch } from "@/redux/store";
 import {
   Accordion,
@@ -49,7 +49,16 @@ const Workspace = () => {
   const projectsMap = Object.values(projects).sort(
     (a, b) => a.offset - b.offset
   );
-  const { workspaceId, workspaceName } = useParams();
+  const [workspaceId, setWorkspaceId] = useState<string | undefined>(
+    useParams().workspaceId
+  );
+  const [workspaceName, setWorkspaceName] = useState<string | undefined>(
+    useParams().workspaceName
+  );
+  // const { workspaceId, workspaceName } =
+  //   useParams() !== undefined
+  //     ? useParams()
+  //     : JSON.parse(localStorage.getItem("lastOpenedWorkspace") as string);
   const [toPermission, setToPermission] = useState<string>("");
   const [open, setOpen] = useState(initialModalState);
   const modalHandler = (modal: string, value: boolean) => {
@@ -192,28 +201,32 @@ const Workspace = () => {
       console.log(error);
     }
   };
-  const getUser = async (workspaceId: number) => {
-    try {
-      const res = await userApi.getMe(workspaceId);
-      if (res) {
-        dispatch(userActions.setUser(res));
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   useEffect(() => {
-    if (!permission) {
-      getUser(Number(workspaceId));
-    }
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (searchLoading) {
+    if (searchLoading && workspaceId) {
       getAllProjects();
     }
-  }, [isSearching, searchLoading, pagination.page]);
+  }, [isSearching, searchLoading, pagination.page, workspaceId]);
+
+  // Open from editor can't get workspaceId and workspaceName
+  useEffect(() => {
+    if (workspaceId && workspaceName) {
+      localStorage.setItem(
+        "lastOpenedWorkspace",
+        JSON.stringify({
+          workspaceId: workspaceId,
+          workspaceName: workspaceName,
+        })
+      );
+    }
+    if (!workspaceId || !workspaceName) {
+      const { workspaceId, workspaceName } = JSON.parse(
+        localStorage.getItem("lastOpenedWorkspace") as string
+      );
+      setWorkspaceId(workspaceId);
+      setWorkspaceName(workspaceName);
+    }
+  }, []);
 
   return (
     <Container size="xl">
