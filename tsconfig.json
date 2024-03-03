@@ -43,6 +43,9 @@
       "@/core/*": [
         "src/core/*"
       ],
+      "@/survey/*": [
+        "src/survey/*"
+      ],
       "@/assets/*": [
         "src/assets/*"
       ],

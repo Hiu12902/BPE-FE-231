@@ -16,3 +16,5 @@ export const PALETTE_WIDTH = 200;
 export const APP_PALETTE_WIDTH = 250;
 
 export const PROPERTIES_PANEL_WIDTH = 250;
+
+export const SURVEY_LAYOUT_WIDTH = 200;
