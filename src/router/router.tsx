@@ -25,6 +25,8 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
 } from "react-router-dom";
+import SurveyBuilder from "@/survey/components/SurveyBuilder/SurveyBuilder";
+import SurveyLayout from "@/survey/components/SurveyLayout/Survey.layout";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -62,6 +64,9 @@ const router = createBrowserRouter(
           <Route path="project/:projectName/:projectId" element={<Project />} />
         </Route>
         <Route path="/editor" element={<BpeBpmnModeler />} />
+        <Route element={<SurveyLayout />}>
+          <Route path="/survey/builder" element={<SurveyBuilder />} />
+        </Route>
       </Route>
       <Route
         element={<AuthenticationLayout />}
