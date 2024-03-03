@@ -1,7 +1,15 @@
+import BackButton from "@/components/BackButton";
+import Logo from "@/components/Logo";
+import {
+  PALETTE_WIDTH,
+  PRIMARY_COLOR
+} from "@/constants/theme/themeConstants";
+import { TOOLBAR_MODE } from "@/constants/toolbar";
+import useGetModelerModules from "@/core/hooks/useGetModelerModule";
+import { getCurrentModeler, selectToolbarMode } from "@/redux/selectors";
 import {
   Accordion,
   ActionIcon,
-  Button,
   Divider,
   Flex,
   Navbar,
@@ -10,21 +18,14 @@ import {
   Stack,
   Text,
   Tooltip,
-  Transition,
+  Transition
 } from "@mantine/core";
+import { ReactComponent as IconChevronRight } from "@tabler/icons/icons/chevron-right.svg";
+import { ReactComponent as IconChevronsLeft } from "@tabler/icons/icons/chevrons-left.svg";
 import { assign } from "min-dash";
-//@ts-ignore
-import { getDi } from "bpmn-js/lib/util/ModelUtil";
-//@ts-ignore
-import { hasEventDefinition } from "bpmn-js/lib/util/DiUtil";
-import { getCurrentModeler, selectToolbarMode } from "@/redux/selectors";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
-import {
-  APP_PALETTE_WIDTH,
-  PALETTE_WIDTH,
-  PRIMARY_COLOR,
-} from "@/constants/theme/themeConstants";
+import { useBeforeUnload } from "react-router-dom";
 import { usePaletteNavbarStyles } from "./PaletteNavbar.style";
 import {
   artifactSymbols,
@@ -35,13 +36,10 @@ import {
   subProcessSymbols,
   taskSymbols,
 } from "./utils/symbols";
-import { useBeforeUnload } from "react-router-dom";
-import useGetModelerModules from "@/core/hooks/useGetModelerModule";
-import BackButton from "@/components/BackButton";
-import { ReactComponent as IconChevronsLeft } from "@tabler/icons/icons/chevrons-left.svg";
-import { ReactComponent as IconChevronRight } from "@tabler/icons/icons/chevron-right.svg";
-import { TOOLBAR_MODE } from "@/constants/toolbar";
-import Logo from "@/components/Logo";
+//@ts-ignore
+import { getDi } from "bpmn-js/lib/util/ModelUtil";
+//@ts-ignore
+import { hasEventDefinition } from "bpmn-js/lib/util/DiUtil";
 
 export function PaletteNavbar({
   isNavbarCollapsed,
@@ -145,7 +143,10 @@ export function PaletteNavbar({
           >
             <Tooltip label="Expand">
               <ActionIcon
-                className={classes.unCollapseBtn}
+                // className={classes.unCollapseBtn}
+                variant="light"
+                color="white"
+                mt={70}
                 radius={50}
                 onClick={() => setIsNavbarCollapsed(false)}
               >
@@ -155,6 +156,7 @@ export function PaletteNavbar({
           </Navbar>
         )}
       </Transition>
+
       <Transition
         mounted={!isNavbarCollapsed}
         transition="scale-x"
@@ -178,17 +180,20 @@ export function PaletteNavbar({
             <Navbar.Section>
               <Logo fullReload={false} />
               <Divider my="sm" />
-              <Flex align="center" justify="center" gap={5}>
+              <Flex justify="center" align="center">
                 <BackButton />
                 <Tooltip label="Collapse">
-                  <Button
-                    style={{ backgroundColor: "white", color: "black" }}
-                    pr={5}
-                    pl={5}
+                  <ActionIcon
+                    variant="light"
+                    color="white"
+                    style={{
+                      left: "15%",
+                    }}
+                    radius={50}
                     onClick={() => setIsNavbarCollapsed(true)}
                   >
-                    <IconChevronsLeft width={20} height={20} />
-                  </Button>
+                    <IconChevronsLeft />
+                  </ActionIcon>
                 </Tooltip>
               </Flex>
             </Navbar.Section>
@@ -199,6 +204,21 @@ export function PaletteNavbar({
               mx="-xs"
               px="xs"
               mt={20}
+              // classNames={classes.scrollbar}
+              type="hover"
+              styles={{
+                scrollbar: {
+                  "&, &:hover": {
+                    background: "transparent",
+                  },
+                  '&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
+                    backgroundColor: PRIMARY_COLOR[3],
+                    "&:active": {
+                      backgroundColor: PRIMARY_COLOR[2],
+                    },
+                  },
+                },
+              }}
             >
               {(!modeler || toolbarMode !== TOOLBAR_MODE.DEFAULT) && (
                 <Overlay color="#000" opacity={0.25} mr={2} />

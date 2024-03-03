@@ -139,14 +139,19 @@ const useStyles = createStyles((theme) => ({
 const BpeBpmnModeler = () => {
   useDocumentTitle('Editor - BPSky');
   const dispatch = useAppDispatch();
+  // Modeler & Current modeler
   const currentModeler = useSelector(selectors.getCurrentModeler);
   const modelers = useSelector(selectors.getModelers);
+  // Linting thể hiện cho lỗi thiết kế
   const lintingActive = useSelector(selectors.getLintingState);
   const lintingIssues = useSelector(selectors.getLintingIssues);
+  // Toolbar cho mode simulating sẽ khác với mode evaluating
   const toolbarMode = useSelector(selectors.selectToolbarMode);
   const evaluatedResults = useSelector(selectors.getEvaluatedResult);
+  // Tabs đang được mở và tabs đang làm việc hiện tại
   const tabs = useSelector(selectors.getTabs);
   const activeTab = useSelector(selectors.getActiveTab);
+  
   const { classes, cx } = useStyles();
   const [scrollBtnsVisibility, setScrollBtnsVisibility] = useState(false);
   const tabsListRef = useRef();
@@ -260,9 +265,20 @@ const BpeBpmnModeler = () => {
         opened={openModels}
         onClose={() => setOpenModels(false)}
         title={<Badge size="lg">Open models from your workspace</Badge>}
-        size="xl"
+        size="90%"
+        styles={{
+          'content': {
+            height: '100%',
+            paddingBottom: "50px",
+          }
+        }}
+        overlayProps={{
+          blur: 3,
+          opacity: 0.55,
+        }}
+        withCloseButton={true}
       >
-        <Workspace name="Personal" isOpenFromEditor />
+        <Workspace />
       </Modal>
     );
   };
@@ -418,7 +434,7 @@ const BpeBpmnModeler = () => {
             })}
           </Tabs>
         ) : null}
-        {(modelers.length > 0 || !!localStorage.modelers) && !noModeler ? (
+        {(modelers.length > 0 || !localStorage.modelers) && !noModeler ? (
           <Modeler />
         ) : (
           renderNoModelers()
