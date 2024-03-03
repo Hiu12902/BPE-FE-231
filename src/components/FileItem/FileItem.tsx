@@ -286,6 +286,7 @@ const FileItem = (props: IFile) => {
       children: "Open",
       onClick: isDocument ? onOpenDocument : onOpenBpmnFile,
       display: !isProcess,
+      disabled: isOpeningInEditor,
     },
     {
       icon: <IconCircleXFilled />,
@@ -398,7 +399,7 @@ const FileItem = (props: IFile) => {
                       dropdownMenuContent={
                         dropdownMenuContent as IDropdownMenuContent[]
                       }
-                      disabled={isOpeningInEditor}
+                      // disabled={isOpeningInEditor}
                     />
                   )}
                 </Flex>
