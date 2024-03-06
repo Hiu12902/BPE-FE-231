@@ -193,6 +193,7 @@ const Modeler = () => {
         height="100vh"
         width={{ base: toolbarMode === TOOLBAR_MODE.EVALUATING ? '0%' : PROPERTIES_PANEL_WIDTH }}
         display={toolbarMode === TOOLBAR_MODE.EVALUATING ? 'none' : ''}
+        zIndex={10}
       >
         <Box ref={propertiesPanelRef} style={{ height: '100%' }} />
       </Aside>
