@@ -1,16 +1,20 @@
-import CommentSection from '@/components/CommentSection/CommentSection';
-import ResultFilesModal from '@/components/ResultFilesModal';
-import { getCurrentModeler, getProject } from '@/redux/selectors';
-import { Badge, Group, Menu, Modal, Stack, Text } from '@mantine/core';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { DEFAULT_SPACING } from '@/core/toolbar/constants/size';
-import { IconBpeComment, IconBpeFiles, IconBpeResult } from '@/core/toolbar/utils/icons/Icons';
-import ToolbarIcon from '../ToolbarIcon/ToolbarIcon';
-import projectApi from '@/api/project';
-import Workspace from '@/components/Workspace';
-import useNotification from '@/hooks/useNotification';
-import { UserRole } from '@/constants/project';
+import CommentSection from "@/components/CommentSection/CommentSection";
+import ResultFilesModal from "@/components/ResultFilesModal";
+import { getCurrentModeler, getProject } from "@/redux/selectors";
+import { Badge, Group, Menu, Modal, Stack, Text } from "@mantine/core";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { DEFAULT_SPACING } from "@/core/toolbar/constants/size";
+import {
+  IconBpeComment,
+  IconBpeFiles,
+  IconBpeResult,
+} from "@/core/toolbar/utils/icons/Icons";
+import ToolbarIcon from "../ToolbarIcon/ToolbarIcon";
+import projectApi from "@/api/project";
+import Workspace from "@/components/Workspace";
+import useNotification from "@/hooks/useNotification";
+import { UserRole } from "@/constants/project";
 
 const MiscGroup = () => {
   const [openCommentSection, setOpenCommentSection] = useState(false);
@@ -25,33 +29,36 @@ const MiscGroup = () => {
   const onCreateNewVersion = async (): Promise<void> => {
     try {
       const { xml } = await currentModeler?.modeler?.saveXML({ format: true });
-      const blob = new Blob([xml], { type: 'text/xml' });
+      const blob = new Blob([xml], { type: "text/xml" });
       const file = new File([blob], `${currentModeler?.id}.bpmn`);
       const data = new FormData();
-      data.append('file', file);
+      data.append("file", file);
 
       if (currentModeler?.projectId && currentModeler?.processId) {
         const res = await projectApi.createNewVersion(
-          { projectId: currentModeler?.projectId, processId: currentModeler?.processId },
+          {
+            projectId: currentModeler?.projectId,
+            processId: currentModeler?.processId,
+          },
           data
         );
         if (res) {
           notify({
-            title: 'Success!',
-            message: 'Create new version for model successfully!',
-            type: 'success',
+            title: "Success!",
+            message: "Create new version for model successfully!",
+            type: "success",
           });
         }
       }
     } catch (err) {
       console.error(err);
       //@ts-ignore
-      if (err.data === 'current number of versions is equal to 5') {
+      if (err.data === "current number of versions is equal to 5") {
         notify({
-          title: 'Opps!',
+          title: "Opps!",
           message:
-            'The number of versions has reached limit, please delete other versions and try again!',
-          type: 'error',
+            "The number of versions has reached limit, please delete other versions and try again!",
+          type: "error",
         });
       }
     }
@@ -78,7 +85,10 @@ const MiscGroup = () => {
           opened={openCommentSection}
           onClose={() => setOpenCommentSection(() => false)}
         />
-        <ResultFilesModal opened={openFilesList} onClose={() => setOpenFilesList(false)} />
+        <ResultFilesModal
+          opened={openFilesList}
+          onClose={() => setOpenFilesList(false)}
+        />
         <ToolbarIcon
           icon={IconBpeComment}
           label="Comment"
@@ -100,7 +110,12 @@ const MiscGroup = () => {
           overflow
           disabled={!currentModeler}
         />
-        <Menu shadow="md" opened={openFileMenu} onChange={setOpenFileMenu} position="right">
+        <Menu
+          shadow="md"
+          opened={openFileMenu}
+          onChange={setOpenFileMenu}
+          position="bottom"
+        >
           <Menu.Target>
             <ToolbarIcon
               icon={IconBpeFiles}
@@ -113,14 +128,22 @@ const MiscGroup = () => {
             />
           </Menu.Target>
 
-          <Menu.Dropdown>
+          <Menu.Dropdown
+            styles={{
+              zIndex: "20",
+            }}
+          >
             <Menu.Item
               onClick={onCreateNewVersion}
-              disabled={!currentModeler || currentModeler.role === UserRole.CAN_VIEW}
+              disabled={
+                !currentModeler || currentModeler.role === UserRole.CAN_VIEW
+              }
             >
               Create New Version
             </Menu.Item>
-            <Menu.Item onClick={() => setOpenModels(true)}>Open Models</Menu.Item>
+            <Menu.Item onClick={() => setOpenModels(true)}>
+              Open Models
+            </Menu.Item>
           </Menu.Dropdown>
         </Menu>
         {renderModelsModal()}
