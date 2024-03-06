@@ -1,9 +1,6 @@
 import BackButton from "@/components/BackButton";
 import Logo from "@/components/Logo";
-import {
-  PALETTE_WIDTH,
-  PRIMARY_COLOR
-} from "@/constants/theme/themeConstants";
+import { PALETTE_WIDTH, PRIMARY_COLOR } from "@/constants/theme/themeConstants";
 import { TOOLBAR_MODE } from "@/constants/toolbar";
 import useGetModelerModules from "@/core/hooks/useGetModelerModule";
 import { getCurrentModeler, selectToolbarMode } from "@/redux/selectors";
@@ -18,7 +15,7 @@ import {
   Stack,
   Text,
   Tooltip,
-  Transition
+  Transition,
 } from "@mantine/core";
 import { ReactComponent as IconChevronRight } from "@tabler/icons/icons/chevron-right.svg";
 import { ReactComponent as IconChevronsLeft } from "@tabler/icons/icons/chevrons-left.svg";
@@ -220,9 +217,9 @@ export function PaletteNavbar({
                 },
               }}
             >
-              {(!modeler || toolbarMode !== TOOLBAR_MODE.DEFAULT) && (
-                <Overlay color="#000" opacity={0.25} mr={2} />
-              )}
+              {/* {(!modeler || toolbarMode !== TOOLBAR_MODE.DEFAULT) && (
+                <Overlay color="#000" opacity={0.25} />
+              )} */}
 
               <Accordion
                 classNames={{
@@ -232,7 +229,9 @@ export function PaletteNavbar({
                 }}
               >
                 <Accordion.Item value="gateway">
-                  <Accordion.Control>
+                  <Accordion.Control
+                    disabled={!modeler || toolbarMode !== TOOLBAR_MODE.DEFAULT}
+                  >
                     <Text weight={600} size="sm">
                       Gateways
                     </Text>
@@ -255,7 +254,9 @@ export function PaletteNavbar({
                 </Accordion.Item>
 
                 <Accordion.Item value="tasks">
-                  <Accordion.Control>
+                  <Accordion.Control
+                    disabled={!modeler || toolbarMode !== TOOLBAR_MODE.DEFAULT}
+                  >
                     <Text weight={600} size="sm">
                       Tasks
                     </Text>
@@ -278,7 +279,9 @@ export function PaletteNavbar({
                 </Accordion.Item>
 
                 <Accordion.Item value="events">
-                  <Accordion.Control>
+                  <Accordion.Control
+                    disabled={!modeler || toolbarMode !== TOOLBAR_MODE.DEFAULT}
+                  >
                     <Text weight={600} size="sm">
                       Events
                     </Text>
@@ -301,7 +304,9 @@ export function PaletteNavbar({
                 </Accordion.Item>
 
                 <Accordion.Item value="data">
-                  <Accordion.Control>
+                  <Accordion.Control
+                    disabled={!modeler || toolbarMode !== TOOLBAR_MODE.DEFAULT}
+                  >
                     <Text weight={600} size="sm">
                       Data
                     </Text>
@@ -324,7 +329,9 @@ export function PaletteNavbar({
                 </Accordion.Item>
 
                 <Accordion.Item value="subProcess">
-                  <Accordion.Control>
+                  <Accordion.Control
+                    disabled={!modeler || toolbarMode !== TOOLBAR_MODE.DEFAULT}
+                  >
                     <Text weight={600} size="sm">
                       Sub Processes
                     </Text>
@@ -351,7 +358,9 @@ export function PaletteNavbar({
                 </Accordion.Item>
 
                 <Accordion.Item value="participants">
-                  <Accordion.Control>
+                  <Accordion.Control
+                    disabled={!modeler || toolbarMode !== TOOLBAR_MODE.DEFAULT}
+                  >
                     <Text weight={600} size="sm">
                       Participants
                     </Text>
@@ -374,7 +383,9 @@ export function PaletteNavbar({
                 </Accordion.Item>
 
                 <Accordion.Item value="artifacts">
-                  <Accordion.Control>
+                  <Accordion.Control
+                    disabled={!modeler || toolbarMode !== TOOLBAR_MODE.DEFAULT}
+                  >
                     <Text weight={600} size="sm">
                       Artifacts
                     </Text>
