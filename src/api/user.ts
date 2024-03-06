@@ -1,5 +1,5 @@
 import Client from '@/api/client';
-import { IUser, IUserSignin, IUserSignup } from '@/interfaces/user';
+import { IUserSignin, IUserSignup } from '@/interfaces/user';
 
 class UserApi {
   public static classInstance: UserApi;
