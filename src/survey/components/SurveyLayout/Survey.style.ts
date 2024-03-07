@@ -1,4 +1,4 @@
-import { PRIMARY_COLOR, SURVEY_LAYOUT_WIDTH } from "@/constants/theme/themeConstants";
+import { PRIMARY_COLOR, SURVEY_LAYOUT_WIDTH, SURVEY_NAVBAR_HEIGHT } from "@/constants/theme/themeConstants";
 import { createStyles } from "@mantine/core";
 
 export const useSurveyLayoutStyle = createStyles(() => ({
@@ -10,7 +10,7 @@ export const useSurveyLayoutStyle = createStyles(() => ({
         backgroundColor: PRIMARY_COLOR[1],
     },
     box: {
-        marginTop: '60px',
+        marginTop: SURVEY_NAVBAR_HEIGHT,
         marginLeft: SURVEY_LAYOUT_WIDTH,
     }
 }));

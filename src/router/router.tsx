@@ -65,7 +65,10 @@ const router = createBrowserRouter(
         </Route>
         <Route path="/editor" element={<BpeBpmnModeler />} />
         <Route element={<SurveyLayout />}>
-          <Route path="/survey/builder" element={<SurveyBuilder />} />
+          <Route
+            path="/survey/builder/:projectId/:processVersion"
+            element={<SurveyBuilder />}
+          />
         </Route>
       </Route>
       <Route

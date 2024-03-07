@@ -12,13 +12,14 @@ export interface SurveyInfo {
 }
 
 export interface Survey {
+    message?: string;
     survey: SurveyInfo;
     questions: Section[];
 }
 
 export interface SurveyPushBody {
     processVersionVersion: string;
-    projectId: string;
+    projectId: number;
 }
 
 export interface SurveyGeneralConfiguration extends SurveyInfo {

@@ -71,19 +71,19 @@ const WorkspaceLayout = ({ isWorkspaceManagement }: IWorkspaceLayout) => {
     }
   }, [workspaceManagement, isWorkspaceManagement]);
 
-  const socket = io("https://bpe.onrender.com");
-  const notify = useNotification();
-  useEffect(() => {
-    if (currentUser && currentUser.id) {
-      socket.on(`insertNewNotification_${currentUser?.id}`, (message) => {
-        notify({
-          type: "notification",
-          message: JSON.parse(message).content,
-          title: "New notification!",
-        });
-      });
-    }
-  }, [socket]);
+  // const socket = io("https://bpe.onrender.com");
+  // const notify = useNotification();
+  // useEffect(() => {
+  //   if (currentUser && currentUser.id) {
+  //     socket.on(`insertNewNotification_${currentUser?.id}`, (message) => {
+  //       notify({
+  //         type: "notification",
+  //         message: JSON.parse(message).content,
+  //         title: "New notification!",
+  //       });
+  //     });
+  //   }
+  // }, [socket]);
 
   if (
     // !isWorkspaceManagement && loading: Normal route

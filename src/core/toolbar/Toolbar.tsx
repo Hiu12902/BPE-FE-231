@@ -1,23 +1,26 @@
-import { Divider, Group, Header, Stack, Text, Transition } from '@mantine/core';
+import { Divider, Group, Header, Stack, Text, Transition } from "@mantine/core";
 
-import * as selectors from '@/redux/selectors';
-import { useSelector } from 'react-redux';
-import { PALETTE_WIDTH, TOOLBAR_HEIGHT } from '@/constants/theme/themeConstants';
-import { TOOLBAR_MODE } from '@/constants/toolbar';
-import ClipBoardGroup from './helper/ClipBoardGroup/ClipBoardGroup';
-import DiagramGroup from './helper/DiagramGroup/DiagramGroup';
-import EditingGroup from './helper/EditGroup/EditGroup';
-import EvaluationFunctionGroup from './helper/EvaluationFunctionGroup/EvaluationFunctionGroup';
-import ImportExportGroup from './helper/ImportExportGroup/ImportExportGroup';
-import MiscGroup from './helper/MiscGroup/MiscGroup';
-import ModelGroup from './helper/ModelGroup/ModelGroup';
-import SimulationActionGroup from './helper/SimulationActionGroup/SimulationActionGroup';
-import SimulationMiscGroup from './helper/SimulationMiscGroup/SimulationMiscGroup';
-import SimulationModesGroup from './helper/SimulationModesGroup/SimulationModesGroup';
-import SimulationPlayerGroup from './helper/SimulationPlayerGroup/SimulationPlayerGroup';
-import SimulationSpeedGroup from './helper/SimulationSpeedGroup/SimulationSpeedGroup';
-import ToolbarIcon from './helper/ToolbarIcon/ToolbarIcon';
-import UtilsGroup from './helper/UtilsGroup/UtilsGroup';
+import * as selectors from "@/redux/selectors";
+import { useSelector } from "react-redux";
+import {
+  PALETTE_WIDTH,
+  TOOLBAR_HEIGHT,
+} from "@/constants/theme/themeConstants";
+import { TOOLBAR_MODE } from "@/constants/toolbar";
+import ClipBoardGroup from "./helper/ClipBoardGroup/ClipBoardGroup";
+import DiagramGroup from "./helper/DiagramGroup/DiagramGroup";
+import EditingGroup from "./helper/EditGroup/EditGroup";
+import EvaluationFunctionGroup from "./helper/EvaluationFunctionGroup/EvaluationFunctionGroup";
+import ImportExportGroup from "./helper/ImportExportGroup/ImportExportGroup";
+import MiscGroup from "./helper/MiscGroup/MiscGroup";
+import ModelGroup from "./helper/ModelGroup/ModelGroup";
+import SimulationActionGroup from "./helper/SimulationActionGroup/SimulationActionGroup";
+import SimulationMiscGroup from "./helper/SimulationMiscGroup/SimulationMiscGroup";
+import SimulationModesGroup from "./helper/SimulationModesGroup/SimulationModesGroup";
+import SimulationPlayerGroup from "./helper/SimulationPlayerGroup/SimulationPlayerGroup";
+import SimulationSpeedGroup from "./helper/SimulationSpeedGroup/SimulationSpeedGroup";
+import ToolbarIcon from "./helper/ToolbarIcon/ToolbarIcon";
+import UtilsGroup from "./helper/UtilsGroup/UtilsGroup";
 import {
   IconBpeBold,
   IconBpeClearStyle,
@@ -26,8 +29,9 @@ import {
   IconBpeTextColor,
   IconBpeTextSize,
   IconBpeUnderline,
-} from './utils/icons/Icons';
-import { CSSProperties } from 'react';
+} from "./utils/icons/Icons";
+import { CSSProperties } from "react";
+import SurveyGroup from "./helper/SurveyGroup/SurveyGroup";
 
 const DEFAULT_SPACING = 5;
 
@@ -35,8 +39,18 @@ const FormattingGroup = () => {
   return (
     <Stack spacing={DEFAULT_SPACING - 2}>
       <Group spacing="xs">
-        <ToolbarIcon icon={IconBpeBold} title="Bold" orientation="vertical" size="small" />
-        <ToolbarIcon icon={IconBpeItalic} title="Italic" orientation="vertical" size="small" />
+        <ToolbarIcon
+          icon={IconBpeBold}
+          title="Bold"
+          orientation="vertical"
+          size="small"
+        />
+        <ToolbarIcon
+          icon={IconBpeItalic}
+          title="Italic"
+          orientation="vertical"
+          size="small"
+        />
         <ToolbarIcon
           icon={IconBpeUnderline}
           title="Underline"
@@ -93,6 +107,8 @@ const DefaultToolbar = ({ style }: { style?: CSSProperties }) => {
       <UtilsGroup />
       <Divider size="xs" orientation="vertical" />
       <MiscGroup />
+      <Divider size="xs" orientation="vertical" />
+      <SurveyGroup />
     </Group>
   );
 };

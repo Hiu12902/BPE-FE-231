@@ -1,30 +1,47 @@
+import { Group, Select, Text } from "@mantine/core";
 import { forwardRef } from "react";
-import { Group, Avatar, Text, Select } from "@mantine/core";
 
-const data = [
+const QuestionTypeMenu = [
+  {
+    icon: "BR",
+    label: "Branching",
+    value: "branching",
+    description: "Redirect to another question based on the answer",
+  },
   {
     icon: "CSAT",
     label: "Customer Satisfaction",
-    value: "CSAT",
+    value: "csat",
     description: "How satisfied are you with our product?",
   },
-
+  {
+    icon: "CSAT-IN",
+    label: "Customer Satisfaction - Insight",
+    value: "csat-in",
+    description: "Find out more information about the customer satisfaction",
+  },
   {
     icon: "CES",
     label: "Customer Effort Score",
-    value: "CES",
+    value: "ces",
     description: "How easy was it to solve your problem?",
+  },
+  {
+    icon: "CES-IN",
+    label: "Customer Effort Score - Insight",
+    value: "ces-in",
+    description: "Find out more information about the customer effort score",
   },
   {
     icon: "NPS",
     label: "Net Promoter Score",
-    value: "NPS",
+    value: "nps",
     description: "How likely are you to recommend our product?",
   },
   {
     icon: "MC",
     label: "Multiple Choice",
-    value: "MC",
+    value: "multiple_choice",
     description: "Choose one or more options from a list",
   },
 ];
@@ -39,7 +56,7 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
   ({ icon, label, description, ...others }: ItemProps, ref) => (
     <div ref={ref} {...others}>
       <Group noWrap>
-        {icon && (
+        {/* {icon && (
           <div
             style={{
               padding: "3px 5px",
@@ -48,13 +65,12 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
               fontSize: "10px",
               fontWeight: "bold",
               textAlign: "center",
-              width: "40px",
+              width: "50px",
             }}
           >
             {icon}
           </div>
-        )}
-
+        )} */}
         <div>
           <Text size="sm">{label}</Text>
           <Text size="xs" opacity={0.65}>
@@ -66,7 +82,13 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
   )
 );
 
-const QuestionTypePicker = () => {
+interface QuestionTypePickerProps {
+  value: string;
+  setValue: (value: string) => void;
+}
+
+const QuestionTypePicker = (props: QuestionTypePickerProps) => {
+  const { value, setValue } = props;
   return (
     <Select
       styles={{
@@ -78,13 +100,14 @@ const QuestionTypePicker = () => {
           fontSize: "16px",
         },
       }}
+      value={value}
+      onChange={(value: string) => setValue(value)}
       label="Choose question type"
-      placeholder="Pick one"
       itemComponent={SelectItem}
-      data={data}
+      data={QuestionTypeMenu}
       searchable
       maxDropdownHeight={400}
-      nothingFound="Nobody here"
+      nothingFound="No items found"
       filter={(value, item) =>
         item.label?.toLowerCase().includes(value.toLowerCase().trim()) ||
         item.description.toLowerCase().includes(value.toLowerCase().trim())
