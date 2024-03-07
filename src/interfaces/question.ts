@@ -10,3 +10,13 @@ export interface Question {
     questionType?: string;
     questionOptions: Option[] | [];
 }
+
+export interface SelectedQuestionContextProps {
+    selectedQuestion: Question;
+    setSelectedQuestion: (question: Question) => void;
+}
+
+export interface IsChangedQuestionContextProps {
+    isChanged: boolean;
+    setIsChanged: (isChanged: boolean) => void;
+}

@@ -8,10 +8,12 @@ interface TitleInformationProps extends TitleProps {
 }
 
 const TitleInformation = (props: TitleInformationProps) => {
-  const { content, extrainfo, order, maw = 300 } = props;
+  const { content, extrainfo, order, maw = 300, ...other } = props;
   return (
     <Group align="center" spacing="xs">
-      <Title order={order}>{content}</Title>
+      <Title order={order} {...other}>
+        {content}
+      </Title>
       {extrainfo && (
         <Tooltip
           label={extrainfo}

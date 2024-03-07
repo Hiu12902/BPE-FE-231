@@ -151,7 +151,7 @@ const BpeBpmnModeler = () => {
   // Tabs đang được mở và tabs đang làm việc hiện tại
   const tabs = useSelector(selectors.getTabs);
   const activeTab = useSelector(selectors.getActiveTab);
-  
+
   const { classes, cx } = useStyles();
   const [scrollBtnsVisibility, setScrollBtnsVisibility] = useState(false);
   const tabsListRef = useRef();
