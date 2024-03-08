@@ -84,11 +84,12 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
 
 interface QuestionTypePickerProps {
   value: string;
+  defaultValue?: string;
   setValue: (value: string) => void;
 }
 
 const QuestionTypePicker = (props: QuestionTypePickerProps) => {
-  const { value, setValue } = props;
+  const { value, setValue, defaultValue } = props;
   return (
     <Select
       styles={{
@@ -101,6 +102,7 @@ const QuestionTypePicker = (props: QuestionTypePickerProps) => {
         },
       }}
       value={value}
+      defaultValue={defaultValue}
       onChange={(value: string) => setValue(value)}
       label="Choose question type"
       itemComponent={SelectItem}
