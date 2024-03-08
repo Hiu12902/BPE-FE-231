@@ -7,6 +7,10 @@ import {
   Question,
   SelectedQuestionContextProps,
 } from "@/interfaces/index";
+import {
+  IsChangedQuestionContext,
+  SelectedQuestionContext,
+} from "@/survey/context";
 import { ActionIcon, ActionIconProps, Badge, Box, Flex } from "@mantine/core";
 import { ReactComponent as IconDelete } from "@tabler/icons/icons/trash.svg";
 import { useContext } from "react";
@@ -20,10 +24,6 @@ import {
   NPSQuestion,
 } from "./components";
 import BranchingQuestion from "./components/BranchingQuestion";
-import {
-  IsChangedQuestionContext,
-  SelectedQuestionContext,
-} from "@/survey/context";
 
 const AddButton = (props: ActionIconProps) => {
   const { classes } = useQuestionItemStyle();
