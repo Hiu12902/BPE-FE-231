@@ -7,6 +7,8 @@ export const useQuestionOptionsStyle = createStyles(() => ({
     optionWrapper: {
         width: '100%',
         marginBottom: 10,
+        alignItems: 'center',
+        gap: "10px"
     },
     button: {
         width: '100%',
@@ -19,5 +21,13 @@ export const useQuestionOptionsStyle = createStyles(() => ({
             backgroundColor: "#f3faff",
             color: "#1976d2",
         }
+    },
+    dragHandle: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100%",
+        width: '15px',
+        padding: "0px",
     }
 }))
