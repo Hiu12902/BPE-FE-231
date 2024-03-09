@@ -21,8 +21,8 @@ const QuestionSection = (props: QuestionSectionProps) => {
         order={4}
       />
       <Flex className={classes.body}>
-        {questions.map((question) => (
-          <QuestionItem data={question} />
+        {questions.map((question, index) => (
+          <QuestionItem data={question} index={index} />
         ))}
       </Flex>
     </Flex>

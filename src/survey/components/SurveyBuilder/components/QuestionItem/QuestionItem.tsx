@@ -13,7 +13,7 @@ import {
 } from "@/survey/context";
 import { ActionIcon, ActionIconProps, Badge, Box, Flex } from "@mantine/core";
 import { ReactComponent as IconDelete } from "@tabler/icons/icons/trash.svg";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useQuestionItemStyle } from "./QuestionItem.style";
 import {
   CESINQuestion,
@@ -24,6 +24,7 @@ import {
   NPSQuestion,
 } from "./components";
 import BranchingQuestion from "./components/BranchingQuestion";
+import { ConfirmModal } from "@/survey/components/Modal";
 
 const AddButton = (props: ActionIconProps) => {
   const { classes } = useQuestionItemStyle();
@@ -43,12 +44,14 @@ const AddButton = (props: ActionIconProps) => {
 
 interface QuestionItemProps {
   data: Question;
+  index: number;
 }
 
 const QuestionItem = (props: QuestionItemProps) => {
   const { classes } = useQuestionItemStyle();
-  const { data } = props;
+  const { data, index } = props;
   const questionType = data.questionType || "";
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const { selectedQuestion, setSelectedQuestion } = useContext(
     SelectedQuestionContext
   ) as SelectedQuestionContextProps; // Typecasting để tránh ts báo lỗi null
@@ -58,6 +61,16 @@ const QuestionItem = (props: QuestionItemProps) => {
 
   return (
     <Flex direction="column" className={classes.wrapper}>
+      <ConfirmModal
+        opened={openConfirmModal}
+        title="Do you want to discard changes"
+        onClose={() => setOpenConfirmModal(false)}
+        onConfirm={() => {
+          setOpenConfirmModal(false);
+          setSelectedQuestion(data);
+          setIsChanged(false);
+        }}
+      />
       <Flex
         direction="column"
         className={
@@ -65,7 +78,7 @@ const QuestionItem = (props: QuestionItemProps) => {
         }
         onClick={() => {
           if (isChanged) {
-            console.log("Do you want to discard changes?");
+            setOpenConfirmModal(true);
           } else {
             setSelectedQuestion(data);
           }
@@ -84,6 +97,9 @@ const QuestionItem = (props: QuestionItemProps) => {
               color="red"
               size="sm"
               children={<IconDelete />}
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent the event from bubbling up the DOM tree
+              }}
             />
           </Flex>
         </Flex>

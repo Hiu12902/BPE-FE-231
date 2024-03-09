@@ -58,24 +58,12 @@ const QuestionConfig = (props: QuestionConfigProps) => {
   const {
     content,
     id: questionId,
-    // isDeleted: isQuestionDeleted,
     isRequired,
     orderInSection,
     questionOptions,
     questionType,
     weight,
   } = selectedQuestion;
-
-  const {
-    createdAt,
-    description,
-    endDate,
-    id: surveyId,
-    isDeleted: isSurveyDeleted,
-    isPublished,
-    name,
-    startDate,
-  } = survey;
 
   const [editedQuestion, setEditedQuestion] =
     useState<Question>(selectedQuestion);
@@ -86,205 +74,215 @@ const QuestionConfig = (props: QuestionConfigProps) => {
     }
   }, [selectedQuestion]);
 
+  const handleApplyChanges = () => {
+    // kiểm tra nếu questionType là multiple_choice thì questionOptions phải có ít nhất 2 option
+    if (
+      (editedQuestion.questionType === "multiple_choice" &&
+        editedQuestion.questionOptions &&
+        editedQuestion.questionOptions.length < 2) ||
+      (editedQuestion.questionType === "multiple_choice" &&
+        !editedQuestion.questionOptions)
+    ) {
+      console.log(editedQuestion.questionOptions);
+      console.log("Question must have at least 2 options");
+      return;
+    }
+    // kiểm tra và xóa đi những field không thay đổi
+    Object.keys(selectedQuestion).forEach((field) => {
+      if (
+        selectedQuestion[field as keyof Question] ===
+        editedQuestion[field as keyof Question]
+      ) {
+        delete editedQuestion[field as keyof Question];
+      }
+    });
+    // nếu sau khi xóa còn field thì gọi API update question
+    if (Object.keys(editedQuestion).length > 0) {
+      console.log("Changes detected");
+      console.log("editedQuestion: ", editedQuestion);
+      // gọi API update question
+    } else {
+      console.log("No changes detected");
+    }
+
+    setSelectedQuestion({} as Question);
+    setIsChanged(false);
+  };
+
   return (
-    <Flex
-      align="center"
-      direction="column"
-      justify="space-between"
-      className={classes.mainWrapper}
-    >
-      <ScrollArea className={classes.scrollAreaWrapper}>
-        <Flex
-          direction="column"
-          gap={20}
-          w="100%"
-          h="100%"
-          justify="center"
-          align="center"
+    <Flex className={classes.mainWrapper}>
+      {/* Survey title */}
+      <Flex className={classes.surveyTitle}>
+        <Tooltip
+          maw={300}
+          multiline
+          position="bottom"
+          label={survey.name}
+          withArrow
         >
+          <Title order={4} lineClamp={1} children={survey.name} />
+        </Tooltip>
+      </Flex>
+      {/* Scroll area appears when a question is selected */}
+      {Object.keys(selectedQuestion).length ? (
+        <ScrollArea className={classes.scrollAreaWrapper}>
+          {/* Content */}
+          <Flex direction="column" className={classes.sectionWrapper}>
+            <TitleInformation order={5} content="Content" />
+            <Input
+              defaultValue={content}
+              value={editedQuestion.content}
+              onChange={(event) => {
+                setEditedQuestion({
+                  ...editedQuestion,
+                  content: event.currentTarget.value,
+                });
+                setIsChanged(true);
+              }}
+            />
+          </Flex>
+          {/* questionType */}
+          <Flex className={classes.sectionWrapper}>
+            <QuestionTypePicker
+              defaultValue={questionType}
+              value={editedQuestion?.questionType || ""}
+              setValue={(value: string) => {
+                setEditedQuestion({
+                  ...editedQuestion,
+                  questionType: value,
+                });
+                setIsChanged(true);
+              }}
+            />
+          </Flex>
+          {/* isRequired */}
           <Flex
             align="center"
             justify="space-between"
             className={classes.sectionWrapper}
           >
-            <Tooltip
-              maw={300}
-              multiline
-              position="bottom"
-              label={name}
-              withArrow
-            >
-              <Title order={4} lineClamp={1} children={name} />
-            </Tooltip>
+            <TitleInformation
+              order={5}
+              content="Response required"
+              extrainfo="Survey respondents have to answer this question"
+            />
+
+            <Switch
+              defaultChecked={isRequired}
+              checked={editedQuestion?.isRequired}
+              onChange={(event) => {
+                setEditedQuestion({
+                  ...editedQuestion,
+                  isRequired: event.target.checked,
+                });
+                setIsChanged(true);
+              }}
+              color="blue"
+              size="md"
+              thumbIcon={
+                editedQuestion?.isRequired ? (
+                  <IconV
+                    style={{
+                      width: "15px",
+                      height: "15px",
+                    }}
+                    color="blue"
+                  />
+                ) : (
+                  <IconX
+                    style={{
+                      width: "15px",
+                      height: "15px",
+                    }}
+                    color="gray"
+                  />
+                )
+              }
+            />
           </Flex>
-
-          {Object.keys(selectedQuestion).length ? (
-            <>
-              <Flex direction="column" className={classes.sectionWrapper}>
-                <TitleInformation order={5} content="Content" />
-                <Input
-                  defaultValue={content}
-                  value={editedQuestion.content}
-                  onChange={(event) => {
-                    setEditedQuestion({
-                      ...editedQuestion,
-                      content: event.currentTarget.value,
-                    });
-                    setIsChanged(true);
-                  }}
-                />
-              </Flex>
-
-              <QuestionTypePicker
-                defaultValue={questionType}
-                value={editedQuestion?.questionType || ""}
-                setValue={(value: string) => {
+          {/* orderInSection */}
+          <Flex
+            align="center"
+            justify="space-between"
+            className={classes.sectionWrapper}
+          >
+            <TitleInformation
+              order={5}
+              content="Position in section"
+              extrainfo="Position of the question in the current section."
+            />
+            <NumberInputCustom
+              defaultValue={orderInSection}
+              value={editedQuestion?.orderInSection || 0}
+              onChange={(value) => {
+                setEditedQuestion({
+                  ...editedQuestion,
+                  orderInSection: value,
+                });
+                setIsChanged(true);
+              }}
+              min={0}
+              max={maxOrderInSection()}
+              step={1}
+            />
+          </Flex>
+          {/* Weight */}
+          <Flex
+            align="center"
+            justify="space-between"
+            className={classes.sectionWrapper}
+          >
+            <Flex direction="column">
+              <TitleInformation
+                order={5}
+                content="Criteria level"
+                extrainfo="Level of importance of the question in the survey. 0 being the least important and 1 being the most important."
+              />
+              <Text c="dimmed" size={12}>
+                Please enter value in range 0-1
+              </Text>
+            </Flex>
+            <NumberInputCustom
+              defaultValue={weight}
+              value={editedQuestion?.weight || 0}
+              onChange={(value) => {
+                setEditedQuestion({
+                  ...editedQuestion,
+                  weight: value,
+                });
+                setIsChanged(true);
+              }}
+              min={0}
+              max={1}
+              step={0.1}
+              precision={2}
+            />
+          </Flex>
+          {/* questionOptions */}
+          {editedQuestion.questionType === "multiple_choice" && (
+            <Flex className={classes.sectionWrapper}>
+              <QuestionOptions
+                value={editedQuestion?.questionOptions || questionOptions}
+                setValue={(value: Option[]) => {
                   setEditedQuestion({
                     ...editedQuestion,
-                    questionType: value,
+                    questionOptions: value,
                   });
                   setIsChanged(true);
                 }}
               />
-
-              <Flex
-                align="center"
-                justify="space-between"
-                className={classes.sectionWrapper}
-              >
-                <TitleInformation
-                  order={5}
-                  content="Response required"
-                  extrainfo="Survey respondents have to answer this question"
-                />
-
-                <Switch
-                  defaultChecked={isRequired}
-                  checked={editedQuestion?.isRequired}
-                  onChange={(event) => {
-                    setEditedQuestion({
-                      ...editedQuestion,
-                      isRequired: event.target.checked,
-                    });
-                    setIsChanged(true);
-                  }}
-                  color="blue"
-                  size="md"
-                  thumbIcon={
-                    editedQuestion?.isRequired ? (
-                      <IconV
-                        style={{
-                          width: "15px",
-                          height: "15px",
-                        }}
-                        color="blue"
-                      />
-                    ) : (
-                      <IconX
-                        style={{
-                          width: "15px",
-                          height: "15px",
-                        }}
-                        color="gray"
-                      />
-                    )
-                  }
-                />
-              </Flex>
-
-              <Flex
-                align="center"
-                justify="space-between"
-                className={classes.sectionWrapper}
-              >
-                <TitleInformation
-                  order={5}
-                  content="Position in section"
-                  extrainfo="Position of the question in the current section."
-                />
-                <NumberInputCustom
-                  defaultValue={orderInSection}
-                  value={editedQuestion?.orderInSection || 0}
-                  onChange={(value) => {
-                    setEditedQuestion({
-                      ...editedQuestion,
-                      orderInSection: value,
-                    });
-                    setIsChanged(true);
-                  }}
-                  min={0}
-                  max={maxOrderInSection()}
-                  step={1}
-                />
-              </Flex>
-
-              <Flex
-                align="center"
-                justify="space-between"
-                className={classes.sectionWrapper}
-              >
-                <Flex direction="column">
-                  <TitleInformation
-                    order={5}
-                    content="Criteria level"
-                    extrainfo="Level of importance of the question in the survey. 0 being the least important and 1 being the most important."
-                  />
-                  <Text c="dimmed" size={12}>
-                    Please enter value in range 0-1
-                  </Text>
-                </Flex>
-                <NumberInputCustom
-                  defaultValue={weight}
-                  value={editedQuestion?.weight || 0}
-                  onChange={(value) => {
-                    setEditedQuestion({
-                      ...editedQuestion,
-                      weight: value,
-                    });
-                    setIsChanged(true);
-                  }}
-                  min={0}
-                  max={1}
-                  step={0.1}
-                  precision={2}
-                />
-              </Flex>
-
-              {questionType === "multiple_choice" && (
-                <QuestionOptions
-                  data={questionOptions}
-                  value={editedQuestion?.questionOptions || []}
-                  setValue={(value: Option[]) => {
-                    setEditedQuestion({
-                      ...editedQuestion,
-                      questionOptions: value,
-                    });
-                    console.log("editedQuestion: ", editedQuestion);
-                    setIsChanged(true);
-                  }}
-                />
-              )}
-            </>
-          ) : (
-            <Flex
-              align="center"
-              justify="center"
-              direction="column"
-              w="100%"
-              h="100%"
-            >
-              <Text
-                size="md"
-                style={{
-                  fontStyle: "italic",
-                  opacity: 0.5,
-                }}
-                children="Select a question to start configuration"
-              />
             </Flex>
           )}
+        </ScrollArea>
+      ) : (
+        // If no question is selected
+        <Flex className={classes.unselectedQuestion}>
+          <Text
+            className={classes.unselectedText}
+            children="Select a question to start configuration"
+          />
         </Flex>
-      </ScrollArea>
+      )}
 
       <Button
         display={Object.keys(selectedQuestion).length ? "block" : "none"}
@@ -295,10 +293,7 @@ const QuestionConfig = (props: QuestionConfigProps) => {
         children="Apply"
         w="90%"
         m={10}
-        onClick={() => {
-          setIsChanged(false);
-          console.log("Apply changes");
-        }}
+        onClick={handleApplyChanges}
       />
     </Flex>
   );

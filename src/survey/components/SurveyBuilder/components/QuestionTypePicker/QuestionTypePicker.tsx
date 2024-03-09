@@ -108,7 +108,7 @@ const QuestionTypePicker = (props: QuestionTypePickerProps) => {
       itemComponent={SelectItem}
       data={QuestionTypeMenu}
       searchable
-      maxDropdownHeight={400}
+      maxDropdownHeight={200}
       nothingFound="No items found"
       filter={(value, item) =>
         item.label?.toLowerCase().includes(value.toLowerCase().trim()) ||
