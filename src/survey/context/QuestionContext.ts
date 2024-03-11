@@ -9,4 +9,5 @@ export const SelectedQuestionContext = createContext<SelectedQuestionContextProp
 export const IsChangedQuestionContext = createContext<IsChangedQuestionContextProps>({
     isChanged: false,
     setIsChanged: () => { },
+    refetch: () => { },
 })

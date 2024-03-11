@@ -21,6 +21,7 @@ const NumberInputCustom = (props: NumberInputCustomProps) => {
     step = 1,
     decimalSeparator = ",",
     precision = 0,
+    label,
   } = props;
   const inputRef = useRef<NumberInputHandlers>();
   return (
@@ -36,6 +37,7 @@ const NumberInputCustom = (props: NumberInputCustomProps) => {
 
       <NumberInput
         hideControls
+        label={label}
         value={value}
         onChange={onChange}
         handlersRef={inputRef}

@@ -1,24 +1,29 @@
 import BackButton from "@/components/BackButton";
-import { Accordion, AccordionProps, Box, Group } from "@mantine/core";
-import { useSurveyNavbarStyle } from "./SurveyNavbar.style";
 import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Accordion, AccordionProps, Box, Group } from "@mantine/core";
 import { ReactComponent as IconBuilder } from "@tabler/icons/icons/edit-circle.svg";
-import { ReactComponent as IconConfig } from "@tabler/icons/icons/settings.svg";
 import { ReactComponent as IconResult } from "@tabler/icons/icons/file-analytics.svg";
+import { ReactComponent as IconConfig } from "@tabler/icons/icons/settings.svg";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useSurveyNavbarStyle } from "./SurveyNavbar.style";
 
 interface IProps extends Partial<AccordionProps> {}
 
 const SurveyNavbar = (props: IProps) => {
   const { classes } = useSurveyNavbarStyle();
   const navigate = useNavigate();
-  const location = useLocation().pathname.split("/")[2];
+  const pathname = useLocation().pathname.split("/");
+  const projectId = pathname[1];
+  const processId = pathname[2];
+  const location = pathname[4];
 
   const NavbarContent = [
     {
       title: "Builder",
       bullet: <IconBuilder width={20} height={20} />,
-      action: () => navigate(`/survey/builder`),
+      action: () => {
+        navigate(`/${projectId}/${processId}/survey/builder`);
+      },
       style: location == "builder" && {
         backgroundColor: PRIMARY_COLOR[0],
         color: "white",
@@ -28,8 +33,10 @@ const SurveyNavbar = (props: IProps) => {
     {
       title: "Configuration",
       bullet: <IconConfig width={20} height={20} />,
-      action: () => navigate(`/survey/builder`),
-      style: location == "builder" && {
+      action: () => {
+        navigate(`/${projectId}/${processId}/survey/configuration/general`);
+      },
+      style: location == "configuration" && {
         backgroundColor: PRIMARY_COLOR[0],
         color: "white",
         fontWeight: 600,
@@ -38,8 +45,10 @@ const SurveyNavbar = (props: IProps) => {
     {
       title: "Result",
       bullet: <IconResult width={20} height={20} />,
-      action: () => navigate(`/survey/builder`),
-      style: location == "builder" && {
+      action: () => {
+        navigate(`/${projectId}/${processId}/survey/result`);
+      },
+      style: location == "result" && {
         backgroundColor: PRIMARY_COLOR[0],
         color: "white",
         fontWeight: 600,

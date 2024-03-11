@@ -590,14 +590,14 @@
   dependencies:
     "@lezer/common" "^1.0.0"
 
-"@mantine/core@^6.0.5":
-  version "6.0.5"
-  resolved "https://registry.npmjs.org/@mantine/core/-/core-6.0.5.tgz"
-  integrity sha512-jmP47Fcdw+UvcX1gDG5dNEhdF0QPeMnFZkB6JNAzaIuXKk8AVDh0rXXki0kWHx88gh/f5bGvOoRnKUb6v7UtDQ==
+"@mantine/core@^6.0.21":
+  version "6.0.21"
+  resolved "https://registry.npmjs.org/@mantine/core/-/core-6.0.21.tgz"
+  integrity sha512-Kx4RrRfv0I+cOCIcsq/UA2aWcYLyXgW3aluAuW870OdXnbII6qg7RW28D+r9D76SHPxWFKwIKwmcucAG08Divg==
   dependencies:
     "@floating-ui/react" "^0.19.1"
-    "@mantine/styles" "6.0.5"
-    "@mantine/utils" "6.0.5"
+    "@mantine/styles" "6.0.21"
+    "@mantine/utils" "6.0.21"
     "@radix-ui/react-scroll-area" "1.0.2"
     react-remove-scroll "^2.5.5"
     react-textarea-autosize "8.3.4"
@@ -630,10 +630,10 @@
     "@mantine/utils" "6.0.6"
     react-transition-group "4.4.2"
 
-"@mantine/styles@6.0.5":
-  version "6.0.5"
-  resolved "https://registry.npmjs.org/@mantine/styles/-/styles-6.0.5.tgz"
-  integrity sha512-z4G+xlf4fMFNDx0tSLXQYboyPrkv0s0oK1LFmh/cd3yoZWO9D1BF+p1eylAYAPjGdyzSg60daalWaoWR82oEiQ==
+"@mantine/styles@6.0.21":
+  version "6.0.21"
+  resolved "https://registry.npmjs.org/@mantine/styles/-/styles-6.0.21.tgz"
+  integrity sha512-PVtL7XHUiD/B5/kZ/QvZOZZQQOj12QcRs3Q6nPoqaoPcOX5+S7bMZLMH0iLtcGq5OODYk0uxlvuJkOZGoPj8Mg==
   dependencies:
     clsx "1.1.1"
     csstype "3.0.9"
@@ -643,10 +643,10 @@
   resolved "https://registry.npmjs.org/@mantine/utils/-/utils-5.10.3.tgz"
   integrity sha512-ZfR1wouA/rz3xTOb2wBnrQpIiyjLcCLLvbUo7rzaG3LhFy7UoGjZ6uqIW9qDrzs7SR4tETRfMxedYagjcoCiEg==
 
-"@mantine/utils@6.0.5":
-  version "6.0.5"
-  resolved "https://registry.npmjs.org/@mantine/utils/-/utils-6.0.5.tgz"
-  integrity sha512-P2FVcBd2oZ9ANOsZUtTwJ4+FV6NgCRE5B7trsT8gEFUbMeQLietcsZEgAe5xhzEu9Afp5V8X8a+E9yx1blMpNg==
+"@mantine/utils@6.0.21":
+  version "6.0.21"
+  resolved "https://registry.npmjs.org/@mantine/utils/-/utils-6.0.21.tgz"
+  integrity sha512-33RVDRop5jiWFao3HKd3Yp7A9mEq4HAJxJPTuYm1NkdqX6aTKOQK7wT8v8itVodBp+sb4cJK6ZVdD1UurK/txQ==
 
 "@mantine/utils@6.0.6":
   version "6.0.6"

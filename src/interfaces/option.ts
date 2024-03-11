@@ -1,5 +1,5 @@
 export interface Option {
-    id?: number;
+    id?: number | string;
     content: string;
     orderInQuestion?: number;
 }
