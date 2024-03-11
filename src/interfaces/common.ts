@@ -11,7 +11,6 @@ export interface IQueryParams {
 }
 
 export interface UseMutation {
-
     onSuccess?: (data: any) => void;
     onError?: (err: ErrorResponse | unknown) => void;
     onSettled?: () => void;

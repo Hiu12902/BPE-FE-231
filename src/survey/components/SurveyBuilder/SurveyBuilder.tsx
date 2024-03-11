@@ -24,7 +24,11 @@ const SurveyBuilder = () => {
     },
   });
 
-  const { data: surveyData, isLoading: surveyLoading } = useSurvey({
+  const {
+    data: surveyData,
+    isLoading: surveyLoading,
+    refetch: surveyRefetch,
+  } = useSurvey({
     processVersion: processVersion,
     projectId: projectId,
   });
@@ -48,6 +52,7 @@ const SurveyBuilder = () => {
       value={{
         isChanged: isChanged,
         setIsChanged: setIsChanged,
+        refetch: surveyRefetch,
       }}
     >
       <SelectedQuestionContext.Provider

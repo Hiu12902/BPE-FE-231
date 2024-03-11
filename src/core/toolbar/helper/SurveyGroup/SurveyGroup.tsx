@@ -11,8 +11,6 @@ const SurveyGroup = () => {
   const currentModeler = useSelector(getCurrentModeler);
   const notify = useNotification();
 
-  console.log("currentModeler", currentModeler);
-
   const handleLaunchSurvey = () => {
     const navigate = useNavigate();
     return () => {
@@ -31,7 +29,7 @@ const SurveyGroup = () => {
         return;
       }
       navigate(
-        `/survey/builder/${currentModeler.projectId}/${currentModeler.id}`
+        `/${currentModeler.projectId}/${currentModeler.id}/survey/builder`
       );
     };
   };

@@ -28,17 +28,21 @@ import QuestionOptions from "../QuestionOptions";
 import QuestionTypePicker from "../QuestionTypePicker";
 import TitleInformation from "../TitleInformation";
 import { useQuestionConfigStyle } from "./QuestionConfig.style";
+import { useUpdateQuestionMutation } from "@/hooks/useQuestion";
+import { useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface QuestionConfigProps {
   data: Survey;
 }
 
 const QuestionConfig = (props: QuestionConfigProps) => {
-  const { classes } = useQuestionConfigStyle();
   const { data } = props;
   const { survey, questions } = data;
+  const projectId = useParams().projectId;
+  const { classes } = useQuestionConfigStyle();
 
-  const { isChanged, setIsChanged } = useContext(
+  const { isChanged, setIsChanged, refetch } = useContext(
     IsChangedQuestionContext
   ) as IsChangedQuestionContextProps;
   const { selectedQuestion, setSelectedQuestion } = useContext(
@@ -55,9 +59,18 @@ const QuestionConfig = (props: QuestionConfigProps) => {
     return max;
   };
 
+  const sectionId = (): number => {
+    let id = 0;
+    questions.forEach((section: Section) => {
+      if (section.questions.includes(selectedQuestion)) {
+        id = section.sectionId;
+      }
+    });
+    return id;
+  };
+
   const {
     content,
-    id: questionId,
     isRequired,
     orderInSection,
     questionOptions,
@@ -74,19 +87,38 @@ const QuestionConfig = (props: QuestionConfigProps) => {
     }
   }, [selectedQuestion]);
 
+  const {
+    mutate: updateQuestion,
+    isError: updateError,
+    isSuccess: updateSuccess,
+  } = useUpdateQuestionMutation({
+    onSuccess: (data: any) => {
+      console.log("Update question success: ", data);
+      refetch();
+    },
+    onSettled: () => {
+      console.log("Update question settled");
+    },
+  });
+
   const handleApplyChanges = () => {
+    const { questionOptions, questionType } = editedQuestion;
     // kiểm tra nếu questionType là multiple_choice thì questionOptions phải có ít nhất 2 option
     if (
-      (editedQuestion.questionType === "multiple_choice" &&
-        editedQuestion.questionOptions &&
-        editedQuestion.questionOptions.length < 2) ||
-      (editedQuestion.questionType === "multiple_choice" &&
-        !editedQuestion.questionOptions)
+      questionType === "multiple_choice" &&
+      (!questionOptions || (questionOptions && questionOptions.length < 2))
     ) {
-      console.log(editedQuestion.questionOptions);
-      console.log("Question must have at least 2 options");
+      console.log("Question must have at least 2 options: ", questionOptions);
       return;
     }
+
+    // Ghi đè orderInQuestion của những option được gửi đi
+    if (questionOptions) {
+      questionOptions.forEach((option, index) => {
+        option.orderInQuestion = index;
+      });
+    }
+
     // kiểm tra và xóa đi những field không thay đổi
     Object.keys(selectedQuestion).forEach((field) => {
       if (
@@ -98,9 +130,22 @@ const QuestionConfig = (props: QuestionConfigProps) => {
     });
     // nếu sau khi xóa còn field thì gọi API update question
     if (Object.keys(editedQuestion).length > 0) {
-      console.log("Changes detected");
-      console.log("editedQuestion: ", editedQuestion);
-      // gọi API update question
+      console.log("Changes detected, editedQuestion: ", editedQuestion);
+      updateQuestion({
+        sectionId: sectionId(),
+        projectId: Number(projectId),
+        questionInSectionId: selectedQuestion.id,
+        ...editedQuestion,
+      });
+      console.log(
+        "Body: ",
+        JSON.stringify({
+          sectionId: sectionId(),
+          projectId: Number(projectId),
+          questionInSectionId: selectedQuestion.id,
+          ...editedQuestion,
+        })
+      );
     } else {
       console.log("No changes detected");
     }
@@ -262,13 +307,12 @@ const QuestionConfig = (props: QuestionConfigProps) => {
           {editedQuestion.questionType === "multiple_choice" && (
             <Flex className={classes.sectionWrapper}>
               <QuestionOptions
-                value={editedQuestion?.questionOptions || questionOptions}
+                value={questionOptions}
                 setValue={(value: Option[]) => {
                   setEditedQuestion({
                     ...editedQuestion,
                     questionOptions: value,
                   });
-                  setIsChanged(true);
                 }}
               />
             </Flex>

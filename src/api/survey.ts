@@ -1,5 +1,5 @@
 import Client from '@/api/client';
-import { IQueryParams, Survey, SurveyInfo, SurveyPushBody } from '../interfaces';
+import { IQueryParams, Survey, SurveyPushBody } from '../interfaces';
 
 class SurveyApi {
     public static classInstance: SurveyApi;
