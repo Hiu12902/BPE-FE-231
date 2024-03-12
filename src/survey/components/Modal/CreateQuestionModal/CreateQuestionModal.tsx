@@ -56,6 +56,15 @@ const CreateQuestionModal = (props: CreateQuestionModalProps) => {
       });
       return;
     }
+    if (
+      newQuestion.questionType === "multiple_choice" &&
+      newQuestion.questionOptions
+    ) {
+      newQuestion.questionOptions.forEach((option, index) => {
+        option.orderInQuestion = index;
+      });
+    }
+
     onCreate(newQuestion);
     setNewQuestion({
       isRequired: false,
