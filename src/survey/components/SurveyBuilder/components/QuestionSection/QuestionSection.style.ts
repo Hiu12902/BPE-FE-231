@@ -9,7 +9,7 @@ export const useQuestionSectionStyle = createStyles(() => ({
     },
     body: {
         flexDirection: "column",
-        alignItems: "center",
+        alignItems: "left",
         width: "100%",
         padding: "5px",
 

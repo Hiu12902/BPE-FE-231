@@ -26,6 +26,7 @@ const ConfirmModal = (props: ConfirmModalProps) => {
   };
   return (
     <Modal
+      size="lg"
       centered
       overlayProps={{
         blur: 3,

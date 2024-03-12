@@ -33,5 +33,19 @@ export const useQuestionItemStyle = createStyles(() => ({
     content: {
         width: "100%",
         height: "100%",
+    },
+    dragHandle: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100%",
+        width: '15px',
+        padding: "0px",
+    },
+    contentWrapper: {
+        width: '100%',
+        marginBottom: 10,
+        alignItems: 'center',
+        gap: "10px"
     }
 }))

@@ -130,24 +130,12 @@ const QuestionConfig = (props: QuestionConfigProps) => {
     });
     // nếu sau khi xóa còn field thì gọi API update question
     if (Object.keys(editedQuestion).length > 0) {
-      console.log("Changes detected, editedQuestion: ", editedQuestion);
       updateQuestion({
         sectionId: sectionId(),
         projectId: Number(projectId),
         questionInSectionId: selectedQuestion.id,
         ...editedQuestion,
       });
-      console.log(
-        "Body: ",
-        JSON.stringify({
-          sectionId: sectionId(),
-          projectId: Number(projectId),
-          questionInSectionId: selectedQuestion.id,
-          ...editedQuestion,
-        })
-      );
-    } else {
-      console.log("No changes detected");
     }
 
     setSelectedQuestion({} as Question);

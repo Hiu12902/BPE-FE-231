@@ -26,5 +26,6 @@ export const useResponseConfigStyle = createStyles(() => ({
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "left",
+        gap: "20px",
     },
 }))

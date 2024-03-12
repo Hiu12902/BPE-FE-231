@@ -7,6 +7,7 @@ const QuestionTypeMenu = [
     label: "Branching",
     value: "branching",
     description: "Redirect to another question based on the answer",
+    disabled: true,
   },
   {
     icon: "CSAT",
@@ -103,6 +104,7 @@ const QuestionTypePicker = (props: QuestionTypePickerProps) => {
       }}
       value={value}
       defaultValue={defaultValue}
+      placeholder="Choose question type for new question..."
       onChange={(value: string) => setValue(value)}
       label="Choose question type"
       itemComponent={SelectItem}

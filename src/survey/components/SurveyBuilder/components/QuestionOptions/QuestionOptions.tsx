@@ -2,7 +2,7 @@ import { IsChangedQuestionContextProps, Option } from "@/interfaces/index";
 import { IsChangedQuestionContext } from "@/survey/context";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { Flex, Input } from "@mantine/core";
-import { useListState } from "@mantine/hooks";
+import { getHotkeyHandler, useListState } from "@mantine/hooks";
 import { ReactComponent as IconDrag } from "@tabler/icons/icons/dots-vertical.svg";
 import { ReactComponent as IconAdd } from "@tabler/icons/icons/plus.svg";
 import { ReactComponent as IconX } from "@tabler/icons/icons/x.svg";
@@ -35,16 +35,19 @@ const QuestionOptions = (props: QuestionOptionsProps) => {
     setNewOption("");
     setIsChanged(true);
   };
+
   const handleDeleteOption = (index: number) => {
     handlers.remove(index);
     setIsChanged(true);
   };
+
   useEffect(() => {
     if (!isChanged) {
       // Khi thay đổi value & isChanged=false nghĩa là có sự thay đổi selectedQuestion, dẫn tới editedQuestion và truyền value vào -> Cần update state mới, nếu không state sẽ bị kẹt lại ở câu MC cũ
       handlers.setState(value);
     }
   }, [value]);
+
   useEffect(() => {
     if (isChanged) {
       // Khi thay đổi state & isChanged=true nghĩa là có sự thêm/xóa option -> Cần update editedQuestion
@@ -68,10 +71,11 @@ const QuestionOptions = (props: QuestionOptionsProps) => {
               w="100%"
               value={option?.content}
               onChange={(event) => {
-                const newValue = [...value];
-                newValue[index].content = event.currentTarget.value;
-                console.log("newValue: ", newValue);
-                setValue(newValue);
+                handlers.setItem(index, {
+                  id: option.id,
+                  content: event.currentTarget.value,
+                });
+                setIsChanged(true);
               }}
             />
             <IconX
@@ -109,6 +113,7 @@ const QuestionOptions = (props: QuestionOptionsProps) => {
             onChange={(event) => {
               setNewOption(event.currentTarget.value);
             }}
+            onKeyDown={getHotkeyHandler([["enter", handleAddNewOption]])}
           />
           <IconAdd
             style={{ cursor: "pointer", width: "23px" }}

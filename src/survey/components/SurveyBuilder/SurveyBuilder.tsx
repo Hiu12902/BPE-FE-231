@@ -21,6 +21,7 @@ const SurveyBuilder = () => {
   const createSurveyMutation = useCreateSurveyMutation({
     onSuccess: (data) => {
       console.log("Successfully create new survey: ", data);
+      surveyRefetch();
     },
   });
 
@@ -28,29 +29,28 @@ const SurveyBuilder = () => {
     data: surveyData,
     isLoading: surveyLoading,
     refetch: surveyRefetch,
+    isFetching: surveyIsFetching,
   } = useSurvey({
     processVersion: processVersion,
     projectId: projectId,
   });
 
   useEffect(() => {
-    if (
-      processVersion &&
-      projectId &&
-      surveyData &&
-      surveyData?.message === "Survey does not exist."
-    ) {
-      createSurveyMutation.mutate({
-        processVersionVersion: processVersion,
-        projectId: Number(projectId),
-      });
+    if (processVersion && projectId && surveyData) {
+      if (surveyData?.message === "Survey does not exist.") {
+        createSurveyMutation.mutate({
+          processVersionVersion: processVersion,
+          projectId: Number(projectId),
+        });
+      }
     }
-  }, []);
+  }, [surveyData]);
 
   return (
     <IsChangedQuestionContext.Provider
       value={{
         isChanged: isChanged,
+        isFetching: surveyIsFetching,
         setIsChanged: setIsChanged,
         refetch: surveyRefetch,
       }}
@@ -62,10 +62,10 @@ const SurveyBuilder = () => {
         }}
       >
         <Flex className={classes.wrapper}>
-          {surveyLoading ? (
+          {surveyLoading || !surveyData?.questions ? (
             <LoadingOverlay visible overlayColor="rgba(255, 255, 255, 1)" />
           ) : (
-            surveyData && (
+            surveyData?.questions && (
               <>
                 <QuestionConfig data={surveyData} />
                 <QuestionEditor data={surveyData} />

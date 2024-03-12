@@ -3,6 +3,7 @@ import { createStyles } from "@mantine/core";
 export const useBranchingQuestionStyle = createStyles(() => ({
     option: {
         margin: "5px",
+        width: "100%",
     },
     radio: {
         '.mantine-Radio-body': {
