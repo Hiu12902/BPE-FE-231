@@ -1,5 +1,15 @@
-import { Survey } from "@/interfaces/index";
-import { Badge, Button, Flex, Group, ScrollArea, Text } from "@mantine/core";
+import { IsChangedQuestionContextProps, Survey } from "@/interfaces/index";
+import { IsChangedQuestionContext } from "@/survey/context";
+import {
+  Badge,
+  Button,
+  Flex,
+  Group,
+  Loader,
+  ScrollArea,
+  Text,
+} from "@mantine/core";
+import { useContext } from "react";
 import QuestionSection from "../QuestionSection";
 import { useQuestionEditorStyle } from "./QuestionEditor.style";
 
@@ -10,13 +20,20 @@ interface QuestionEditorProps {
 const QuestionEditor = (props: QuestionEditorProps) => {
   const { data } = props;
   const { classes } = useQuestionEditorStyle();
+  // const { isFetching } = useContext(
+  //   IsChangedQuestionContext
+  // ) as IsChangedQuestionContextProps;
   return (
     <Flex
       className={classes.wrapper}
       direction="column"
-      justify="space-between"
+      justify="center"
       align="center"
     >
+      {/* {isFetching ? (
+        <Loader />
+      ) : (
+        <> */}
       <Flex
         justify="space-between"
         align="center"
@@ -31,10 +48,7 @@ const QuestionEditor = (props: QuestionEditorProps) => {
 
       <ScrollArea className={classes.editArea}>
         {data?.questions.map((section) => (
-          <QuestionSection
-            key={section.sectionId}
-            data={section}
-          />
+          <QuestionSection key={section.sectionId} data={section} />
         ))}
       </ScrollArea>
 
@@ -49,6 +63,8 @@ const QuestionEditor = (props: QuestionEditorProps) => {
         </Group>
         <Button variant="light" color="green" children="Save" />
       </Flex>
+      {/* </>
+      )} */}
     </Flex>
   );
 };
