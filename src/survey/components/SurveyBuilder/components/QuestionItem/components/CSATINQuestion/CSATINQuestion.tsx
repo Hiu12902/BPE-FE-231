@@ -26,7 +26,7 @@ const CSATINQuestion = (props: CSATINQuestionProps) => {
       className={classes.option}
     >
       <Flex className={classes.option} justify="space-around">
-        <Input w="100%" disabled />
+        <Input w="100%" disabled className={classes.input} />
       </Flex>
     </Radio.Group>
   );

@@ -31,8 +31,8 @@ import {
   CSATQuestion,
   MultipleChoiceQuestion,
   NPSQuestion,
+  BranchingQuestion,
 } from "./components";
-import BranchingQuestion from "./components/BranchingQuestion";
 
 interface AddButtonProps extends ActionIconProps {
   handleAddNewQuestion: () => void;

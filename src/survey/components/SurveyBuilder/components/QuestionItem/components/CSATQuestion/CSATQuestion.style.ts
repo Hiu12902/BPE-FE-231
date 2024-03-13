@@ -10,6 +10,7 @@ export const useCSATQuestionStyle = createStyles(() => ({
             flexDirection: "column-reverse",
             alignItems: "center",
             justifyItems: "center",
+            marginTop: "15px",
         },
         '.mantine-Radio-label': {
             padding: 0,

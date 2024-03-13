@@ -7,6 +7,7 @@ export const useBranchingQuestionStyle = createStyles(() => ({
     },
     radio: {
         '.mantine-Radio-body': {
+            marginTop: "15px",
             display: "flex",
             flexDirection: "column-reverse",
             alignItems: "center",
