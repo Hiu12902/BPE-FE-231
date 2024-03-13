@@ -31,6 +31,8 @@ import {
   SurveyConfiguration,
   SurveyResult,
 } from "@/survey/components";
+import SurveyLaunchLayout from "@/survey/components/SurveyLaunchLayout/SurveyLaunch.layout";
+import SurveyLauncher from "@/survey/components/SurveyLauncher";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -85,6 +87,9 @@ const router = createBrowserRouter(
             path=":projectId/:processVersion/survey/result/"
             element={<SurveyResult />}
           />
+        </Route>
+        <Route element={<SurveyLaunchLayout />}>
+          <Route path="/survey/launch" element={<SurveyLauncher />} />
         </Route>
       </Route>
       <Route

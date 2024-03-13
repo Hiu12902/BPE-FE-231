@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 import { useSurveyLayoutStyle } from "./Survey.style";
 import { SurveyNavbar } from "./components";
 
-const SurveyBuilder = () => {
+const SurveyLayout = () => {
   const { classes } = useSurveyLayoutStyle();
   return (
     <AppShell
@@ -25,4 +25,4 @@ const SurveyBuilder = () => {
   );
 };
 
-export default SurveyBuilder;
+export default SurveyLayout;
