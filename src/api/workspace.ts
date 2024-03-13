@@ -26,10 +26,6 @@ class WorkspaceApi {
         });
     }
 
-    // public getPinnedWorkspaces(): Promise<any> {
-    //     return Client.get("/workspace/me/pinned");
-    // }
-
     public createWorkspace({
         name,
         description,
@@ -67,10 +63,6 @@ class WorkspaceApi {
     public pinWorkspace(workspaceId: number): Promise<any> {
         return Client.post("/workspace/pinned", { workspaceId });
     }
-
-    // public searchWorkspace(query: { searchValue: string }): Promise<any> {
-    //     return Client.get(`/workspace/search/${query.searchValue}`);
-    // }
 
     public openWorkspace(workspaceId: number): Promise<any> {
         return Client.post('/workspace/open', { workspaceId });
