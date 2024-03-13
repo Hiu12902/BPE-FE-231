@@ -22,6 +22,16 @@ export interface SurveyPushBody {
     projectId: number;
 }
 
+export interface SurveyUpdateBody {
+    surveyId: number;
+    projectId: number;
+    name?: string;
+    description?: string;
+    npsWeight?: number;
+    cesWeight?: number;
+    csatWeight?: number;
+}
+
 export interface SurveyGeneralConfiguration extends SurveyInfo {
     npsWright: number;
     cesWeight: number;

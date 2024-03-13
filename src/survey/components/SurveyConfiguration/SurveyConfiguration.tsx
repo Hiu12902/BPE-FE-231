@@ -1,4 +1,4 @@
-import { Flex, LoadingOverlay } from "@mantine/core";
+import { Flex } from "@mantine/core";
 import { useSurveyConfigurationStyle } from "./SurveyConfiguration.style";
 import {
   GeneralConfig,
@@ -13,18 +13,11 @@ interface SurveyConfigurationProps {
 const SurveyConfiguration = (props: SurveyConfigurationProps) => {
   const { configOption } = props;
   const { classes } = useSurveyConfigurationStyle();
-  const surveyLoading = false;
   return (
     <Flex className={classes.wrapper}>
-      {surveyLoading ? (
-        <LoadingOverlay visible overlayColor="rgba(255, 255, 255, 1)" />
-      ) : (
-        <>
-          <ConfigurationOption />
-          {configOption === "general" && <GeneralConfig />}
-          {configOption === "response" && <ResponseConfig />}
-        </>
-      )}
+      <ConfigurationOption />
+      {configOption === "general" && <GeneralConfig />}
+      {configOption === "response" && <ResponseConfig />}
     </Flex>
   );
 };

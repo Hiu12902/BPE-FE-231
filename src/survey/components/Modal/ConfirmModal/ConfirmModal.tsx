@@ -11,7 +11,7 @@ import {
 interface ConfirmModalProps extends ModalProps {
   opened: boolean;
   title?: string;
-  message?: string;
+  message?: string | JSX.Element;
   onConfirm: () => void;
 }
 
@@ -45,7 +45,8 @@ const ConfirmModal = (props: ConfirmModalProps) => {
         },
       }}
     >
-      <Text>{message}</Text>
+      {message}
+      <br />
       <Text span weight={600} color="red">
         Your action will not be able to undo.
       </Text>

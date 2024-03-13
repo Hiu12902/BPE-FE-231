@@ -62,7 +62,7 @@ const SurveyBuilder = () => {
         }}
       >
         <Flex className={classes.wrapper}>
-          {surveyLoading || !surveyData?.questions ? (
+          {surveyIsFetching || !surveyData?.questions ? (
             <LoadingOverlay visible overlayColor="rgba(255, 255, 255, 1)" />
           ) : (
             surveyData?.questions && (

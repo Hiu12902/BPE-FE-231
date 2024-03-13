@@ -1,5 +1,5 @@
 import Client from '@/api/client';
-import { IQueryParams, Survey, SurveyPushBody } from '../interfaces';
+import { IQueryParams, Survey, SurveyInfo, SurveyPushBody, SurveyUpdateBody } from '../interfaces';
 
 class SurveyApi {
     public static classInstance: SurveyApi;
@@ -22,6 +22,36 @@ class SurveyApi {
                 projectId: params.projectId,
             }
         });
+    }
+
+    public getSurveyInformation(params: IQueryParams): Promise<SurveyInfo> {
+        return Client.get(`/survey`, {
+            params: {
+                processVersionVersion: params.processVersionVersion,
+                projectId: params.projectId,
+            }
+        })
+    }
+
+    public deleteSurvey(params: IQueryParams): Promise<any> {
+        return Client.delete(`/survey`, {
+            params: {
+                surveyId: params.surveyId,
+                projectId: params.projectId
+            }
+        })
+    }
+
+    public updateSurveyGeneralConfiguration(data: SurveyUpdateBody): Promise<SurveyUpdateBody> {
+        return Client.put(`/survey/general_configuration`, {
+            surveyId: data.surveyId,
+            projectId: data.projectId,
+            name: data.name,
+            description: data.description,
+            npsWarnings: data.npsWeight,
+            cesWeight: data.cesWeight,
+            csatWeight: data.csatWeight,
+        })
     }
 }
 
