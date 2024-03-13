@@ -571,6 +571,11 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@kurkle/color@^0.3.0":
+  version "0.3.2"
+  resolved "https://registry.npmjs.org/@kurkle/color/-/color-0.3.2.tgz"
+  integrity sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==
+
 "@lezer/common@^1.0.0":
   version "1.0.2"
   resolved "https://registry.npmjs.org/@lezer/common/-/common-1.0.2.tgz"
@@ -1472,6 +1477,13 @@ character-entities@^2.0.0:
   version "2.0.2"
   resolved "https://registry.npmjs.org/character-entities/-/character-entities-2.0.2.tgz"
   integrity sha512-shx7oQ0Awen/BRIdkjkvz54PnEEI/EjwXDSIZp86/KKdbafHh1Df/RYGBhn4hbe2+uKC9FnT5UCEdyPz3ai9hQ==
+
+chart.js@^4.4.2:
+  version "4.4.2"
+  resolved "https://registry.npmjs.org/chart.js/-/chart.js-4.4.2.tgz"
+  integrity sha512-6GD7iKwFpP5kbSD4MeRRRlTnQvxfQREy36uEtm1hzHzcOqwWx0YEHuspuoNlslu+nciLIB7fjjsHkUv/FzFcOg==
+  dependencies:
+    "@kurkle/color" "^0.3.0"
 
 ci-info@^2.0.0:
   version "2.0.0"

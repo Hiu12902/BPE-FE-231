@@ -30,6 +30,7 @@
     "bpmn-js-token-simulation": "^0.31.0",
     "bpmnlint": "^8.1.1",
     "canvg": "^4.0.1",
+    "chart.js": "^4.4.2",
     "dayjs": "^1.11.10",
     "lodash": "^4.17.21",
     "mantine-datatable": "^2.9.14",
