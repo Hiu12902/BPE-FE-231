@@ -3,69 +3,67 @@ import Chart, { ChartItem } from "chart.js/auto";
 import { useEffect } from "react";
 
 const SurveyResult = () => {
-  const data = {
-    labels: ["CSAT", "CES", "NPS"],
-    datasets: [
-      {
-        label: "Total scores from survey",
-        data: [11, 16, 15],
-        backgroundColor: [
-          "rgba(75, 192, 192, 0.5)",
-          "rgba(255, 205, 86, 0.5)",
-          "rgba(54, 162, 235, 0.5)",
-        ],
-      },
-    ],
-  };
-
-  const chartGenerator = async () => {
+  const resultGenerator = async () => {
     const chart = new Chart(
-      document.getElementById("acquisitions") as ChartItem,
+      document.getElementById("accquisitions") as ChartItem,
       {
-        type: "polarArea",
+        type: "doughnut",
+        data: {
+          labels: ["CSAT", "CES", "NPS"],
+          datasets: [
+            {
+              label: "Score",
+              data: [11, 16, 150],
+              backgroundColor: ["#a5e0e0", "#ffe6ab", "#9bd1f5"],
+              hoverBackgroundColor: ["#4bc0c0", "#FFCE56", "#36A2EB"],
+            },
+          ],
+        },
         options: {
-          responsive: true,
-          scales: {
-            r: {
-              pointLabels: {
-                display: true,
-                centerPointLabels: true,
-                font: {
-                  size: 18,
-                },
-              },
+          elements: {
+            arc: {
+              borderWidth: 2,
+              borderAlign: "center",
+              borderColor: "#fff",
             },
           },
           plugins: {
             legend: {
-              position: "top",
               labels: {
-                borderRadius: 20,
-                boxPadding: 10,
-                boxHeight: 20,
-                boxWidth: 20,
-                color: "#ccc",
+                font: {
+                  size: 16,
+                },
+              },
+              display: true,
+              onHover: (evt, item, legend) => {
+                (
+                  legend.chart.data.datasets[0].backgroundColor as string[]
+                ).forEach((color, index, colors) => {
+                  colors[index] =
+                    index === item.index || color.length === 9
+                      ? color
+                      : color + "3D";
+                });
+                legend.chart.update();
+              },
+              onLeave: function handleLeave(evt, item, legend) {
+                (
+                  legend.chart.data.datasets[0].backgroundColor as string[]
+                ).forEach((color, index, colors) => {
+                  colors[index] =
+                    color.length === 9 ? color.slice(0, -2) : color;
+                });
+                legend.chart.update();
               },
             },
             title: {
               display: true,
               text: "Survey result",
               font: {
-                size: 25,
+                size: 20,
               },
             },
           },
-        },
-        data: {
-          datasets:
-            data.datasets &&
-            data.datasets.map((dataset) => {
-              return {
-                ...dataset,
-                data: dataset.data,
-                backgroundColor: dataset.backgroundColor,
-              };
-            }),
         },
       }
     );
@@ -73,13 +71,12 @@ const SurveyResult = () => {
   };
 
   useEffect(() => {
-    console.log("chartGenerator");
-    chartGenerator();
+    resultGenerator();
   }, []);
 
   return (
     <Flex
-      style={{ width: "100%", height: "90vh" }}
+      style={{ width: "100%", height: "90vh", padding: "30px" }}
       justify="center"
       align="center"
     >
@@ -88,7 +85,7 @@ const SurveyResult = () => {
         justify="center"
         align="center"
       >
-        <canvas id="acquisitions"></canvas>
+        <canvas id="accquisitions"></canvas>
       </Flex>
     </Flex>
   );
