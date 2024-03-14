@@ -1,5 +1,5 @@
 import Client from '@/api/client';
-import { IQueryParams, Survey, SurveyInfo, SurveyPushBody, SurveyUpdateBody } from '../interfaces';
+import { IQueryParams, Survey, SurveyGeneralConfiguration, SurveyInfo, SurveyPushBody, SurveyResponseConfiguration, SurveyUpdateBody } from '../interfaces';
 
 class SurveyApi {
     public static classInstance: SurveyApi;
@@ -33,6 +33,24 @@ class SurveyApi {
         })
     }
 
+    public getSurveyGeneralConfig(params: IQueryParams): Promise<SurveyGeneralConfiguration> {
+        return Client.get(`/survey/general_configuration`, {
+            params: {
+                surveyId: params.surveyId,
+                projectId: params.projectId,
+            }
+        })
+    }
+
+    public getSurveyResponseConfig(params: IQueryParams): Promise<SurveyResponseConfiguration> {
+        return Client.get(`/survey/response_configuration`, {
+            params: {
+                surveyId: params.surveyId,
+                projectId: params.projectId,
+            }
+        })
+    }
+
     public deleteSurvey(params: IQueryParams): Promise<any> {
         return Client.delete(`/survey`, {
             params: {
@@ -51,6 +69,18 @@ class SurveyApi {
             npsWarnings: data.npsWeight,
             cesWeight: data.cesWeight,
             csatWeight: data.csatWeight,
+        })
+    }
+
+    public updateSurveyResponseConfiguration(data: SurveyUpdateBody): Promise<SurveyUpdateBody> {
+        return Client.put(`/survey/response_configuration`, {
+            surveyId: data.surveyId,
+            projectId: data.projectId,
+            startDate: data.startDate,
+            endDate: data.endDate,
+            incompleteSurveyAction: data.incompleteSurveyAction,
+            allowDuplicateRespondent: data.allowDuplicateRespondent,
+            sendResultToRespondent: data.sendResultToRespondent,
         })
     }
 }

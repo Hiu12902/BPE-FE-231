@@ -24,12 +24,50 @@ export const useSurvey = (
     }
 };
 
-export const useSurveyInformationQuery = (params: IQueryParams) => {
+export const useSurveyGeneralConfigQuery = (params: IQueryParams) => {
     const queryParams = {
         ...params,
     }
 
     const queryKey = ['survey_general_configuration', queryParams];
+
+    const surveyGeneralConfigQuery = useQuery({
+        queryKey: queryKey,
+        queryFn: () => surveyApi.getSurveyGeneralConfig({
+            ...params,
+        }),
+    })
+
+    return {
+        ...surveyGeneralConfigQuery,
+    }
+}
+
+export const useSurveyResponseConfigQuery = (params: IQueryParams) => {
+    const queryParams = {
+        ...params,
+    }
+
+    const queryKey = ['survey_response_configuration', queryParams];
+
+    const surveyResponseConfigQuery = useQuery({
+        queryKey: queryKey,
+        queryFn: () => surveyApi.getSurveyResponseConfig({
+            ...params,
+        }),
+    })
+
+    return {
+        ...surveyResponseConfigQuery,
+    }
+}
+
+export const useSurveyInformationQuery = (params: IQueryParams) => {
+    const queryParams = {
+        ...params,
+    }
+
+    const queryKey = ['survey_information', queryParams];
 
     const surveyInformationQuery = useQuery({
         queryKey: queryKey,
@@ -62,6 +100,22 @@ export const useCreateSurveyMutation = ({ onSuccess, onSettled }: UseMutation) =
 export const useUpdateSurveyGeneralConfigurationMutation = ({ onSuccess, onSettled }: UseMutation) => {
     return useMutation({
         mutationFn: (data: SurveyUpdateBody) => surveyApi.updateSurveyGeneralConfiguration(data),
+        onSuccess: (data: any) => onSuccess?.(data),
+        onError: (err: any) => {
+            const notify = useNotification();
+            notify({
+                title: 'Error',
+                message: err.message,
+                type: 'error',
+            });
+        },
+        onSettled: () => onSettled?.(),
+    })
+}
+
+export const useUpdateSurveyResponseConfigurationMutation = ({ onSuccess, onSettled }: UseMutation) => {
+    return useMutation({
+        mutationFn: (data: SurveyUpdateBody) => surveyApi.updateSurveyResponseConfiguration(data),
         onSuccess: (data: any) => onSuccess?.(data),
         onError: (err: any) => {
             const notify = useNotification();

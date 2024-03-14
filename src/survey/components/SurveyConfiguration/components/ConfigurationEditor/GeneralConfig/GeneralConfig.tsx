@@ -1,8 +1,9 @@
+import useNotification from "@/hooks/useNotification";
 import {
-  useSurveyInformationQuery,
-  useUpdateSurveyGeneralConfigurationMutation,
+  useSurveyGeneralConfigQuery,
+  useUpdateSurveyGeneralConfigurationMutation
 } from "@/hooks/useSurvey";
-import { SurveyInfo } from "@/interfaces/survey";
+import { SurveyGeneralConfiguration } from "@/interfaces/survey";
 import {
   Button,
   Flex,
@@ -16,51 +17,53 @@ import {
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGeneralConfigStyle } from "./GeneralConfig.style";
-import useNotification from "@/hooks/useNotification";
 
-const GeneralConfig = () => {
+const GeneralConfig = ({ surveyId }: { surveyId: number }) => {
   const { classes } = useGeneralConfigStyle();
-  const { projectId, processVersion } = useParams();
-  const {
-    data: surveyInformation,
-    isLoading,
-    refetch: refetchSurveyInformation,
-  } = useSurveyInformationQuery({
-    projectId: projectId,
-    processVersionVersion: processVersion,
-  });
+  const { projectId } = useParams();
+  const notify = useNotification();
 
+  // GET: Survey general configuration
+  const {
+    data: surveyGeneralConfiguration,
+    isLoading,
+    refetch: refetchSurveyGeneralConfiguration,
+  } = useSurveyGeneralConfigQuery({
+    projectId: projectId,
+    surveyId: surveyId,
+  });
+  
+  // UPDATE: Survey general configuration
   const generalConfigurationMutation =
     useUpdateSurveyGeneralConfigurationMutation({
       onSuccess: () => {
-        const notify = useNotification();
+        refetchSurveyGeneralConfiguration();
         notify({
           message: "Survey information updated successfully.",
           type: "success",
         });
-        refetchSurveyInformation();
       },
     });
 
-  const [surveyInfo, setSurveyInfo] = useState<SurveyInfo>(
-    surveyInformation as SurveyInfo
+  const [surveyConfig, setSurveyConfig] = useState<SurveyGeneralConfiguration>(
+    surveyGeneralConfiguration as SurveyGeneralConfiguration
   );
 
   const handleSaveSurveyChanges = () => {
-    if (surveyInformation?.id && projectId) {
+    if (surveyId && projectId) {
       generalConfigurationMutation.mutate({
-        surveyId: surveyInformation?.id,
+        surveyId: surveyId,
         projectId: Number(projectId),
-        ...surveyInfo,
+        ...surveyConfig,
       });
     }
   };
 
   useEffect(() => {
-    if (surveyInformation) {
-      setSurveyInfo(surveyInformation);
+    if (surveyGeneralConfiguration) {
+      setSurveyConfig(surveyGeneralConfiguration);
     }
-  }, [surveyInformation]);
+  }, [surveyGeneralConfiguration]);
 
   if (isLoading) {
     return (
@@ -77,7 +80,7 @@ const GeneralConfig = () => {
     );
   } else {
     return (
-      surveyInfo && (
+      surveyConfig && (
         <Flex
           direction="column"
           justify="space-between"
@@ -94,10 +97,13 @@ const GeneralConfig = () => {
               <Input
                 className={classes.input}
                 placeholder="Enter survey name here..."
-                defaultValue={surveyInformation?.name || ""}
-                value={surveyInfo.name}
+                defaultValue={surveyGeneralConfiguration?.name || ""}
+                value={surveyConfig.name}
                 onChange={(e) => {
-                  setSurveyInfo({ ...surveyInfo, name: e.currentTarget.value });
+                  setSurveyConfig({
+                    ...surveyConfig,
+                    name: e.currentTarget.value,
+                  });
                 }}
               />
             </Flex>
@@ -112,11 +118,11 @@ const GeneralConfig = () => {
                 className={classes.input}
                 minRows={5}
                 placeholder="Enter survey description here..."
-                defaultValue={surveyInformation?.description || ""}
-                value={surveyInfo.description}
+                defaultValue={surveyGeneralConfiguration?.description || ""}
+                value={surveyConfig.description}
                 onChange={(e) => {
-                  setSurveyInfo({
-                    ...surveyInfo,
+                  setSurveyConfig({
+                    ...surveyConfig,
                     description: e.currentTarget.value,
                   });
                 }}
@@ -136,29 +142,50 @@ const GeneralConfig = () => {
                 <NumberInput
                   label="CSAT"
                   className={classes.numberInput}
+                  defaultValue={surveyGeneralConfiguration?.csatWeight || 0}
+                  value={surveyConfig.csatWeight}
+                  onChange={(value) => {
+                    setSurveyConfig({
+                      ...surveyConfig,
+                      csatWeight: Number(value),
+                    });
+                  }}
                   min={0}
                   max={1}
                   step={0.05}
                   precision={2}
-                  defaultValue={0}
                 />
                 <NumberInput
                   label="CES"
                   className={classes.numberInput}
+                  defaultValue={surveyGeneralConfiguration?.cesWeight || 0}
+                  value={surveyConfig.cesWeight}
+                  onChange={(value) => {
+                    setSurveyConfig({
+                      ...surveyConfig,
+                      cesWeight: Number(value),
+                    });
+                  }}
                   min={0}
                   max={1}
                   step={0.05}
                   precision={2}
-                  defaultValue={0}
                 />
                 <NumberInput
                   label="NPS"
                   className={classes.numberInput}
+                  defaultValue={surveyGeneralConfiguration?.npsWeight || 0}
+                  value={surveyConfig.npsWeight}
+                  onChange={(value) => {
+                    setSurveyConfig({
+                      ...surveyConfig,
+                      npsWeight: Number(value),
+                    });
+                  }}
                   min={0}
                   max={1}
                   step={0.05}
                   precision={2}
-                  defaultValue={0}
                 />
               </Flex>
             </Flex>
@@ -166,8 +193,14 @@ const GeneralConfig = () => {
           <Flex justify="flex-end" m={10}>
             <Button
               disabled={
-                surveyInfo.name === surveyInformation?.name &&
-                surveyInfo.description === surveyInformation?.description
+                surveyConfig.name === surveyGeneralConfiguration?.name &&
+                surveyConfig.description ===
+                  surveyGeneralConfiguration?.description &&
+                surveyConfig.cesWeight ===
+                  surveyGeneralConfiguration?.cesWeight &&
+                surveyConfig.csatWeight ===
+                  surveyGeneralConfiguration?.csatWeight &&
+                surveyConfig.npsWeight === surveyGeneralConfiguration?.npsWeight
               }
               onClick={handleSaveSurveyChanges}
             >

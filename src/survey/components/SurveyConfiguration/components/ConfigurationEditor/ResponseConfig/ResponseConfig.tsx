@@ -1,43 +1,63 @@
-import { Button, Flex, Loader, Title, Text } from "@mantine/core";
-import { useResponseConfigStyle } from "./ResponseConfig.style";
-import TimePicker from "../TimePicker";
-import { useNavigate, useParams } from "react-router-dom";
+import useNotification from "@/hooks/useNotification";
 import {
   useDeleteSurveyMutation,
-  useSurveyInformationQuery,
-  useUpdateSurveyGeneralConfigurationMutation,
+  useSurveyResponseConfigQuery,
+  useUpdateSurveyResponseConfigurationMutation,
 } from "@/hooks/useSurvey";
-import { useEffect, useState } from "react";
-import useNotification from "@/hooks/useNotification";
-import { SurveyInfo } from "@/interfaces/index";
+import { SurveyResponseConfiguration } from "@/interfaces/index";
 import { ConfirmModal } from "@/survey/components/Modal";
-import { useQueryClient } from "@tanstack/react-query";
+import { Button, Divider, Flex, Loader, Text, Title } from "@mantine/core";
+import { DateTimePicker, DatesProvider } from "@mantine/dates";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useResponseConfigStyle } from "./ResponseConfig.style";
 
-const ResponseConfig = () => {
+const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
   const { classes } = useResponseConfigStyle();
-  const { projectId, processVersion } = useParams();
+  const { projectId } = useParams();
   const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false);
   const navigate = useNavigate();
+  const notify = useNotification();
+  const [start, setStart] = useState<Date | string | null>(null);
+  const [end, setEnd] = useState<Date | string | null>(null);
+
+  const handleChangeStartDate = (value: Date) => {
+    setStart(value);
+  };
+
+  const handleChangeEndDate = (value: Date) => {
+    setEnd(value);
+    setSurveyConfig({
+      ...surveyConfig,
+      startDate: (end as Date).toISOString().substring(0, 19),
+    });
+  };
+
+  // GET: Survey Response configuration
   const {
-    data: surveyInformation,
+    data: surveyResponseConfiguration,
     isLoading,
-    refetch: refetchSurveyInformation,
-  } = useSurveyInformationQuery({
+    refetch: refetchSurveyResponseConfiguration,
+  } = useSurveyResponseConfigQuery({
     projectId: projectId,
-    processVersionVersion: processVersion,
+    surveyId: surveyId,
   });
 
-  const generalConfigurationMutation =
-    useUpdateSurveyGeneralConfigurationMutation({
+  // UPDATE: Survey Response configuration
+  const responseConfigurationMutation =
+    useUpdateSurveyResponseConfigurationMutation({
       onSuccess: () => {
-        const notify = useNotification();
+        refetchSurveyResponseConfiguration();
         notify({
           message: "Survey information updated successfully.",
           type: "success",
         });
-        refetchSurveyInformation();
       },
     });
+
+  const [surveyConfig, setSurveyConfig] = useState<SurveyResponseConfiguration>(
+    surveyResponseConfiguration as SurveyResponseConfiguration
+  );
 
   const deleteSurveyMutation = useDeleteSurveyMutation({
     onSuccess: (data: any) => {
@@ -47,16 +67,12 @@ const ResponseConfig = () => {
     },
   });
 
-  const [surveyInfo, setSurveyInfo] = useState<SurveyInfo>(
-    surveyInformation as SurveyInfo
-  );
-
   const handleSaveSurveyChanges = () => {
-    if (surveyInformation?.id && projectId) {
-      generalConfigurationMutation.mutate({
-        surveyId: surveyInformation?.id,
+    if (surveyId && projectId) {
+      responseConfigurationMutation.mutate({
+        surveyId: surveyId,
         projectId: Number(projectId),
-        ...surveyInfo,
+        ...surveyConfig,
       });
     }
   };
@@ -66,10 +82,28 @@ const ResponseConfig = () => {
   };
 
   useEffect(() => {
-    if (surveyInformation) {
-      setSurveyInfo(surveyInformation);
+    if (surveyResponseConfiguration) {
+      setSurveyConfig(surveyResponseConfiguration);
     }
-  }, [surveyInformation]);
+  }, [surveyResponseConfiguration]);
+
+  useEffect(() => {
+    if (start) {
+      setSurveyConfig({
+        ...surveyConfig,
+        startDate: (start as Date).toISOString().substring(0, 19),
+      });
+    }
+  }, [start]);
+
+  useEffect(() => {
+    if (end) {
+      setSurveyConfig({
+        ...surveyConfig,
+        endDate: (end as Date).toISOString().substring(0, 19),
+      });
+    }
+  }, [end]);
 
   if (isLoading) {
     return (
@@ -86,7 +120,7 @@ const ResponseConfig = () => {
     );
   } else {
     return (
-      surveyInfo && (
+      surveyConfig && (
         <Flex
           direction="column"
           justify="space-between"
@@ -113,9 +147,9 @@ const ResponseConfig = () => {
               </Flex>
             }
             onConfirm={() => {
-              if (surveyInformation?.id && projectId) {
+              if (surveyId && projectId) {
                 deleteSurveyMutation.mutate({
-                  surveyId: surveyInformation?.id,
+                  surveyId: surveyId,
                   projectId: projectId,
                 });
                 setOpenConfirmModal(false);
@@ -125,19 +159,61 @@ const ResponseConfig = () => {
           <Flex className={classes.bodyWrapper}>
             <Flex className={classes.sectionWrapper}>
               <Title order={4}>Survey availability</Title>
-              <TimePicker
-                surveyInfo={surveyInfo}
-                setSurveyInfo={(data: SurveyInfo) => {
-                  setSurveyInfo(data);
+              <DatesProvider
+                settings={{
+                  locale: "ru",
+                  firstDayOfWeek: 1,
+                  weekendDays: [0, 6],
                 }}
-              />
+              >
+                <Flex justify="space-around" gap="10px">
+                  <Flex justify="center" align="center" gap="10px" w="100%">
+                    <DateTimePicker
+                      // clearable
+                      w="100%"
+                      label="Start date"
+                      defaultValue={
+                        surveyConfig.startDate !== null
+                          ? new Date(surveyConfig.startDate)
+                          : undefined
+                      }
+                      value={start !== null ? new Date(start) : undefined}
+                      placeholder="Choose start date"
+                      onChange={handleChangeStartDate}
+                    />
+                  </Flex>
+                  <Divider orientation="vertical" />
+                  <Flex justify="center" align="center" gap="10px" w="100%">
+                    <DateTimePicker
+                      // clearable
+                      w="100%"
+                      label="End date"
+                      placeholder="Choose end date"
+                      defaultValue={
+                        surveyConfig.endDate !== null
+                          ? new Date(surveyConfig.endDate)
+                          : undefined
+                      }
+                      value={end !== null ? new Date(end) : undefined}
+                      onChange={handleChangeEndDate}
+                    />
+                  </Flex>
+                </Flex>
+              </DatesProvider>
             </Flex>
           </Flex>
           <Flex justify="space-between" m={10}>
             <Button color="red" onClick={handleDeleteSurvey}>
               Delete survey
             </Button>
-            <Button onClick={handleSaveSurveyChanges}>Save changes</Button>
+            <Button
+              disabled={
+                surveyConfig.startDate === start && surveyConfig.endDate === end
+              }
+              onClick={handleSaveSurveyChanges}
+            >
+              Save changes
+            </Button>
           </Flex>
         </Flex>
       )

@@ -1,33 +1,29 @@
-import { SurveyInfo } from "@/interfaces/survey";
+import { SurveyResponseConfiguration } from "@/interfaces/survey";
 import { Divider, Flex } from "@mantine/core";
-import {
-  DateTimePicker,
-  DatesProvider
-} from "@mantine/dates";
+import { DateTimePicker, DatesProvider } from "@mantine/dates";
+import { useEffect, useState } from "react";
 
 interface TimePickerProps {
-  surveyInfo: SurveyInfo;
-  setSurveyInfo: (data: SurveyInfo) => void;
+  surveyConfig: SurveyResponseConfiguration;
+  setSurveyConfig: (data: SurveyResponseConfiguration) => void;
 }
 
-const toLocaleUTCDateString = (date: Date) => {
-  const timeDiff = date.getTimezoneOffset() * 60000;
-  const adjustDate = new Date(date.valueOf() - timeDiff);
-  return adjustDate.toISOString();
-};
-
 const TimePicker = (props: TimePickerProps) => {
-  const { startDate, endDate } = props.surveyInfo;
+  const { startDate, endDate } = props.surveyConfig;
+  const [start, setStart] = useState<Date | string | null>(startDate);
+  const [end, setEnd] = useState<Date | string | null>(endDate);
   const handleChangeStartDate = (value: Date) => {
-    props.setSurveyInfo({
-      ...props.surveyInfo,
-      startDate: toLocaleUTCDateString(value),
+    setStart(value);
+    props.setSurveyConfig({
+      ...props.surveyConfig,
+      startDate: (start as Date).toISOString().substring(0, 19),
     });
   };
   const handleChangeEndDate = (value: Date) => {
-    props.setSurveyInfo({
-      ...props.surveyInfo,
-      startDate: toLocaleUTCDateString(value),
+    setEnd(value);
+    props.setSurveyConfig({
+      ...props.surveyConfig,
+      startDate: (end as Date).toISOString().substring(0, 19),
     });
   };
 
@@ -39,10 +35,9 @@ const TimePicker = (props: TimePickerProps) => {
         <Flex justify="center" align="center" gap="10px" w="100%">
           <DateTimePicker
             clearable
-            defaultValue={new Date()}
             w="100%"
             label="Start date"
-            value={startDate ? new Date(startDate) : new Date()}
+            value={start !== null ? new Date(start) : undefined}
             placeholder="Choose start date"
             onChange={handleChangeStartDate}
           />
@@ -54,7 +49,7 @@ const TimePicker = (props: TimePickerProps) => {
             w="100%"
             label="End date"
             placeholder="Choose end date"
-            value={endDate ? new Date(endDate) : undefined}
+            value={end !== null ? new Date(end) : undefined}
             onChange={handleChangeEndDate}
           />
         </Flex>
