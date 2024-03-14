@@ -88,9 +88,9 @@ const router = createBrowserRouter(
             element={<SurveyResult />}
           />
         </Route>
-        <Route element={<SurveyLaunchLayout />}>
-          <Route path="/survey/launch" element={<SurveyLauncher />} />
-        </Route>
+      </Route>
+      <Route element={<SurveyLaunchLayout />}>
+        <Route path="/survey/launch" element={<SurveyLauncher />} />
       </Route>
       <Route
         element={<AuthenticationLayout />}

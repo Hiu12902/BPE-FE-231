@@ -30,10 +30,21 @@ export interface SurveyUpdateBody {
     npsWeight?: number;
     cesWeight?: number;
     csatWeight?: number;
+    startDate?: Date | string | null;
+    endDate?: Date | string | null;
+    incompleteSurveyAction?: string;
+    allowDuplicateRespondent?: boolean;
+    sendResultToRespondent?: boolean;
 }
 
 export interface SurveyGeneralConfiguration extends SurveyInfo {
-    npsWright: number;
+    npsWeight: number;
     cesWeight: number;
     csatWeight: number;
+}
+
+export interface SurveyResponseConfiguration extends SurveyInfo {
+    incompleteSurveyAction: string;
+    allowDuplicateRespondent: boolean;
+    sendResultToRespondent: boolean;
 }
