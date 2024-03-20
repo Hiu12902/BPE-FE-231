@@ -1,8 +1,28 @@
-import { Flex, Title, Text, List, ThemeIcon, Badge } from "@mantine/core";
+import { useSurveyInformationQuery } from "@/hooks/useSurvey";
+import {
+  Flex,
+  Title,
+  Text,
+  List,
+  ThemeIcon,
+  Badge,
+  Loader,
+} from "@mantine/core";
 import { ReactComponent as IconCheck } from "@tabler/icons/icons/pin.svg";
 
-const LauncherIntroduction = () => {
-  return (
+interface LauncherIntroductionProps {
+  name: string;
+  description: string;
+}
+
+const LauncherIntroduction = (props: LauncherIntroductionProps) => {
+  const { name, description } = props;
+
+  return name.length <= 0 ? (
+    <Flex w="100%" justify="center" my={100} align="center">
+      <Loader />
+    </Flex>
+  ) : (
     <Flex
       direction="column"
       justify="center"
@@ -20,11 +40,9 @@ const LauncherIntroduction = () => {
             color: "#1976d2",
           }}
         >
-          Welcome to survey ABC of Process version XYZ
+          Welcome to {name}
         </Title>
-        <Text c="dimmed">
-          This survey is about The quick brown fox jumps over the lazy dog
-        </Text>
+        <Text c="dimmed">{description}</Text>
       </Flex>
       <Flex direction="column" gap={10}>
         <Title

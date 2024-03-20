@@ -6,7 +6,16 @@ import {
 } from "@/hooks/useSurvey";
 import { SurveyResponseConfiguration } from "@/interfaces/index";
 import { ConfirmModal } from "@/survey/components/Modal";
-import { Button, Divider, Flex, Loader, Text, Title } from "@mantine/core";
+import {
+  Button,
+  Divider,
+  Flex,
+  Loader,
+  Radio,
+  Switch,
+  Text,
+  Title,
+} from "@mantine/core";
 import { DateTimePicker, DatesProvider } from "@mantine/dates";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -27,10 +36,6 @@ const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
 
   const handleChangeEndDate = (value: Date) => {
     setEnd(value);
-    setSurveyConfig({
-      ...surveyConfig,
-      startDate: (end as Date).toISOString().substring(0, 19),
-    });
   };
 
   // GET: Survey Response configuration
@@ -156,7 +161,67 @@ const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
               }
             }}
           />
+          {/* Body */}
           <Flex className={classes.bodyWrapper}>
+            {/* allowMultipleResponses */}
+            <Flex justify="space-between" align="center" w="100%">
+              <Flex
+                direction="column"
+                justify="flex-start"
+                align="left"
+                w="100%"
+              >
+                <Title order={4}>
+                  Allow respondents to send another response
+                </Title>
+                <Text c="dimmed" fz={13}>
+                  Let respondents send another response when they have finished
+                  the current one.
+                </Text>
+              </Flex>
+              <Switch
+                size="lg"
+                value={surveyConfig.allowDuplicateRespondent ? "true" : "false"}
+                defaultChecked={surveyConfig.allowDuplicateRespondent}
+                onLabel="Yes"
+                offLabel="No"
+                onChange={(e) => {
+                  setSurveyConfig({
+                    ...surveyConfig,
+                    allowDuplicateRespondent: e.target.checked,
+                  });
+                }}
+              />
+            </Flex>
+            {/*  */}
+            <Flex justify="space-between" align="center" w="100%">
+              <Flex
+                direction="column"
+                justify="flex-start"
+                align="left"
+                w="100%"
+              >
+                <Title order={4}>Send survey results to respondents</Title>
+                <Text c="dimmed" fz={13}>
+                  Send a summary of survey results to respondents after the
+                  survey closes.
+                </Text>
+              </Flex>
+              <Switch
+                size="lg"
+                value={surveyConfig.sendResultToRespondent ? "true" : "false"}
+                defaultChecked={surveyConfig.sendResultToRespondent}
+                onLabel="Yes"
+                offLabel="No"
+                onChange={(e) => {
+                  setSurveyConfig({
+                    ...surveyConfig,
+                    sendResultToRespondent: e.target.checked,
+                  });
+                }}
+              />
+            </Flex>
+            {/* Start date/End date */}
             <Flex className={classes.sectionWrapper}>
               <Title order={4}>Survey availability</Title>
               <DatesProvider
@@ -202,13 +267,19 @@ const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
               </DatesProvider>
             </Flex>
           </Flex>
+          {/* Button group */}
           <Flex justify="space-between" m={10}>
             <Button color="red" onClick={handleDeleteSurvey}>
               Delete survey
             </Button>
             <Button
               disabled={
-                surveyConfig.startDate === start && surveyConfig.endDate === end
+                surveyConfig.startDate === start &&
+                surveyConfig.endDate === end &&
+                surveyConfig.allowDuplicateRespondent ===
+                  surveyResponseConfiguration?.allowDuplicateRespondent &&
+                surveyConfig.sendResultToRespondent ===
+                  surveyResponseConfiguration?.sendResultToRespondent
               }
               onClick={handleSaveSurveyChanges}
             >

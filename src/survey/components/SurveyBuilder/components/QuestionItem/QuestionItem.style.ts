@@ -47,5 +47,8 @@ export const useQuestionItemStyle = createStyles(() => ({
         marginBottom: 10,
         alignItems: 'center',
         gap: "10px"
+    },
+    badge: {
+        marginLeft: "-25px",
     }
 }))

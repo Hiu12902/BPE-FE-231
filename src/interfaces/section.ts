@@ -6,3 +6,9 @@ export interface Section {
     orderInSurvey?: number;
     questions: Question[];
 }
+
+export interface SectionInfo {
+    id: number;
+    sectionName: string;
+    orderInSurvey: number;
+}

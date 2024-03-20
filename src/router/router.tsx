@@ -89,8 +89,11 @@ const router = createBrowserRouter(
           />
         </Route>
       </Route>
-      <Route element={<SurveyLaunchLayout />}>
-        <Route path="/survey/launch" element={<SurveyLauncher />} />
+      <Route element={<SurveyLaunchLayout />} errorElement={<CrashComponent />}>
+        <Route
+          path=":processVersion/survey/launch"
+          element={<SurveyLauncher />}
+        />
       </Route>
       <Route
         element={<AuthenticationLayout />}

@@ -8,3 +8,4 @@ export * from './survey';
 export * from './option';
 export * from './question';
 export * from './section';
+export * from './response';

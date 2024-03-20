@@ -3,7 +3,7 @@ import { createStyles } from "@mantine/core";
 export const useMultipleChoiceQuestionStyle = createStyles(() => ({
     option: {
         alignContent: "center",
-        margin: "15px 5px 5px 5px",
+        margin: "5px",
     },
     radio: {
         '.mantine-Radio-body': {

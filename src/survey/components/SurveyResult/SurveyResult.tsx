@@ -1,92 +1,62 @@
-import { Flex } from "@mantine/core";
-import Chart, { ChartItem } from "chart.js/auto";
-import { useEffect } from "react";
+import { useSurveyResultQuery } from "@/hooks/useSurvey";
+import { ISurveyResult } from "@/interfaces/survey";
+import { Flex, LoadingOverlay } from "@mantine/core";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { ProgressBar, Table } from "./components";
 
 const SurveyResult = () => {
-  const resultGenerator = async () => {
-    const chart = new Chart(
-      document.getElementById("accquisitions") as ChartItem,
-      {
-        type: "doughnut",
-        data: {
-          labels: ["CSAT", "CES", "NPS"],
-          datasets: [
-            {
-              label: "Score",
-              data: [11, 16, 150],
-              backgroundColor: ["#a5e0e0", "#ffe6ab", "#9bd1f5"],
-              hoverBackgroundColor: ["#4bc0c0", "#FFCE56", "#36A2EB"],
-            },
-          ],
-        },
-        options: {
-          elements: {
-            arc: {
-              borderWidth: 2,
-              borderAlign: "center",
-              borderColor: "#fff",
-            },
-          },
-          plugins: {
-            legend: {
-              labels: {
-                font: {
-                  size: 16,
-                },
-              },
-              display: true,
-              onHover: (evt, item, legend) => {
-                (
-                  legend.chart.data.datasets[0].backgroundColor as string[]
-                ).forEach((color, index, colors) => {
-                  colors[index] =
-                    index === item.index || color.length === 9
-                      ? color
-                      : color + "3D";
-                });
-                legend.chart.update();
-              },
-              onLeave: function handleLeave(evt, item, legend) {
-                (
-                  legend.chart.data.datasets[0].backgroundColor as string[]
-                ).forEach((color, index, colors) => {
-                  colors[index] =
-                    color.length === 9 ? color.slice(0, -2) : color;
-                });
-                legend.chart.update();
-              },
-            },
-            title: {
-              display: true,
-              text: "Survey result",
-              font: {
-                size: 20,
-              },
-            },
-          },
-        },
-      }
-    );
-    return chart;
-  };
+  const processVersion = useParams().processVersion;
+  const [version, setVersion] = useState<string>("");
+  const [result, setResult] = useState<ISurveyResult>({} as ISurveyResult);
+  const { data } = useSurveyResultQuery({
+    processVersion: version,
+  });
 
   useEffect(() => {
-    resultGenerator();
-  }, []);
+    if (data) {
+      const totalWeight = data.ces.weight + data.csat.weight + data.nps.weight;
+      setResult({
+        ...data,
+        ces: {
+          ...data.ces,
+          score: Number(data.ces.score.toFixed(2)),
+          weight: Number(((data.ces.weight / totalWeight) * 100).toFixed(2)),
+        },
+        csat: {
+          ...data.csat,
+          score: Number(data.csat.score.toFixed(2)),
+          weight: Number(((data.csat.weight / totalWeight) * 100).toFixed(2)),
+        },
+        nps: {
+          ...data.nps,
+          score: Number(data.nps.score.toFixed(2)),
+          weight: Number(((data.nps.weight / totalWeight) * 100).toFixed(2)),
+        },
+      });
+    }
+  }, [data]);
 
-  return (
+  useEffect(() => {
+    if (processVersion) {
+      setVersion(processVersion);
+    }
+  }, [processVersion]);
+
+  return !result.ces || !result.csat || !result.nps ? (
+    <LoadingOverlay visible overlayColor="rgba(255, 255, 255, 0.5)" />
+  ) : (
     <Flex
-      style={{ width: "100%", height: "90vh", padding: "30px" }}
-      justify="center"
-      align="center"
+      style={{
+        width: "100%",
+        height: "90vh",
+        padding: "50px",
+      }}
+      direction="column"
+      gap="50px"
     >
-      <Flex
-        style={{ width: "100%", height: "90%" }}
-        justify="center"
-        align="center"
-      >
-        <canvas id="accquisitions"></canvas>
-      </Flex>
+      <ProgressBar result={result} />
+      <Table result={result} />
     </Flex>
   );
 };

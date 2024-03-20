@@ -1,5 +1,5 @@
 import Client from '@/api/client';
-import { IQueryParams, Survey, SurveyGeneralConfiguration, SurveyInfo, SurveyPushBody, SurveyResponseConfiguration, SurveyUpdateBody } from '../interfaces';
+import { IQueryParams, Section, SectionInfo, Survey, SurveyGeneralConfiguration, SurveyInfo, SurveyPushBody, SurveyResponseConfiguration, ISurveyResult, SurveySubmissionBody, SurveySubmissionResponse, SurveyUpdateBody } from '../interfaces';
 
 class SurveyApi {
     public static classInstance: SurveyApi;
@@ -81,6 +81,67 @@ class SurveyApi {
             incompleteSurveyAction: data.incompleteSurveyAction,
             allowDuplicateRespondent: data.allowDuplicateRespondent,
             sendResultToRespondent: data.sendResultToRespondent,
+        })
+    }
+
+    public getSectionInSurvey(props: { processVersion: string }): Promise<{
+        survey: SurveyInfo,
+        sections: SectionInfo[],
+    }> {
+        return Client.get(`/survey/section/all`, {
+            params: {
+                processVersionVersion: props.processVersion
+            }
+        })
+    }
+
+    public getQuestionInSection(props: { sectionId: number }): Promise<Section> {
+        return Client.get(`/survey/section`, {
+            params: {
+                sectionId: props.sectionId
+            }
+        })
+    }
+
+    public createSurveySubmission(props: SurveySubmissionBody): Promise<SurveySubmissionResponse> {
+        const {
+            processVersionVersion,
+            email,
+            fullName,
+            answers,
+        } = props;
+        return Client.post(`/survey/submission`, {
+            processVersionVersion: processVersionVersion,
+            email: email,
+            fullName: fullName,
+            answers: answers,
+        });
+    }
+
+    public getSurveySubmissions({
+        processVersionVersion,
+        responseId
+    }: {
+        processVersionVersion: string;
+        responseId: number;
+    }): Promise<any> {
+        return Client.get(`/survey/response`, {
+            params: {
+                processVersionVersion: processVersionVersion,
+                responseId: responseId,
+            }
+        })
+    }
+
+    public getSurveyResult({
+        processVersion
+    }: {
+        processVersion: string;
+    }): Promise<ISurveyResult> {
+        return Client.get(`/survey/result`, {
+            params: {
+                processVersionVersion: processVersion,
+            }
         })
     }
 }
