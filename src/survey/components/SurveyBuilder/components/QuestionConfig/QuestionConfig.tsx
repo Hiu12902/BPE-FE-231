@@ -30,7 +30,6 @@ import TitleInformation from "../TitleInformation";
 import { useQuestionConfigStyle } from "./QuestionConfig.style";
 import { useUpdateQuestionMutation } from "@/hooks/useQuestion";
 import { useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 
 interface QuestionConfigProps {
   data: Survey;

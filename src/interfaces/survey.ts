@@ -1,3 +1,4 @@
+import { ResponseSubmission } from "./response";
 import { Section } from "./section";
 
 export interface SurveyInfo {
@@ -35,6 +36,42 @@ export interface SurveyUpdateBody {
     incompleteSurveyAction?: string;
     allowDuplicateRespondent?: boolean;
     sendResultToRespondent?: boolean;
+}
+
+export interface SurveySubmissionBody {
+    processVersionVersion: string;
+    email: string;
+    fullName: string;
+    answers: ResponseSubmission[];
+}
+
+export interface SurveySubmissionResponse {
+    responseId: number;
+    message: string;
+    incompleteSurveyAction?: string;
+    allowDuplicateRespondent?: boolean;
+    sendResultToRespondent?: boolean;
+}
+
+export interface ISurveyResult {
+    numberOfResponses: number;
+    ces: {
+        score: number;
+        weight: number;
+        numOfPositiveAnswers: number;
+    }
+    nps: {
+        score: number;
+        weight: number;
+        numOfPromoters: number;
+        numOfDetractors: number;
+    }
+    csat: {
+        score: number;
+        weight: number;
+        numOfPositiveAnswers: number;
+    }
+    totalScore: number;
 }
 
 export interface SurveyGeneralConfiguration extends SurveyInfo {

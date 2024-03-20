@@ -7,6 +7,7 @@ import notificationSlice from './notifications';
 import pinnedWorkspaceSlice from './pinnedWorkspace';
 import projectSlice from './project';
 import requestsSlice from './requests';
+import responseSlice from './response';
 import tabsSlice from './tabs';
 import toolSlice from './tool';
 import userSlice from './user';
@@ -25,6 +26,7 @@ const pinnedWorkspaceActions = pinnedWorkspaceSlice.actions;
 const membersActions = membersSlice.actions;
 const requestsActions = requestsSlice.actions;
 const notificationActions = notificationSlice.actions;
+const responseActions = responseSlice.actions;
 
 export {
   toolSliceActions,
@@ -53,4 +55,6 @@ export {
   requestsActions,
   notificationSlice,
   notificationActions,
+  responseSlice,
+  responseActions,
 };

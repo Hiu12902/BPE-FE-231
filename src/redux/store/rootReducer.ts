@@ -11,7 +11,8 @@ import {
   requestsSlice,
   toolSlice,
   userSlice,
-  workspaceSlice
+  workspaceSlice,
+  responseSlice
 } from '../slices';
 import tabsSlice from '../slices/tabs';
 
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   [membersSlice.name]: membersSlice.reducer,
   [requestsSlice.name]: requestsSlice.reducer,
   [notificationSlice.name]: notificationSlice.reducer,
+  [responseSlice.name]: responseSlice.reducer,
 });
 
 export default rootReducer;

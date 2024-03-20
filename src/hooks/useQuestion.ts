@@ -1,5 +1,5 @@
-import { useMutation } from "@tanstack/react-query";
-import { questionApi } from "../api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { questionApi, surveyApi } from "../api";
 import { QuestionDeleteBody, QuestionPushBody, QuestionUpdateBody, UseMutation } from "../interfaces";
 import useNotification from "./useNotification";
 
@@ -58,4 +58,21 @@ export const useCreateQuestionMutation = ({
         },
         onSettled: () => onSettled?.(),
     })
+}
+
+export const useQuestionInSectionQuery = ({
+    sectionId
+}: {
+    sectionId: number
+}) => {
+    const queryKey = ['question', sectionId];
+
+    const questionInSectionQuery = useQuery({
+        queryKey: queryKey,
+        queryFn: () => surveyApi.getQuestionInSection({ sectionId }),
+    });
+
+    return {
+        ...questionInSectionQuery,
+    }
 }

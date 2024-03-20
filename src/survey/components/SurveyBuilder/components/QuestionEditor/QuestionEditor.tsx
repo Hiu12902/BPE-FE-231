@@ -1,17 +1,23 @@
-import { IsChangedQuestionContextProps, Survey } from "@/interfaces/index";
-import { IsChangedQuestionContext } from "@/survey/context";
+import { Survey } from "@/interfaces/index";
 import {
   Badge,
   Button,
+  Divider,
   Flex,
   Group,
-  Loader,
+  Modal,
   ScrollArea,
   Text,
+  Title,
 } from "@mantine/core";
-import { useContext } from "react";
 import QuestionSection from "../QuestionSection";
 import { useQuestionEditorStyle } from "./QuestionEditor.style";
+import { useState } from "react";
+import { PublishModal } from "@/survey/components/Modal";
+import { useNavigate, useParams } from "react-router-dom";
+import SurveyLauncher from "@/survey/components/SurveyLauncher";
+import { useDispatch } from "react-redux";
+import { responseActions } from "@/redux/slices";
 
 interface QuestionEditorProps {
   data?: Survey;
@@ -20,9 +26,15 @@ interface QuestionEditorProps {
 const QuestionEditor = (props: QuestionEditorProps) => {
   const { data } = props;
   const { classes } = useQuestionEditorStyle();
-  // const { isFetching } = useContext(
-  //   IsChangedQuestionContext
-  // ) as IsChangedQuestionContextProps;
+  const dispatch = useDispatch();
+  const [openPublishModal, setOpenPublishModal] = useState<boolean>(false);
+  const [openPreviewModal, setPreviewModal] = useState<boolean>(false);
+
+  const handlePublish = () => {};
+  const handlePreview = () => {
+    setPreviewModal(true);
+  };
+
   return (
     <Flex
       className={classes.wrapper}
@@ -30,10 +42,28 @@ const QuestionEditor = (props: QuestionEditorProps) => {
       justify="center"
       align="center"
     >
-      {/* {isFetching ? (
-        <Loader />
-      ) : (
-        <> */}
+      <Modal
+        opened={openPreviewModal}
+        onClose={() => {
+          setPreviewModal(false);
+          dispatch(responseActions.deleteResponse());
+        }}
+        fullScreen
+      >
+        <Flex direction="column" justify="center" align="center">
+          <Title order={3} color="blue">
+            Survey preview
+          </Title>
+          <SurveyLauncher preview={true} />
+        </Flex>
+      </Modal>
+      <PublishModal
+        opened={openPublishModal}
+        title="Publish survey"
+        message="Are you sure you want to publish this survey?"
+        onConfirm={handlePublish}
+        onClose={() => setOpenPublishModal(false)}
+      />
       <Flex
         justify="space-between"
         align="center"
@@ -43,7 +73,6 @@ const QuestionEditor = (props: QuestionEditorProps) => {
           <Badge>Draft</Badge>
           <Text c="dimmed">Last saved: Feb 3, 2024 at 2:15 AM.</Text>
         </Group>
-        <Button variant="light" color="blue" children="Add New question" />
       </Flex>
 
       <ScrollArea className={classes.editArea}>
@@ -57,14 +86,21 @@ const QuestionEditor = (props: QuestionEditorProps) => {
         justify="space-between"
         align="center"
       >
-        <Group>
-          <Button variant="light" color="gray" children="Preview" />
-          <Button variant="light" color="indigo" children="Publish" />
-        </Group>
-        <Button variant="light" color="green" children="Save" />
+        <Button
+          variant="light"
+          color="green"
+          children="Preview"
+          onClick={handlePreview}
+        />
+        <Button
+          variant="light"
+          color="blue"
+          children="Publish"
+          onClick={() => {
+            setOpenPublishModal(true);
+          }}
+        />
       </Flex>
-      {/* </>
-      )} */}
     </Flex>
   );
 };

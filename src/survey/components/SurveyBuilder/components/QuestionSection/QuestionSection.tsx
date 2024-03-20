@@ -102,11 +102,7 @@ const QuestionSection = (props: QuestionSectionProps) => {
             {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef}>
                 {state.map((question, index) => (
-                  <QuestionItem
-                    data={question}
-                    sectionId={sectionId}
-                    index={index}
-                  />
+                  <QuestionItem data={question} sectionId={sectionId} index={index} />
                 ))}
                 {provided.placeholder}
               </div>

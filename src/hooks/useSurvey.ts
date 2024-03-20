@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { surveyApi } from '../api';
-import { IQueryParams, SurveyPushBody, SurveyUpdateBody, UseMutation } from '../interfaces';
+import { IQueryParams, SurveyPushBody, SurveySubmissionBody, SurveyUpdateBody, UseMutation } from '../interfaces';
 import useNotification from './useNotification';
 
 export const useSurvey = (
@@ -142,5 +142,52 @@ export const useDeleteSurveyMutation = ({ onSuccess, onSettled }: UseMutation) =
             });
         },
         onSettled: () => onSettled?.(),
+    })
+}
+
+export const useSurveySubmissionMutation = ({ onSuccess, onSettled }: UseMutation) => {
+    return useMutation({
+        mutationFn: (params: SurveySubmissionBody) => surveyApi.createSurveySubmission(params),
+        onSuccess: (data: any) => onSuccess?.(data),
+        onError: (err: any) => {
+            const notify = useNotification();
+            notify({
+                title: 'Error',
+                message: err.message,
+                type: 'error',
+            });
+        },
+        onSettled: () => onSettled?.(),
+    })
+}
+
+export const useSurveySubmissionQuery = ({
+    processVersionVersion,
+    responseId
+}: {
+    processVersionVersion: string;
+    responseId: number;
+}) => {
+    return useQuery({
+        queryKey: ['survey_submission', processVersionVersion, responseId],
+        queryFn: () => surveyApi.getSurveySubmissions({
+            processVersionVersion,
+            responseId,
+        }),
+        enabled: !!responseId,
+    })
+}
+
+export const useSurveyResultQuery = ({
+    processVersion
+}: {
+    processVersion: string;
+}) => {
+    return useQuery({
+        queryKey: ['survey_result', processVersion],
+        queryFn: () => surveyApi.getSurveyResult({
+            processVersion,
+        }),
+        enabled: !!processVersion,
     })
 }

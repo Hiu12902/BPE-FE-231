@@ -159,11 +159,15 @@ const QuestionItem = (props: QuestionItemProps) => {
         }}
       >
         <Flex w="100%" justify="space-between" align="center">
-          <AddButton
-            top={-25}
-            left={-25}
-            handleAddNewQuestion={handleAddAboveQuestion}
-          />
+          <Flex justify="flex-start" align="center">
+            <AddButton
+              top={-25}
+              left={-25}
+              handleAddNewQuestion={handleAddAboveQuestion}
+            />
+            <Badge className={classes.badge}>Question {index + 1}</Badge>
+          </Flex>
+
           <Flex className={classes.questionControl} align="center">
             <Badge
               color="blue"
