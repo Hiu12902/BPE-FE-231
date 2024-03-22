@@ -1,3 +1,5 @@
+import useNotification from "@/hooks/useNotification";
+import { SurveyPublishBody } from "@/interfaces/index";
 import {
   ActionIcon,
   Badge,
@@ -12,55 +14,70 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { useEffect, useState } from "react";
-import { ReactComponent as IconSend } from "@tabler/icons/icons/plus.svg";
-import { ReactComponent as IconCopy } from "@tabler/icons/icons/copy.svg";
-import { ReactComponent as IconDelete } from "@tabler/icons/icons/x.svg";
+import { DateTimePicker, DatesProvider } from "@mantine/dates";
 import { getHotkeyHandler } from "@mantine/hooks";
+import { ReactComponent as IconCopy } from "@tabler/icons/icons/copy.svg";
+import { ReactComponent as IconSend } from "@tabler/icons/icons/plus.svg";
+import { ReactComponent as IconDelete } from "@tabler/icons/icons/x.svg";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { usePublishModalStyle } from "./PublishModal.style";
-import useNotification from "@/hooks/useNotification";
-import TimePicker from "../../SurveyConfiguration/components/ConfigurationEditor/TimePicker";
-import { DateTimePicker, DatesProvider } from "@mantine/dates";
 
 interface PublishModalProps extends ModalProps {
   opened: boolean;
   title?: string;
   message?: string | JSX.Element;
-  onConfirm: () => void;
+  onConfirm: (data: SurveyPublishBody) => void;
 }
 
 const PublishModal = (props: PublishModalProps) => {
-  const { opened, title, message, onConfirm, onClose } = props;
   const notify = useNotification();
   const { classes } = usePublishModalStyle();
-  const processVersion = useParams().processVersion;
   const [email, setEmail] = useState<string>("");
+  const processVersion = useParams().processVersion;
   const [emailList, setEmailList] = useState<string[]>([]);
+  const { opened, title, message, onConfirm, onClose } = props;
 
-  const [start, setStart] = useState<Date | string | null>(null);
   const [end, setEnd] = useState<Date | string | null>(null);
+  const [start, setStart] = useState<Date | string | null>(null);
+
   const handleChangeStartDate = (value: Date) => {
     setStart(value);
   };
   const handleChangeEndDate = (value: Date) => {
     setEnd(value);
   };
+  const [url, setUrl] = useState<string>("");
 
-  const handleCancel = () => {
+  const handleClose = () => {
     setEmail("");
     setEmailList([]);
     setStart(null);
     setEnd(null);
     onClose?.();
   };
+
   const handlePublish = () => {
-    // onConfirm();
-    console.log(emailList);
-    console.log((start as Date).toISOString().substring(0, 19));
-    console.log((end as Date).toISOString().substring(0, 19));
-    onClose?.();
+    const toLocaleISOString = (date: Date) => {
+      const tzoffset = new Date().getTimezoneOffset() * 60000;
+      return new Date(date.getTime() - tzoffset).toISOString().substring(0, 19);
+    };
+
+    onConfirm?.({
+      email: emailList,
+      startDate:
+        start !== null
+          ? toLocaleISOString(start as Date)
+          : toLocaleISOString(new Date()),
+      endDate: end !== null ? toLocaleISOString(end as Date) : null,
+      surveyUrl: url,
+      processVersionVersion: "",
+      projectId: 0,
+    });
+
+    handleClose();
   };
+
   const handleAddEmail = () => {
     setEmail("");
     if (!emailList.find((email) => email)) {
@@ -69,21 +86,21 @@ const PublishModal = (props: PublishModalProps) => {
   };
 
   useEffect(() => {
-    if (emailList) {
-      console.log(emailList);
+    if (processVersion) {
+      setUrl(`http://localhost:5173/${processVersion}/survey/launch`);
     }
-  }, [emailList]);
+  }, [processVersion]);
 
   return (
     <Modal
-      size="lg"
+      size="xl"
       centered
       overlayProps={{
         blur: 3,
         opacity: 0.55,
       }}
       opened={opened}
-      onClose={handleCancel}
+      onClose={handleClose}
       title={
         <Badge size="lg" mb={5} color="blue">
           {title}
@@ -164,13 +181,11 @@ const PublishModal = (props: PublishModalProps) => {
           Use this link to distribute your survey
         </Text>
         <Input
-          value={`http://localhost:5173/${processVersion}/survey/launch`}
+          value={url}
           rightSection={
             <IconCopy
               onClick={() => {
-                navigator.clipboard.writeText(
-                  `http://localhost:5173/${processVersion}/survey/launch`
-                );
+                navigator.clipboard.writeText(url);
                 notify({
                   title: "Link copied",
                   message: "Link has been copied to clipboard",
@@ -203,8 +218,9 @@ const PublishModal = (props: PublishModalProps) => {
                 clearable
                 w="100%"
                 label="Start date"
+                description="Leave empty if you want to publish now."
                 defaultValue={undefined}
-                value={start !== null ? new Date(start) : undefined}
+                value={start !== null ? new Date(start) : null}
                 placeholder="Choose start date"
                 onChange={handleChangeStartDate}
               />
@@ -215,9 +231,10 @@ const PublishModal = (props: PublishModalProps) => {
                 clearable
                 w="100%"
                 label="End date"
+                description="End date could be empty, survey will launch forever."
                 placeholder="Choose end date"
                 defaultValue={undefined}
-                value={end !== null ? new Date(end) : undefined}
+                value={end !== null ? new Date(end) : null}
                 onChange={handleChangeEndDate}
               />
             </Flex>
@@ -227,7 +244,7 @@ const PublishModal = (props: PublishModalProps) => {
 
       <Divider my="md" />
       <Group position="right">
-        <Button variant="outline" onClick={handleCancel} children="Cancel" />
+        <Button variant="outline" onClick={handleClose} children="Cancel" />
         <Button onClick={handlePublish} color="red" children="Publish" />
       </Group>
     </Modal>

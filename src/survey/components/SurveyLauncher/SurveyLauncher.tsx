@@ -7,7 +7,7 @@ import { responseActions } from "@/redux/slices";
 import { Button, Flex, Group, Loader, Stepper } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ConfirmModal } from "../Modal";
 import { LauncherConclusion, LauncherIntroduction } from "./components";
 import QuestionSection from "./components/QuestionSection";
@@ -17,12 +17,13 @@ interface SectionMapStep {
 }
 
 const SurveyLauncher = ({ preview }: { preview?: boolean }) => {
-  const [SecMapStep, setSecMapStep] = useState<SectionMapStep>({});
-  const [step, setStep] = useState<number>(0);
   const dispatch = useDispatch();
   const notify = useNotification();
+  const navigate = useNavigate();
   const branch = useSelector(getBranch);
   const response = useSelector(getResponse);
+  const [step, setStep] = useState<number>(0);
+  const [SecMapStep, setSecMapStep] = useState<SectionMapStep>({});
   const [openConfirmBack, setOpenConfirmBack] = useState<boolean>(false);
 
   const handleChangeStep = (stepIndex: number) => {
@@ -94,9 +95,16 @@ const SurveyLauncher = ({ preview }: { preview?: boolean }) => {
   const [processVersion, setProcessVersion] = useState<string>("");
   const version = useParams().processVersion;
 
-  const { data, isFetching } = useSectionQuery({
+  const { data, isFetching, error } = useSectionQuery({
     processVersion: processVersion,
+    mode: preview === true ? "preview" : "published",
   });
+
+  useEffect(() => {
+    if (error) {
+      navigate("/404");
+    }
+  }, [error]);
 
   const section = data?.sections;
   const survey = data?.survey;
@@ -120,7 +128,7 @@ const SurveyLauncher = ({ preview }: { preview?: boolean }) => {
         });
       }
     }
-  }, [section, branch]);
+  }, [section, branch, data]);
 
   const surveySubmitMutation = useSurveySubmissionMutation({
     onSuccess: (data) => {
@@ -128,7 +136,6 @@ const SurveyLauncher = ({ preview }: { preview?: boolean }) => {
         message: "Survey submitted successfully",
         type: "success",
       });
-      // setLastestResponse(data.responseId);
     },
     onError: (error) => {
       notify({

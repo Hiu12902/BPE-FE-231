@@ -7,8 +7,8 @@ export interface SurveyInfo {
     description: string;
     createdAt: Date | string;
     isDeleted: boolean;
-    startDate: Date | string | null;
-    endDate: Date | string | null;
+    startDate?: Date | string | null;
+    endDate?: Date | string | null;
     isPublished: boolean;
 }
 
@@ -81,7 +81,24 @@ export interface SurveyGeneralConfiguration extends SurveyInfo {
 }
 
 export interface SurveyResponseConfiguration extends SurveyInfo {
-    incompleteSurveyAction: string;
-    allowDuplicateRespondent: boolean;
-    sendResultToRespondent: boolean;
+    incompleteSurveyAction?: string;
+    allowDuplicateRespondent?: boolean;
+    sendResultToRespondent?: boolean;
+}
+
+export interface SurveyPublishBody {
+    projectId: number;
+    processVersionVersion: string;
+    email: string[];
+    surveyUrl: string;
+    startDate: null | Date | string;
+    endDate: null | Date | string;
+}
+
+export interface SurveyPublishResponse {
+    id: number;
+    isPublished: boolean;
+    startDate?: Date | string | null;
+    endDate?: Date | string | null;
+    surveyUrl: string;
 }

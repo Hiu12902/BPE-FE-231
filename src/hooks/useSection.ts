@@ -3,8 +3,10 @@ import { surveyApi } from "../api";
 
 export const useSectionQuery = ({
   processVersion,
+  mode,
 }: {
   processVersion: string;
+  mode: string;
 }) => {
   const queryKey = ["section", processVersion];
 
@@ -13,8 +15,10 @@ export const useSectionQuery = ({
     queryFn: () =>
       surveyApi.getSectionInSurvey({
         processVersion,
+        mode,
       }),
     enabled: !!processVersion,
+    retry: 3,
   });
 
   return {

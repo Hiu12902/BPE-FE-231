@@ -1,4 +1,4 @@
-import { Survey } from "@/interfaces/index";
+import { Survey, SurveyPublishBody } from "@/interfaces/index";
 import {
   Badge,
   Button,
@@ -18,6 +18,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import SurveyLauncher from "@/survey/components/SurveyLauncher";
 import { useDispatch } from "react-redux";
 import { responseActions } from "@/redux/slices";
+import { useSurveyPublishMutation } from "@/hooks/useSurvey";
+import useNotification from "@/hooks/useNotification";
 
 interface QuestionEditorProps {
   data?: Survey;
@@ -25,12 +27,41 @@ interface QuestionEditorProps {
 
 const QuestionEditor = (props: QuestionEditorProps) => {
   const { data } = props;
+  const { projectId, processVersion } = useParams();
+  const notify = useNotification();
   const { classes } = useQuestionEditorStyle();
   const dispatch = useDispatch();
   const [openPublishModal, setOpenPublishModal] = useState<boolean>(false);
   const [openPreviewModal, setPreviewModal] = useState<boolean>(false);
 
-  const handlePublish = () => {};
+  const publishSurveyMutation = useSurveyPublishMutation({
+    onSuccess: (data) => {
+      if (data) {
+        if (data.message) {
+          notify({
+            message: data.message,
+            type: "error",
+          });
+        } else {
+          notify({
+            message: "Survey published successfully!",
+            type: "success",
+          });
+        }
+      }
+    },
+  });
+
+  const handlePublish = (data: SurveyPublishBody) => {
+    if (projectId && processVersion) {
+      publishSurveyMutation.mutate({
+        ...data,
+        projectId: Number(projectId),
+        processVersionVersion: processVersion,
+      });
+    }
+  };
+
   const handlePreview = () => {
     setPreviewModal(true);
   };
@@ -61,7 +92,9 @@ const QuestionEditor = (props: QuestionEditorProps) => {
         opened={openPublishModal}
         title="Publish survey"
         message="Are you sure you want to publish this survey?"
-        onConfirm={handlePublish}
+        onConfirm={(data: SurveyPublishBody) => {
+          handlePublish(data);
+        }}
         onClose={() => setOpenPublishModal(false)}
       />
       <Flex
