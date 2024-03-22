@@ -127,8 +127,10 @@ const ProgressBar = (props: ProgressBarProps) => {
           <Flex w="10%" justify="flex-end" px={20}>
             <Badge
               size="md"
-              variant="gradient"
-              gradient={{ from: "teal", to: "lime", deg: 100 }}
+              variant="outline"
+              color="teal"
+              // variant="gradient"
+              // gradient={{ from: "teal", to: "lime", deg: 100 }}
             >
               CES
             </Badge>
@@ -167,8 +169,10 @@ const ProgressBar = (props: ProgressBarProps) => {
           <Flex w="10%" justify="flex-end" px={20}>
             <Badge
               size="md"
-              variant="gradient"
-              gradient={{ from: "coral", to: "yellow", deg: 100 }}
+              variant="outline"
+              color="orange"
+              // variant="gradient"
+              // gradient={{ from: "coral", to: "yellow", deg: 100 }}
             >
               CSAT
             </Badge>
@@ -207,8 +211,10 @@ const ProgressBar = (props: ProgressBarProps) => {
           <Flex w="10%" justify="flex-end" px={20}>
             <Badge
               size="md"
-              variant="gradient"
-              gradient={{ from: "cyan", to: "indigo", deg: 105 }}
+              variant="outline"
+              color="indigo"
+              // variant="gradient"
+              // gradient={{ from: "cyan", to: "indigo", deg: 105 }}
             >
               NPS
             </Badge>
