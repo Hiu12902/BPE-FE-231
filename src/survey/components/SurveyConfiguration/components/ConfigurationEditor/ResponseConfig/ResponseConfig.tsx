@@ -1,5 +1,6 @@
 import useNotification from "@/hooks/useNotification";
 import {
+  useCloseSurveyMutation,
   useDeleteSurveyMutation,
   useSurveyResponseConfigQuery,
   useUpdateSurveyResponseConfigurationMutation,
@@ -22,48 +23,61 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useResponseConfigStyle } from "./ResponseConfig.style";
 
 const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
-  const { classes } = useResponseConfigStyle();
-  const { projectId } = useParams();
-  const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false);
   const navigate = useNavigate();
   const notify = useNotification();
-  const [start, setStart] = useState<Date | string | null>(null);
-  const [end, setEnd] = useState<Date | string | null>(null);
+  const { classes } = useResponseConfigStyle();
+  const { projectId, processVersion } = useParams();
+  const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false);
+  const [configChange, setConfigChange] = useState<SurveyResponseConfiguration>(
+    {} as SurveyResponseConfiguration
+  );
+  const [startValue, setStartValue] = useState<Date | string | null>(null);
+  const [endValue, setEndValue] = useState<Date | string | null>(null);
 
-  const handleChangeStartDate = (value: Date) => {
-    setStart(value);
-  };
-
-  const handleChangeEndDate = (value: Date) => {
-    setEnd(value);
+  const toLocaleISOString = (date: Date) => {
+    const tzoffset = new Date().getTimezoneOffset() * 60000;
+    return new Date(date.getTime() - tzoffset).toISOString().substring(0, 19);
   };
 
   // GET: Survey Response configuration
-  const {
-    data: surveyResponseConfiguration,
-    isLoading,
-    refetch: refetchSurveyResponseConfiguration,
-  } = useSurveyResponseConfigQuery({
-    projectId: projectId,
-    surveyId: surveyId,
-  });
+  const { data: responseConfig, refetch: refetchResponseConfig } =
+    useSurveyResponseConfigQuery({
+      projectId: projectId,
+      surveyId: surveyId,
+    });
 
   // UPDATE: Survey Response configuration
-  const responseConfigurationMutation =
-    useUpdateSurveyResponseConfigurationMutation({
-      onSuccess: () => {
-        refetchSurveyResponseConfiguration();
+  const responseConfigMutation = useUpdateSurveyResponseConfigurationMutation({
+    onSuccess: (data) => {
+      if (data.message) {
+        notify({
+          message: data.message,
+          type: "error",
+        });
+      } else {
         notify({
           message: "Survey information updated successfully.",
           type: "success",
         });
-      },
-    });
+        refetchResponseConfig();
+      }
+    },
+  });
 
-  const [surveyConfig, setSurveyConfig] = useState<SurveyResponseConfiguration>(
-    surveyResponseConfiguration as SurveyResponseConfiguration
-  );
+  // POST: Close survey
+  const closeSurveyMutation = useCloseSurveyMutation({
+    onSuccess: (data: any) => {
+      if (data) {
+        notify({
+          message: "Survey closed successfully.",
+          type: "success",
+        });
+        refetchResponseConfig();
+      }
+    },
+  });
 
+  // DELETE: Delete survey
   const deleteSurveyMutation = useDeleteSurveyMutation({
     onSuccess: (data: any) => {
       if (data.message) {
@@ -74,10 +88,10 @@ const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
 
   const handleSaveSurveyChanges = () => {
     if (surveyId && projectId) {
-      responseConfigurationMutation.mutate({
+      responseConfigMutation.mutate({
         surveyId: surveyId,
         projectId: Number(projectId),
-        ...surveyConfig,
+        ...configChange,
       });
     }
   };
@@ -86,210 +100,236 @@ const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
     setOpenConfirmModal(true);
   };
 
-  useEffect(() => {
-    if (surveyResponseConfiguration) {
-      setSurveyConfig(surveyResponseConfiguration);
-    }
-  }, [surveyResponseConfiguration]);
-
-  useEffect(() => {
-    if (start) {
-      setSurveyConfig({
-        ...surveyConfig,
-        startDate: (start as Date).toISOString().substring(0, 19),
+  const handleCloseSurvey = () => {
+    if (processVersion && projectId) {
+      closeSurveyMutation.mutate({
+        processVersionVersion: processVersion,
+        projectId: Number(projectId),
       });
     }
-  }, [start]);
+  };
+
+  const handleChangeStartDate = (value: Date) => {
+    setStartValue(value);
+  };
+
+  const handleChangeEndDate = (value: Date) => {
+    setEndValue(value);
+  };
 
   useEffect(() => {
-    if (end) {
-      setSurveyConfig({
-        ...surveyConfig,
-        endDate: (end as Date).toISOString().substring(0, 19),
-      });
+    if (responseConfig) {
+      console.log("responseConfig fetch: ", responseConfig);
+      const { startDate, endDate } = responseConfig;
+      if (startDate !== null && startDate) {
+        setStartValue(new Date(startDate));
+      }
+      if (endDate !== null && endDate) {
+        setEndValue(new Date(endDate));
+      }
     }
-  }, [end]);
+  }, [responseConfig]);
 
-  if (isLoading) {
-    return (
-      <Flex
-        style={{
-          height: "screen",
-          width: "70%",
+  // useEffect(() => {
+  //   if (configChange) {
+  //     console.log("configChange changes: ", configChange);
+  //   }
+  // }, [configChange]);
+
+  useEffect(() => {
+    if (responseConfig?.startDate !== undefined && startValue !== null) {
+      if (toLocaleISOString(startValue as Date) !== responseConfig?.startDate) {
+        setConfigChange({
+          ...configChange,
+          startDate: toLocaleISOString(startValue as Date),
+        });
+      } else {
+        const { startDate, ...rest } = configChange;
+        setConfigChange(rest);
+      }
+    }
+  }, [startValue]);
+
+  useEffect(() => {
+    if (responseConfig?.endDate !== undefined && endValue !== null) {
+      if (toLocaleISOString(endValue as Date) !== responseConfig?.endDate) {
+        setConfigChange({
+          ...configChange,
+          endDate: toLocaleISOString(endValue as Date),
+        });
+      } else {
+        const { endDate, ...rest } = configChange;
+        setConfigChange(rest);
+      }
+    }
+  }, [endValue]);
+
+  return !responseConfig ? (
+    <Flex
+      style={{
+        height: "screen",
+        width: "70%",
+      }}
+      align="center"
+      justify="center"
+    >
+      <Loader />
+    </Flex>
+  ) : (
+    <Flex
+      direction="column"
+      justify="space-between"
+      className={classes.wrapper}
+    >
+      <ConfirmModal
+        opened={openConfirmModal}
+        onClose={() => setOpenConfirmModal(false)}
+        title="Delete survey"
+        message={
+          <Flex direction="column">
+            <Text>Please confirm your action!</Text>
+            <br />
+            <Text
+              variant="gradient"
+              gradient={{ from: "indigo", to: "red", deg: 45 }}
+              sx={{ fontFamily: "Greycliff CF, sans-serif" }}
+              fw={700}
+            >
+              This action will remove all the survey information, section and
+              questions in the survey. Survey result will be deleted and reset
+              to default."
+            </Text>
+          </Flex>
+        }
+        onConfirm={() => {
+          if (surveyId && projectId) {
+            deleteSurveyMutation.mutate({
+              surveyId: surveyId,
+              projectId: projectId,
+            });
+            setOpenConfirmModal(false);
+          }
         }}
-        align="center"
-        justify="center"
-      >
-        <Loader />
-      </Flex>
-    );
-  } else {
-    return (
-      surveyConfig && (
-        <Flex
-          direction="column"
-          justify="space-between"
-          className={classes.wrapper}
-        >
-          <ConfirmModal
-            opened={openConfirmModal}
-            onClose={() => setOpenConfirmModal(false)}
-            title="Delete survey"
-            message={
-              <Flex direction="column">
-                <Text>Please confirm your action!</Text>
-                <br />
-                <Text
-                  variant="gradient"
-                  gradient={{ from: "indigo", to: "red", deg: 45 }}
-                  sx={{ fontFamily: "Greycliff CF, sans-serif" }}
-                  fw={700}
-                >
-                  This action will remove all the survey information, section
-                  and questions in the survey. Survey result will be deleted and
-                  reset to default."
-                </Text>
-              </Flex>
-            }
-            onConfirm={() => {
-              if (surveyId && projectId) {
-                deleteSurveyMutation.mutate({
-                  surveyId: surveyId,
-                  projectId: projectId,
+      />
+      {/* Body */}
+      <Flex className={classes.bodyWrapper}>
+        {/* allowMultipleResponses */}
+        <Flex justify="space-between" align="center" w="100%">
+          <Flex direction="column" justify="flex-start" align="left" w="100%">
+            <Title order={4}>Allow respondents to send another response</Title>
+            <Text c="dimmed" fz={13}>
+              Let respondents send another response when they have finished the
+              current one.
+            </Text>
+          </Flex>
+          <Switch
+            size="lg"
+            value={configChange.allowDuplicateRespondent ? "true" : "false"}
+            defaultChecked={responseConfig.allowDuplicateRespondent}
+            onLabel="Yes"
+            offLabel="No"
+            onChange={(e) => {
+              if (
+                responseConfig.allowDuplicateRespondent !== e.target.checked
+              ) {
+                setConfigChange({
+                  ...configChange,
+                  allowDuplicateRespondent: e.target.checked,
                 });
-                setOpenConfirmModal(false);
+              } else {
+                const { allowDuplicateRespondent, ...rest } = configChange;
+                setConfigChange(rest);
               }
             }}
           />
-          {/* Body */}
-          <Flex className={classes.bodyWrapper}>
-            {/* allowMultipleResponses */}
-            <Flex justify="space-between" align="center" w="100%">
-              <Flex
-                direction="column"
-                justify="flex-start"
-                align="left"
-                w="100%"
-              >
-                <Title order={4}>
-                  Allow respondents to send another response
-                </Title>
-                <Text c="dimmed" fz={13}>
-                  Let respondents send another response when they have finished
-                  the current one.
-                </Text>
-              </Flex>
-              <Switch
-                size="lg"
-                value={surveyConfig.allowDuplicateRespondent ? "true" : "false"}
-                defaultChecked={surveyConfig.allowDuplicateRespondent}
-                onLabel="Yes"
-                offLabel="No"
-                onChange={(e) => {
-                  setSurveyConfig({
-                    ...surveyConfig,
-                    allowDuplicateRespondent: e.target.checked,
-                  });
-                }}
-              />
-            </Flex>
-            {/*  */}
-            <Flex justify="space-between" align="center" w="100%">
-              <Flex
-                direction="column"
-                justify="flex-start"
-                align="left"
-                w="100%"
-              >
-                <Title order={4}>Send survey results to respondents</Title>
-                <Text c="dimmed" fz={13}>
-                  Send a summary of survey results to respondents after the
-                  survey closes.
-                </Text>
-              </Flex>
-              <Switch
-                size="lg"
-                value={surveyConfig.sendResultToRespondent ? "true" : "false"}
-                defaultChecked={surveyConfig.sendResultToRespondent}
-                onLabel="Yes"
-                offLabel="No"
-                onChange={(e) => {
-                  setSurveyConfig({
-                    ...surveyConfig,
-                    sendResultToRespondent: e.target.checked,
-                  });
-                }}
-              />
-            </Flex>
-            {/* Start date/End date */}
-            <Flex className={classes.sectionWrapper}>
-              <Title order={4}>Survey availability</Title>
-              <DatesProvider
-                settings={{
-                  locale: "ru",
-                  firstDayOfWeek: 1,
-                  weekendDays: [0, 6],
-                }}
-              >
-                <Flex justify="space-around" gap="10px">
-                  <Flex justify="center" align="center" gap="10px" w="100%">
-                    <DateTimePicker
-                      // clearable
-                      w="100%"
-                      label="Start date"
-                      defaultValue={
-                        surveyConfig.startDate !== null
-                          ? new Date(surveyConfig.startDate)
-                          : undefined
-                      }
-                      value={start !== null ? new Date(start) : undefined}
-                      placeholder="Choose start date"
-                      onChange={handleChangeStartDate}
-                    />
-                  </Flex>
-                  <Divider orientation="vertical" />
-                  <Flex justify="center" align="center" gap="10px" w="100%">
-                    <DateTimePicker
-                      // clearable
-                      w="100%"
-                      label="End date"
-                      placeholder="Choose end date"
-                      defaultValue={
-                        surveyConfig.endDate !== null
-                          ? new Date(surveyConfig.endDate)
-                          : undefined
-                      }
-                      value={end !== null ? new Date(end) : undefined}
-                      onChange={handleChangeEndDate}
-                    />
-                  </Flex>
-                </Flex>
-              </DatesProvider>
-            </Flex>
-          </Flex>
-          {/* Button group */}
-          <Flex justify="space-between" m={10}>
-            <Button color="red" onClick={handleDeleteSurvey}>
-              Delete survey
-            </Button>
-            <Button
-              disabled={
-                surveyConfig.startDate === start &&
-                surveyConfig.endDate === end &&
-                surveyConfig.allowDuplicateRespondent ===
-                  surveyResponseConfiguration?.allowDuplicateRespondent &&
-                surveyConfig.sendResultToRespondent ===
-                  surveyResponseConfiguration?.sendResultToRespondent
-              }
-              onClick={handleSaveSurveyChanges}
-            >
-              Save changes
-            </Button>
-          </Flex>
         </Flex>
-      )
-    );
-  }
+        {/* Send survey results to respondents */}
+        <Flex justify="space-between" align="center" w="100%">
+          <Flex direction="column" justify="flex-start" align="left" w="100%">
+            <Title order={4}>Send survey results to respondents</Title>
+            <Text c="dimmed" fz={13}>
+              Send a summary of survey results to respondents after the survey
+              closes.
+            </Text>
+          </Flex>
+          <Switch
+            size="lg"
+            value={configChange.sendResultToRespondent ? "true" : "false"}
+            defaultChecked={responseConfig.sendResultToRespondent}
+            onLabel="Yes"
+            offLabel="No"
+            onChange={(e) => {
+              if (responseConfig.sendResultToRespondent !== e.target.checked) {
+                setConfigChange({
+                  ...configChange,
+                  sendResultToRespondent: e.target.checked,
+                });
+              } else {
+                const { sendResultToRespondent, ...rest } = configChange;
+                setConfigChange(rest);
+              }
+            }}
+          />
+        </Flex>
+        {/* Start date/End date */}
+        <Flex className={classes.sectionWrapper}>
+          <Title order={4}>Survey availability</Title>
+          <DatesProvider
+            settings={{
+              locale: "ru",
+              firstDayOfWeek: 1,
+              weekendDays: [0, 6],
+            }}
+          >
+            <Flex justify="space-around" gap="10px">
+              <Flex justify="center" align="center" gap="10px" w="100%">
+                <DateTimePicker
+                  // clearable
+                  w="100%"
+                  label="Start date"
+                  value={startValue !== null ? new Date(startValue) : null}
+                  placeholder="Choose start date"
+                  onChange={handleChangeStartDate}
+                />
+              </Flex>
+              <Divider orientation="vertical" />
+              <Flex justify="center" align="center" gap="10px" w="100%">
+                <DateTimePicker
+                  // clearable
+                  w="100%"
+                  label="End date"
+                  placeholder="Choose end date"
+                  value={endValue !== null ? new Date(endValue) : null}
+                  onChange={handleChangeEndDate}
+                />
+              </Flex>
+            </Flex>
+          </DatesProvider>
+        </Flex>
+      </Flex>
+      {/* Button group */}
+      <Flex justify="space-between" m={10}>
+        <Flex gap={10}>
+          <Button color="red" onClick={handleDeleteSurvey}>
+            Delete survey
+          </Button>
+          <Button
+            color="red"
+            disabled={!responseConfig?.isPublished}
+            onClick={handleCloseSurvey}
+          >
+            Close survey
+          </Button>
+        </Flex>
+        <Button
+          disabled={Object.keys(configChange).length === 0}
+          onClick={handleSaveSurveyChanges}
+        >
+          Save changes
+        </Button>
+      </Flex>
+    </Flex>
+  );
 };
 
 export default ResponseConfig;

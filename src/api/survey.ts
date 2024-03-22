@@ -1,5 +1,5 @@
 import Client from '@/api/client';
-import { IQueryParams, Section, SectionInfo, Survey, SurveyGeneralConfiguration, SurveyInfo, SurveyPushBody, SurveyResponseConfiguration, ISurveyResult, SurveySubmissionBody, SurveySubmissionResponse, SurveyUpdateBody } from '../interfaces';
+import { IQueryParams, ISurveyResult, Section, SectionInfo, Survey, SurveyGeneralConfiguration, SurveyInfo, SurveyPublishBody, SurveyPublishResponse, SurveyPushBody, SurveyResponseConfiguration, SurveySubmissionBody, SurveySubmissionResponse, SurveyUpdateBody } from '../interfaces';
 
 class SurveyApi {
     public static classInstance: SurveyApi;
@@ -84,13 +84,14 @@ class SurveyApi {
         })
     }
 
-    public getSectionInSurvey(props: { processVersion: string }): Promise<{
+    public getSectionInSurvey(props: { processVersion: string, mode: string }): Promise<{
         survey: SurveyInfo,
         sections: SectionInfo[],
     }> {
         return Client.get(`/survey/section/all`, {
             params: {
-                processVersionVersion: props.processVersion
+                processVersionVersion: props.processVersion,
+                mode: props.mode,
             }
         })
     }
@@ -142,6 +143,27 @@ class SurveyApi {
             params: {
                 processVersionVersion: processVersion,
             }
+        })
+    }
+
+    public publishSurvey(data: SurveyPublishBody): Promise<SurveyPublishResponse> {
+        return Client.post(`/survey/publish`, {
+            projectId: data.projectId,
+            processVersionVersion: data.processVersionVersion,
+            email: data.email,
+            surveyUrl: data.surveyUrl,
+            startDate: data.startDate,
+            endDate: data.endDate,
+        })
+    }
+
+    public closeSurvey({ processVersionVersion, projectId }: {
+        processVersionVersion?: string,
+        projectId?: number
+    }): Promise<SurveyResponseConfiguration> {
+        return Client.post(`/survey/publish/close`, {
+            processVersionVersion: processVersionVersion,
+            projectId: projectId,
         })
     }
 }

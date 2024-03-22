@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { surveyApi } from '../api';
-import { IQueryParams, SurveyPushBody, SurveySubmissionBody, SurveyUpdateBody, UseMutation } from '../interfaces';
+import { IQueryParams, SurveyPublishBody, SurveyPublishResponse, SurveyPushBody, SurveyResponseConfiguration, SurveySubmissionBody, SurveyUpdateBody, UseMutation } from '../interfaces';
 import useNotification from './useNotification';
 
 export const useSurvey = (
@@ -189,5 +189,40 @@ export const useSurveyResultQuery = ({
             processVersion,
         }),
         enabled: !!processVersion,
+    })
+}
+
+export const useSurveyPublishMutation = ({ onSuccess, onSettled }: UseMutation) => {
+    return useMutation({
+        mutationFn: (params: SurveyPublishBody) => surveyApi.publishSurvey(params),
+        onSuccess: (data: SurveyPublishResponse) => onSuccess?.(data),
+        onError: (err: any) => {
+            const notify = useNotification();
+            notify({
+                title: 'Error',
+                message: err.message,
+                type: 'error',
+            });
+        },
+        onSettled: () => onSettled?.(),
+    })
+}
+
+export const useCloseSurveyMutation = ({ onSuccess, onSettled }: UseMutation) => {
+    return useMutation({
+        mutationFn: ({ processVersionVersion, projectId }: {
+            processVersionVersion?: string,
+            projectId?: number
+        }) => surveyApi.closeSurvey({ processVersionVersion, projectId }),
+        onSuccess: (data: SurveyResponseConfiguration) => onSuccess?.(data),
+        onError: (err: any) => {
+            const notify = useNotification();
+            notify({
+                title: 'Error',
+                message: err.message,
+                type: 'error',
+            });
+        },
+        onSettled: () => onSettled?.(),
     })
 }
