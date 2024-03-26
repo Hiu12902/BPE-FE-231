@@ -29,7 +29,7 @@ const QuestionItem = (props: QuestionItemProps) => {
     </Flex>
   ) : (
     <Flex className={classes.body} id={`question-${sectionId}-${data.id}`}>
-      <Badge className={classes.badge}>Question {index}</Badge>
+      <Badge className={classes.badge}>{index}</Badge>
       <Box className={classes.content}>
         {questionType &&
           {

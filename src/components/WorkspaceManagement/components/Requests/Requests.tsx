@@ -99,7 +99,7 @@ const Requests = () => {
         total: requests.total,
         limit: requests.limit,
       });
-      if (requests) {
+      if (requests && requests.data) {
         batch(() => {
           requests.data.map((member: IRequests, index: number) =>
             dispatch(

@@ -1,10 +1,10 @@
-import React from "react";
+import { Container, Title } from "@mantine/core";
 
 const Customization = () => {
   return (
-    <div>
-      <h1>Customization</h1>
-    </div>
+    <Container size="xl">
+      <Title order={1}>Customization</Title>
+    </Container>
   );
 };
 

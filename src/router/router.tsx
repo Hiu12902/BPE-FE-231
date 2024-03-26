@@ -33,6 +33,7 @@ import {
 } from "@/survey/components";
 import SurveyLaunchLayout from "@/survey/components/SurveyLaunchLayout/SurveyLaunch.layout";
 import SurveyLauncher from "@/survey/components/SurveyLauncher";
+import ProcessPortfolio from "@/components/WorkspaceManagement/components/ProcessPortfolio/ProcessPortfolio";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -51,7 +52,6 @@ const router = createBrowserRouter(
             path="/management/:workspaceName/:workspaceId"
             element={<WorkspaceManagement />}
           />
-
           <Route
             path="/management/members/:workspaceName/:workspaceId"
             element={<Members />}
@@ -63,6 +63,10 @@ const router = createBrowserRouter(
           <Route
             path="/management/customization/:workspaceName/:workspaceId"
             element={<Customization />}
+          />
+          <Route
+            path="/management/processportfolio/:workspaceName/:workspaceId"
+            element={<ProcessPortfolio />}
           />
         </Route>
         <Route element={<AppLayout />}>

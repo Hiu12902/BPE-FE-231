@@ -1,6 +1,7 @@
 import { Accordion, AccordionProps, Box, Group, Text } from "@mantine/core";
 import { ReactComponent as IconRequest } from "@tabler/icons/icons/git-pull-request.svg";
 import { ReactComponent as IconCustomization } from "@tabler/icons/icons/triangle-square-circle.svg";
+import { ReactComponent as IconProcessPortfolio } from "@tabler/icons/icons/chart-bubble.svg";
 import { ReactComponent as IconMember } from "@tabler/icons/icons/user-circle.svg";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useWorkspaceNavbarStyle } from "./WorkspaceNavbar.style";
@@ -40,13 +41,27 @@ const WorkspaceNavbar = (props: IProps) => {
         fontWeight: 600,
       },
     },
+    // {
+    //   title: "Customization",
+    //   description: "Customize your workspace appearance",
+    //   bullet: <IconCustomization width={20} height={20} />,
+    //   action: () =>
+    //     navigate(`/management/customization/${workspaceName}/${workspaceId}`),
+    //   style: location === "customization" && {
+    //     backgroundColor: PRIMARY_COLOR[0],
+    //     color: "white",
+    //     fontWeight: 600,
+    //   },
+    // },
     {
-      title: "Customization",
+      title: "Process Portfolio",
       description: "Customize your workspace appearance",
-      bullet: <IconCustomization width={20} height={20} />,
+      bullet: <IconProcessPortfolio width={20} height={20} />,
       action: () =>
-        navigate(`/management/customization/${workspaceName}/${workspaceId}`),
-      style: location === "customization" && {
+        navigate(
+          `/management/processportfolio/${workspaceName}/${workspaceId}`
+        ),
+      style: location === "processportfolio" && {
         backgroundColor: PRIMARY_COLOR[0],
         color: "white",
         fontWeight: 600,

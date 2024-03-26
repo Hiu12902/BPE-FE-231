@@ -24,3 +24,21 @@ export interface ErrorResponse {
     status: number;
     timestamp: string;
 }
+
+
+export interface ResponseObject<T> {
+    data: T[];
+    total: number;
+    limit: number;
+    status: string;
+    // empty: boolean;
+    // first: boolean;
+    // last: boolean;
+    // number: number;
+    // numberOfElements: number;
+    // pageable: Pageable;
+    // size: number;
+    // sort: Sort;
+    // totalElements: number;
+    // totalPages: number;
+}

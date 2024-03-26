@@ -100,6 +100,7 @@ const FileItem = (props: IFile) => {
   const getProcessVersions = async () => {
     try {
       if (versions.length > 0) {
+        console.log("versions", versions);
         return;
       }
       if (id) {

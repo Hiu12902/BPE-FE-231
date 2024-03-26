@@ -9,3 +9,4 @@ export * from './option';
 export * from './question';
 export * from './section';
 export * from './response';
+export * from './processportfolio';

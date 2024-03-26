@@ -1,5 +1,5 @@
 import { ISurveyResult } from "@/interfaces/survey";
-import { Badge, Flex, Progress, Title, Tooltip } from "@mantine/core";
+import { Badge, Flex, Progress, Title } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { useState } from "react";
 
@@ -128,7 +128,7 @@ const ProgressBar = (props: ProgressBarProps) => {
             <Badge
               size="md"
               variant="outline"
-              color="teal"
+              // color="teal"
               // variant="gradient"
               // gradient={{ from: "teal", to: "lime", deg: 100 }}
             >
@@ -170,7 +170,7 @@ const ProgressBar = (props: ProgressBarProps) => {
             <Badge
               size="md"
               variant="outline"
-              color="orange"
+              // color="orange"
               // variant="gradient"
               // gradient={{ from: "coral", to: "yellow", deg: 100 }}
             >
@@ -212,7 +212,7 @@ const ProgressBar = (props: ProgressBarProps) => {
             <Badge
               size="md"
               variant="outline"
-              color="indigo"
+              // color="indigo"
               // variant="gradient"
               // gradient={{ from: "cyan", to: "indigo", deg: 105 }}
             >

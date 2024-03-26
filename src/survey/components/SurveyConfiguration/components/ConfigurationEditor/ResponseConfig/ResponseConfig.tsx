@@ -190,14 +190,15 @@ const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
             <Text>Please confirm your action!</Text>
             <br />
             <Text
-              variant="gradient"
-              gradient={{ from: "indigo", to: "red", deg: 45 }}
+              // variant="gradient"
+              // gradient={{ from: "indigo", to: "red", deg: 45 }}
+              color="red"
               sx={{ fontFamily: "Greycliff CF, sans-serif" }}
               fw={700}
             >
               This action will remove all the survey information, section and
               questions in the survey. Survey result will be deleted and reset
-              to default."
+              to default.
             </Text>
           </Flex>
         }
