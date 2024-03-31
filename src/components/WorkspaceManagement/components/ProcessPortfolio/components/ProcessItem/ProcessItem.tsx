@@ -67,7 +67,7 @@ const ProcessItem = (props: ProcessItemProps) => {
           </Grid.Col>
         </Grid>
       </Accordion.Control>
-      <VersionList processId={Number(props.processId)} />
+      <VersionList processId={Number(props.processId)} processName={name} />
     </Accordion.Item>
   );
 };

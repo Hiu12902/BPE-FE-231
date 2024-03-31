@@ -58,15 +58,18 @@ class ProcessPortfolioApi {
 
     public activateVersion({
         workspaceId,
+        processId,
         processVersionVersion
     }: {
         workspaceId: number,
+        processId: number,
         processVersionVersion: string,
     }): Promise<PortfolioProcess> {
         return Client.post(
             `/workspace/portfolio/processversion/activation`,
             {
                 workspaceId: workspaceId,
+                processId: processId,
                 processVersionVersion: processVersionVersion,
             }
         )

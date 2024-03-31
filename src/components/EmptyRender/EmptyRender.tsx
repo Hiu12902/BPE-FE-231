@@ -14,7 +14,7 @@ const EmptyRender = ({ icon = noProjects, text, action }: IEmptyRender) => {
         <Image src={icon as string} width={120} opacity={0.7} />
       </Center>
       <Text align="center" color="dimmed">
-        {text && text}
+        {text ? text : null}
       </Text>
       <Center>{action && action}</Center>
     </Stack>

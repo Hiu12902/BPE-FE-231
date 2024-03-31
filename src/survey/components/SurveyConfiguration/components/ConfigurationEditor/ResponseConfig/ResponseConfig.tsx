@@ -12,10 +12,9 @@ import {
   Divider,
   Flex,
   Loader,
-  Radio,
   Switch,
   Text,
-  Title,
+  Title
 } from "@mantine/core";
 import { DateTimePicker, DatesProvider } from "@mantine/dates";
 import { useEffect, useState } from "react";
@@ -36,7 +35,7 @@ const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
 
   const toLocaleISOString = (date: Date) => {
     const tzoffset = new Date().getTimezoneOffset() * 60000;
-    return new Date(date.getTime() - tzoffset).toISOString().substring(0, 19);
+    return new Date(date.getTime() - tzoffset).toISOString().substring(0, 16);
   };
 
   // GET: Survey Response configuration
@@ -129,12 +128,6 @@ const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
       }
     }
   }, [responseConfig]);
-
-  // useEffect(() => {
-  //   if (configChange) {
-  //     console.log("configChange changes: ", configChange);
-  //   }
-  // }, [configChange]);
 
   useEffect(() => {
     if (responseConfig?.startDate !== undefined && startValue !== null) {
@@ -316,7 +309,7 @@ const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
           </Button>
           <Button
             color="red"
-            disabled={!responseConfig?.isPublished}
+            disabled={responseConfig?.isPublished === "closed"}
             onClick={handleCloseSurvey}
           >
             Close survey

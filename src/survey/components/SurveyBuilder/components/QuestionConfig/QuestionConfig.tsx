@@ -1,3 +1,4 @@
+import { useUpdateQuestionMutation } from "@/hooks/useQuestion";
 import {
   IsChangedQuestionContextProps,
   Option,
@@ -23,13 +24,12 @@ import {
 import { ReactComponent as IconV } from "@tabler/icons/icons/check.svg";
 import { ReactComponent as IconX } from "@tabler/icons/icons/x.svg";
 import { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import NumberInputCustom from "../NumberInputCustom";
 import QuestionOptions from "../QuestionOptions";
 import QuestionTypePicker from "../QuestionTypePicker";
 import TitleInformation from "../TitleInformation";
 import { useQuestionConfigStyle } from "./QuestionConfig.style";
-import { useUpdateQuestionMutation } from "@/hooks/useQuestion";
-import { useParams } from "react-router-dom";
 
 interface QuestionConfigProps {
   data: Survey;
@@ -308,15 +308,21 @@ const QuestionConfig = (props: QuestionConfigProps) => {
       ) : (
         // If no question is selected
         <Flex className={classes.unselectedQuestion}>
-          <Text
-            className={classes.unselectedText}
-            children="Select a question to start configuration"
-          />
+          {survey.isPublished ? (
+            <Text
+              className={classes.unselectedText}
+              children="Select a question to start configuration"
+            />
+          ) : null}
         </Flex>
       )}
 
       <Button
-        display={Object.keys(selectedQuestion).length ? "block" : "none"}
+        display={
+          Object.keys(selectedQuestion).length && survey.isPublished
+            ? "block"
+            : "none"
+        }
         disabled={!isChanged}
         color="blue"
         radius="md"

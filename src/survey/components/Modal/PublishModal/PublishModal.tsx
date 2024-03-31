@@ -1,4 +1,5 @@
 import useNotification from "@/hooks/useNotification";
+import { usePublishInfoQuery } from "@/hooks/useSurvey";
 import { SurveyPublishBody } from "@/interfaces/index";
 import {
   ActionIcon,
@@ -8,15 +9,16 @@ import {
   Flex,
   Group,
   Input,
+  LoadingOverlay,
   Modal,
   ModalProps,
   Text,
   TextInput,
   Title,
+  Tooltip,
 } from "@mantine/core";
 import { DateTimePicker, DatesProvider } from "@mantine/dates";
 import { getHotkeyHandler } from "@mantine/hooks";
-import { ReactComponent as IconCopy } from "@tabler/icons/icons/copy.svg";
 import { ReactComponent as IconSend } from "@tabler/icons/icons/plus.svg";
 import { ReactComponent as IconDelete } from "@tabler/icons/icons/x.svg";
 import { useEffect, useState } from "react";
@@ -28,70 +30,112 @@ interface PublishModalProps extends ModalProps {
   title?: string;
   message?: string | JSX.Element;
   onConfirm: (data: SurveyPublishBody) => void;
+  projectId: number;
 }
 
 const PublishModal = (props: PublishModalProps) => {
   const notify = useNotification();
   const { classes } = usePublishModalStyle();
-  const [email, setEmail] = useState<string>("");
+  const [emailInput, setEmailInput] = useState<string>("");
   const processVersion = useParams().processVersion;
-  const [emailList, setEmailList] = useState<string[]>([]);
-  const { opened, title, message, onConfirm, onClose } = props;
+  const { opened, title, onConfirm, onClose, projectId } = props;
 
-  const [end, setEnd] = useState<Date | string | null>(null);
-  const [start, setStart] = useState<Date | string | null>(null);
+  const [publishInfoChange, setPublishInfoChange] = useState<SurveyPublishBody>(
+    {
+      email: [],
+      startDate: null,
+      endDate: null,
+      surveyUrl: "",
+      processVersionVersion: "",
+      projectId: 0,
+    }
+  );
+
+  const {
+    data: publishInfo,
+    refetch: refetchPublishInfo,
+    isFetching: publishInfoFetching,
+  } = usePublishInfoQuery({
+    processVersion: processVersion,
+    projectId: projectId,
+  });
 
   const handleChangeStartDate = (value: Date) => {
-    setStart(value);
+    setPublishInfoChange({
+      ...publishInfoChange,
+      startDate: value,
+    });
   };
   const handleChangeEndDate = (value: Date) => {
-    setEnd(value);
+    setPublishInfoChange({
+      ...publishInfoChange,
+      endDate: value,
+    });
   };
-  const [url, setUrl] = useState<string>("");
 
   const handleClose = () => {
-    setEmail("");
-    setEmailList([]);
-    setStart(null);
-    setEnd(null);
+    setPublishInfoChange({} as SurveyPublishBody);
     onClose?.();
   };
 
   const handlePublish = () => {
     const toLocaleISOString = (date: Date) => {
       const tzoffset = new Date().getTimezoneOffset() * 60000;
-      return new Date(date.getTime() - tzoffset).toISOString().substring(0, 19);
+      return new Date(date.getTime() - tzoffset).toISOString().substring(0, 16);
     };
 
+    const { email, startDate, endDate, surveyUrl } = publishInfoChange;
+
     onConfirm?.({
-      email: emailList,
+      email: email,
       startDate:
-        start !== null
-          ? toLocaleISOString(start as Date)
+        startDate !== null
+          ? toLocaleISOString(new Date(startDate))
           : toLocaleISOString(new Date()),
-      endDate: end !== null ? toLocaleISOString(end as Date) : null,
-      surveyUrl: url,
+      endDate: endDate !== null ? toLocaleISOString(new Date(endDate)) : null,
+      surveyUrl: surveyUrl,
       processVersionVersion: "",
       projectId: 0,
     });
 
+    refetchPublishInfo();
     handleClose();
   };
 
   const handleAddEmail = () => {
-    setEmail("");
-    if (!emailList.find((email) => email)) {
-      setEmailList([...emailList, email]);
+    if (!publishInfoChange.email.find((email) => email === emailInput)) {
+      setPublishInfoChange({
+        ...publishInfoChange,
+        email: [...publishInfoChange.email, emailInput],
+      });
     }
+    setEmailInput("");
   };
 
   useEffect(() => {
-    if (processVersion) {
-      setUrl(`http://localhost:5173/${processVersion}/survey/launch`);
+    if (publishInfo) {
+      const { email, surveyUrl, startDate, endDate } = publishInfo;
+      setPublishInfoChange({
+        ...publishInfoChange,
+        email: email,
+        surveyUrl: surveyUrl
+          ? surveyUrl
+          : `http://localhost:5173/${processVersion}/survey/launch`,
+        startDate: startDate,
+        endDate: endDate,
+      });
     }
-  }, [processVersion]);
+  }, [publishInfo]);
 
-  return (
+  useEffect(() => {
+    console.log(publishInfoChange);
+  }, [publishInfoChange]);
+
+  return !publishInfo ? (
+    <Flex>
+      <LoadingOverlay visible={true} />
+    </Flex>
+  ) : (
     <Modal
       size="xl"
       centered
@@ -112,6 +156,7 @@ const PublishModal = (props: PublishModalProps) => {
         },
       }}
     >
+      <LoadingOverlay visible={publishInfoFetching} />
       <Text>
         Publishing will update the version seen by respondents. It can take up
         to 5 minutes to reflect changes for respondents starting new survey
@@ -124,8 +169,8 @@ const PublishModal = (props: PublishModalProps) => {
           label=" Respondent's email"
           description="Add a respondent's email"
           placeholder="Enter email here..."
-          value={email}
-          onChange={(e) => setEmail(e.currentTarget.value)}
+          value={emailInput}
+          onChange={(e) => setEmailInput(e.currentTarget.value)}
           onKeyDown={getHotkeyHandler([["enter", handleAddEmail]])}
           rightSection={
             <IconSend
@@ -148,104 +193,143 @@ const PublishModal = (props: PublishModalProps) => {
           }}
         />
       </Flex>
-
-      <Group mt={20}>
-        {emailList.map((email, index) => (
-          <Badge
-            variant="outline"
-            w="auto"
-            key={index}
-            size="md"
-            rightSection={
-              <ActionIcon
-                size="xs"
-                color="blue"
-                radius="xl"
-                variant="transparent"
-                onClick={() => {
-                  setEmailList(emailList.filter((item) => item !== email));
-                }}
-              >
-                <IconDelete />
-              </ActionIcon>
-            }
-          >
-            {email}
-          </Badge>
-        ))}
-      </Group>
+      {publishInfoChange?.email.length > 0 && (
+        <Group mt={20}>
+          {publishInfoChange?.email.map((email, index) => (
+            <Badge
+              variant="outline"
+              w="auto"
+              key={index}
+              size="md"
+              rightSection={
+                <ActionIcon
+                  size="xs"
+                  color="blue"
+                  radius="xl"
+                  variant="transparent"
+                  onClick={() => {
+                    setPublishInfoChange({
+                      ...publishInfoChange,
+                      email: publishInfoChange.email.filter(
+                        (item) => item !== email
+                      ),
+                    });
+                  }}
+                >
+                  <IconDelete />
+                </ActionIcon>
+              }
+            >
+              {email}
+            </Badge>
+          ))}
+        </Group>
+      )}
 
       <Flex mt={20} direction="column">
         <Title order={5}>Distribute</Title>
         <Text c="dimmed" fz={12}>
           Use this link to distribute your survey
         </Text>
-        <Input
-          value={url}
-          rightSection={
-            <IconCopy
+        <Tooltip label="Click to copy survey's URL">
+          <Flex
+            w="100%"
+            onClick={() => {
+              if (!publishInfoChange?.surveyUrl) return;
+              navigator.clipboard.writeText(publishInfoChange?.surveyUrl);
+              notify({
+                title: "Link copied",
+                message: "Link has been copied to clipboard",
+                type: "success",
+              });
+            }}
+            styles={{
+              cursor: "pointer",
+            }}
+          >
+            <Input
+              w="100%"
+              value={publishInfoChange?.surveyUrl}
+              disabled
               onClick={() => {
-                navigator.clipboard.writeText(url);
+                if (!publishInfoChange?.surveyUrl) return;
+                navigator.clipboard.writeText(publishInfoChange?.surveyUrl);
                 notify({
                   title: "Link copied",
                   message: "Link has been copied to clipboard",
                   type: "success",
                 });
               }}
-              style={{
-                width: 24,
-                height: 24,
-                cursor: "pointer",
+              styles={{
+                wrapper: {
+                  cursor: "pointer",
+                },
               }}
+              className={classes.link}
             />
-          }
-          className={classes.link}
-        />
+          </Flex>
+        </Tooltip>
       </Flex>
 
-      <Flex mt={20} direction="column">
-        <Title order={5}>Publish date</Title>
-        <DatesProvider
-          settings={{
-            locale: "ru",
-            firstDayOfWeek: 1,
-            weekendDays: [0, 6],
-          }}
-        >
-          <Flex justify="space-around" gap="10px">
-            <Flex justify="center" align="center" gap="10px" w="100%">
-              <DateTimePicker
-                clearable
-                w="100%"
-                label="Start date"
-                description="Leave empty if you want to publish now."
-                defaultValue={undefined}
-                value={start !== null ? new Date(start) : null}
-                placeholder="Choose start date"
-                onChange={handleChangeStartDate}
-              />
+      {publishInfo.isPublished === "closed" && (
+        <Flex mt={20} direction="column">
+          <Title order={5}>Publish date</Title>
+          <DatesProvider
+            settings={{
+              locale: "ru",
+              firstDayOfWeek: 1,
+              weekendDays: [0, 6],
+            }}
+          >
+            <Flex justify="space-around" gap="10px">
+              <Flex justify="center" align="center" gap="10px" w="100%">
+                <DateTimePicker
+                  clearable
+                  w="100%"
+                  label="Start date"
+                  description="Leave empty if you want to publish now."
+                  defaultValue={undefined}
+                  value={
+                    publishInfoChange?.startDate !== null
+                      ? new Date(publishInfoChange?.startDate)
+                      : null
+                  }
+                  placeholder="Choose start date"
+                  onChange={handleChangeStartDate}
+                />
+              </Flex>
+              <Divider orientation="vertical" />
+              <Flex justify="center" align="center" gap="10px" w="100%">
+                <DateTimePicker
+                  clearable
+                  w="100%"
+                  label="End date"
+                  description="End date could be empty, survey will launch forever."
+                  placeholder="Choose end date"
+                  defaultValue={undefined}
+                  value={
+                    publishInfoChange?.endDate !== null
+                      ? new Date(publishInfoChange?.endDate)
+                      : null
+                  }
+                  onChange={handleChangeEndDate}
+                />
+              </Flex>
             </Flex>
-            <Divider orientation="vertical" />
-            <Flex justify="center" align="center" gap="10px" w="100%">
-              <DateTimePicker
-                clearable
-                w="100%"
-                label="End date"
-                description="End date could be empty, survey will launch forever."
-                placeholder="Choose end date"
-                defaultValue={undefined}
-                value={end !== null ? new Date(end) : null}
-                onChange={handleChangeEndDate}
-              />
-            </Flex>
-          </Flex>
-        </DatesProvider>
-      </Flex>
+          </DatesProvider>
+        </Flex>
+      )}
 
       <Divider my="md" />
       <Group position="right">
         <Button variant="outline" onClick={handleClose} children="Cancel" />
-        <Button onClick={handlePublish} color="red" children="Publish" />
+        <Button
+          onClick={handlePublish}
+          color="red"
+          children={
+            publishInfo.isPublished === "closed" ? "Publish" : "Save changes"
+          }
+        />
       </Group>
     </Modal>
   );

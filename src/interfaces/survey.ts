@@ -9,7 +9,7 @@ export interface SurveyInfo {
     isDeleted: boolean;
     startDate?: Date | string | null;
     endDate?: Date | string | null;
-    isPublished: boolean;
+    isPublished: string;
 }
 
 export interface Survey {
@@ -89,10 +89,20 @@ export interface SurveyResponseConfiguration extends SurveyInfo {
 export interface SurveyPublishBody {
     projectId: number;
     processVersionVersion: string;
+
     email: string[];
     surveyUrl: string;
-    startDate: null | Date | string;
-    endDate: null | Date | string;
+    startDate: Date | string | null;
+    endDate: Date | string | null;
+}
+
+export interface SurveyPublishInfo {
+    id: number;
+    email: string[];
+    surveyUrl: string;
+    startDate: Date | string | null;
+    endDate: Date | string | null;
+    isPublished: string;
 }
 
 export interface SurveyPublishResponse {

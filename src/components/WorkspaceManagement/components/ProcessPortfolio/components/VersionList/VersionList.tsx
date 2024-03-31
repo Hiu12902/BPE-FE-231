@@ -6,10 +6,11 @@ import VersionItem from "../VersionItem";
 
 interface VersionListProps {
   processId: number | null;
+  processName: string;
 }
 
 const VersionList = (props: VersionListProps) => {
-  const { processId } = props;
+  const { processId, processName } = props;
   const { workspaceId } = useParams();
 
   const {
@@ -29,9 +30,19 @@ const VersionList = (props: VersionListProps) => {
         </Accordion>
       ) : (
         <Accordion variant="contained">
-          {versions.map((item: PortfolioVersion) => {
-            return <VersionItem data={item} refetch={versionsRefetch} />;
-          })}
+          {versions
+            .sort((a, b) => {
+              return a.num - b.num;
+            })
+            .map((item: PortfolioVersion) => {
+              return (
+                <VersionItem
+                  data={item}
+                  refetch={versionsRefetch}
+                  processName={processName}
+                />
+              );
+            })}
         </Accordion>
       )}
     </Accordion.Panel>

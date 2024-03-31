@@ -37,5 +37,11 @@ export const useQuestionConfigStyle = createStyles(() => ({
         fontSize: 15,
         color: '#bbb',
         fontStyle: 'italic',
+    },
+    warningText: {
+        width: '70%',
+        fontSize: 15,
+        color: 'red',
+        fontWeight: 'bold',
     }
 }))

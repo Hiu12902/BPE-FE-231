@@ -1,8 +1,17 @@
-import { Survey, SurveyPublishBody } from "@/interfaces/index";
+import useNotification from "@/hooks/useNotification";
+import { useSurveyPublishMutation } from "@/hooks/useSurvey";
+import {
+  IsChangedQuestionContextProps,
+  Survey,
+  SurveyPublishBody,
+} from "@/interfaces/index";
+import { responseActions } from "@/redux/slices";
+import { PublishModal } from "@/survey/components/Modal";
+import SurveyLauncher from "@/survey/components/SurveyLauncher";
+import { IsChangedQuestionContext } from "@/survey/context";
 import {
   Badge,
   Button,
-  Divider,
   Flex,
   Group,
   Modal,
@@ -10,16 +19,11 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { useContext, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
 import QuestionSection from "../QuestionSection";
 import { useQuestionEditorStyle } from "./QuestionEditor.style";
-import { useState } from "react";
-import { PublishModal } from "@/survey/components/Modal";
-import { useNavigate, useParams } from "react-router-dom";
-import SurveyLauncher from "@/survey/components/SurveyLauncher";
-import { useDispatch } from "react-redux";
-import { responseActions } from "@/redux/slices";
-import { useSurveyPublishMutation } from "@/hooks/useSurvey";
-import useNotification from "@/hooks/useNotification";
 
 interface QuestionEditorProps {
   data?: Survey;
@@ -27,27 +31,34 @@ interface QuestionEditorProps {
 
 const QuestionEditor = (props: QuestionEditorProps) => {
   const { data } = props;
-  const { projectId, processVersion } = useParams();
+  const dispatch = useDispatch();
   const notify = useNotification();
   const { classes } = useQuestionEditorStyle();
-  const dispatch = useDispatch();
-  const [openPublishModal, setOpenPublishModal] = useState<boolean>(false);
+  const { projectId, processVersion } = useParams();
   const [openPreviewModal, setPreviewModal] = useState<boolean>(false);
+  const [openPublishModal, setOpenPublishModal] = useState<boolean>(false);
+  const { refetch } = useContext(
+    IsChangedQuestionContext
+  ) as IsChangedQuestionContextProps;
 
   const publishSurveyMutation = useSurveyPublishMutation({
-    onSuccess: (data) => {
-      if (data) {
-        if (data.message) {
+    onSuccess: (res) => {
+      if (res) {
+        if (res.message) {
           notify({
-            message: data.message,
+            message: res.message,
             type: "error",
           });
         } else {
           notify({
-            message: "Survey published successfully!",
+            message:
+              data?.survey.isPublished === "closed"
+                ? "Survey published successfully!"
+                : "Change publish configuration successfully",
             type: "success",
           });
         }
+        refetch();
       }
     },
   });
@@ -88,15 +99,18 @@ const QuestionEditor = (props: QuestionEditorProps) => {
           <SurveyLauncher preview={true} />
         </Flex>
       </Modal>
-      <PublishModal
-        opened={openPublishModal}
-        title="Publish survey"
-        message="Are you sure you want to publish this survey?"
-        onConfirm={(data: SurveyPublishBody) => {
-          handlePublish(data);
-        }}
-        onClose={() => setOpenPublishModal(false)}
-      />
+      {openPublishModal && (
+        <PublishModal
+          opened={openPublishModal}
+          title="Publish survey"
+          message="Are you sure you want to publish this survey?"
+          onConfirm={(data: SurveyPublishBody) => {
+            handlePublish(data);
+          }}
+          onClose={() => setOpenPublishModal(false)}
+          projectId={Number(projectId)}
+        />
+      )}
       <Flex
         justify="space-between"
         align="center"
@@ -109,9 +123,33 @@ const QuestionEditor = (props: QuestionEditorProps) => {
       </Flex>
 
       <ScrollArea className={classes.editArea}>
-        {data?.questions.map((section) => (
-          <QuestionSection key={section.sectionId} data={section} />
-        ))}
+        {data?.survey.isPublished !== "closed" ? (
+          <Flex
+            w="100%"
+            h="50vh"
+            justify="center"
+            align="center"
+            direction="column"
+          >
+            <Text
+              children="This survey is currently published, 
+            please close it before editing."
+            />
+            <Text
+              mt={10}
+              italic
+              c="dimmed"
+              fz={13}
+              children="You can close survey in Configuration > Survey response."
+            />
+          </Flex>
+        ) : (
+          <>
+            {data?.questions.map((section) => (
+              <QuestionSection key={section.sectionId} data={section} />
+            ))}
+          </>
+        )}
       </ScrollArea>
 
       <Flex

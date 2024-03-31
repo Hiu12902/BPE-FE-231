@@ -1,5 +1,5 @@
 import Client from '@/api/client';
-import { IQueryParams, ISurveyResult, Section, SectionInfo, Survey, SurveyGeneralConfiguration, SurveyInfo, SurveyPublishBody, SurveyPublishResponse, SurveyPushBody, SurveyResponseConfiguration, SurveySubmissionBody, SurveySubmissionResponse, SurveyUpdateBody } from '../interfaces';
+import { IQueryParams, ISurveyResult, Section, SectionInfo, Survey, SurveyGeneralConfiguration, SurveyInfo, SurveyPublishBody, SurveyPublishInfo, SurveyPublishResponse, SurveyPushBody, SurveyResponseConfiguration, SurveySubmissionBody, SurveySubmissionResponse, SurveyUpdateBody } from '../interfaces';
 
 class SurveyApi {
     public static classInstance: SurveyApi;
@@ -164,6 +164,18 @@ class SurveyApi {
         return Client.post(`/survey/publish/close`, {
             processVersionVersion: processVersionVersion,
             projectId: projectId,
+        })
+    }
+
+    public getPublishInfo({ processVersionVersion, projectId }: {
+        processVersionVersion?: string,
+        projectId?: number
+    }): Promise<SurveyPublishInfo> {
+        return Client.get(`/survey/publish`, {
+            params: {
+                processVersionVersion: processVersionVersion,
+                projectId: projectId,
+            }
         })
     }
 }

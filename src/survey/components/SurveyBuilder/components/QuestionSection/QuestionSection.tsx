@@ -1,22 +1,22 @@
+import { useUpdateQuestionMutation } from "@/hooks/useQuestion";
 import {
   IsChangedQuestionContextProps,
   Question,
   Section,
   SelectedQuestionContextProps,
 } from "@/interfaces/index";
-import { Flex } from "@mantine/core";
-import QuestionItem from "../QuestionItem";
-import TitleInformation from "../TitleInformation";
-import { useQuestionSectionStyle } from "./QuestionSection.style";
-import { useListState } from "@mantine/hooks";
-import { DragDropContext, Droppable } from "@hello-pangea/dnd";
-import { useUpdateQuestionMutation } from "@/hooks/useQuestion";
-import { useContext, useEffect } from "react";
 import {
   IsChangedQuestionContext,
   SelectedQuestionContext,
 } from "@/survey/context";
+import { DragDropContext, Droppable } from "@hello-pangea/dnd";
+import { Flex } from "@mantine/core";
+import { useListState } from "@mantine/hooks";
+import { useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import QuestionItem from "../QuestionItem";
+import TitleInformation from "../TitleInformation";
+import { useQuestionSectionStyle } from "./QuestionSection.style";
 
 interface QuestionSectionProps {
   data: Section;
@@ -24,7 +24,7 @@ interface QuestionSectionProps {
 
 const QuestionSection = (props: QuestionSectionProps) => {
   const { data } = props;
-  const { sectionName, sectionId, questions, orderInSurvey } = data;
+  const { sectionName, sectionId, questions } = data;
   const { classes } = useQuestionSectionStyle();
   const projectId = useParams().projectId;
   const { refetch } = useContext(
@@ -35,11 +35,7 @@ const QuestionSection = (props: QuestionSectionProps) => {
   ) as SelectedQuestionContextProps;
 
   const [state, handlers] = useListState(questions);
-  const {
-    mutate: updateQuestion,
-    isError,
-    isSuccess,
-  } = useUpdateQuestionMutation({
+  const { mutate: updateQuestion } = useUpdateQuestionMutation({
     onSuccess: (data: any) => {
       console.log("Update question success: ", data);
       refetch();
@@ -102,7 +98,11 @@ const QuestionSection = (props: QuestionSectionProps) => {
             {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef}>
                 {state.map((question, index) => (
-                  <QuestionItem data={question} sectionId={sectionId} index={index} />
+                  <QuestionItem
+                    data={question}
+                    sectionId={sectionId}
+                    index={index}
+                  />
                 ))}
                 {provided.placeholder}
               </div>

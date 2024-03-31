@@ -13,4 +13,9 @@ export const useProcessPortfolioStyle = createStyles(() => ({
             display: 'none'
         }
     },
+    buttonGroup: {
+        display: "flex",
+        gap: "10px",
+        alignItems: "center",
+    }
 }))

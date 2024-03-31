@@ -179,6 +179,11 @@ const FileItem = (props: IFile) => {
           processId: processId,
         });
         if (res) {
+          notify({
+            title: "Success!",
+            message: "Delete version successfully!",
+            type: "success",
+          });
           onDeleteFile?.(xmlFileLink ? xmlFileLink : documentLink);
         }
       }
@@ -323,7 +328,7 @@ const FileItem = (props: IFile) => {
       <Box
         component={Stack}
         className={classes.container}
-        mt={isDocument ? 15 : 0}
+        // mt={isDocument ? 15 : 0}
         p="sm"
         onDoubleClick={
           isVersion

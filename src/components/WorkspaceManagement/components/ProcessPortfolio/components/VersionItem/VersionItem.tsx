@@ -1,21 +1,38 @@
+import DropdownMenu from "@/components/DropdownMenu";
 import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
 import useNotification from "@/hooks/useNotification";
 import { useActivateVersionMutation } from "@/hooks/useProcessPortfolio";
 import { PortfolioProcess, PortfolioVersion } from "@/interfaces/index";
-import { Accordion, Flex, Grid, Switch, Text, Title } from "@mantine/core";
+import { Accordion, Badge, Flex, Grid, Text, Title } from "@mantine/core";
+import { ReactComponent as IconEdit } from "@tabler/icons/icons/edit.svg";
 import { ReactComponent as IconHexagons } from "@tabler/icons/icons/hexagons.svg";
+import { ReactComponent as IconActivate } from "@tabler/icons/icons/toggle-right.svg";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { EditModal } from "../Modal";
+import { useVersionItemStyle } from "./VersionItem.style";
 
 interface VersionItemProps {
   data: PortfolioVersion;
+  processName: string;
   refetch?: () => void;
 }
 
 const VersionItem = (props: VersionItemProps) => {
-  const { data, refetch } = props;
-  const { version, health, feasibility, strategicImportance, isActive } = data;
+  const { data, refetch, processName } = props;
+  const { classes } = useVersionItemStyle();
+  const {
+    version,
+    health,
+    feasibility,
+    strategicImportance,
+    isActive,
+    processId,
+    num,
+  } = data;
   const notify = useNotification();
   const { workspaceId } = useParams();
+  const [openEditModal, setOpenEditModal] = useState<boolean>(false);
 
   const activateVersionMutation = useActivateVersionMutation({
     onSuccess: (data: PortfolioProcess) => {
@@ -35,18 +52,47 @@ const VersionItem = (props: VersionItemProps) => {
     },
   });
 
+  const onActivateProcess = () => {
+    if (workspaceId) {
+      activateVersionMutation.mutate({
+        workspaceId: Number(workspaceId),
+        processId: processId,
+        processVersionVersion: version,
+      });
+    }
+  };
+
+  const onOpenEditModal = () => {
+    setOpenEditModal(true);
+  };
+
+  const dropdownMenuContent = [
+    {
+      icon: <IconActivate className={classes.dropdownMenuIcon} />,
+      children: "Activate process version",
+      onClick: onActivateProcess,
+      disabled: isActive,
+    },
+    {
+      icon: <IconEdit className={classes.dropdownMenuIcon} />,
+      children: "Edit",
+      onClick: onOpenEditModal,
+    },
+  ];
+
   return (
     <Accordion.Item value={version}>
-      <Accordion.Control
-        onClick={() => {}}
-        styles={{
-          padding: 0,
-          margin: 0,
+      <EditModal
+        opened={openEditModal}
+        onClose={() => {
+          setOpenEditModal(false);
         }}
-      >
+        onSave={() => {}}
+      />
+      <Accordion.Control>
         <Grid align="center" justify="center">
           {/* Project name */}
-          <Grid.Col span={4}>
+          <Grid.Col span={3}>
             <Flex justify="flex-start" align="center">
               <IconHexagons
                 width={30}
@@ -62,7 +108,7 @@ const VersionItem = (props: VersionItemProps) => {
                   maxWidth: "80%",
                 }}
               >
-                {version}
+                {`${processName}_ver_${num}.bpmn`}
               </Text>
             </Flex>
           </Grid.Col>
@@ -95,32 +141,19 @@ const VersionItem = (props: VersionItemProps) => {
           </Grid.Col>
 
           {/* Dropdown menu */}
-          <Grid.Col span={1}>
-            <Flex justify="flex-end">
-              <Switch
-                onLabel="Active"
-                offLabel="Inactive"
-                defaultChecked={isActive}
-                checked={isActive}
-                disabled={isActive}
-                onChange={(e) => {
-                  if (isActive) {
-                    notify({
-                      title: "This version is active!",
-                      message:
-                        "You can not deactivate it! Please activate another version instead.",
-                      type: "warning",
-                    });
-                  } else {
-                    if (workspaceId) {
-                      activateVersionMutation.mutate({
-                        workspaceId: Number(workspaceId),
-                        processVersionVersion: version,
-                      });
-                    }
-                  }
-                }}
-              />
+          <Grid.Col span={2}>
+            <Flex justify="space-around" align="center">
+              {isActive ? (
+                <Badge variant="filled" color="teal">
+                  Active
+                </Badge>
+              ) : (
+                <Badge variant="outline" color="gray">
+                  Inactive
+                </Badge>
+              )}
+
+              <DropdownMenu dropdownMenuContent={dropdownMenuContent} />
             </Flex>
           </Grid.Col>
         </Grid>

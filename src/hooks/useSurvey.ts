@@ -200,7 +200,7 @@ export const useSurveyPublishMutation = ({ onSuccess, onSettled }: UseMutation) 
             const notify = useNotification();
             notify({
                 title: 'Error',
-                message: err.message,
+                message: "Something wrong happened during publishing, please try again later!",
                 type: 'error',
             });
         },
@@ -224,5 +224,22 @@ export const useCloseSurveyMutation = ({ onSuccess, onSettled }: UseMutation) =>
             });
         },
         onSettled: () => onSettled?.(),
+    })
+}
+
+export const usePublishInfoQuery = ({
+    processVersion,
+    projectId
+}: {
+    processVersion?: string;
+    projectId: number;
+}) => {
+    return useQuery({
+        queryKey: ['survey_publish_info', processVersion, projectId],
+        queryFn: () => surveyApi.getPublishInfo({
+            processVersionVersion: processVersion,
+            projectId: projectId,
+        }),
+        enabled: !!processVersion && !!projectId,
     })
 }

@@ -18,4 +18,5 @@ export interface PortfolioVersion {
     health: null | number,
     strategicImportance: number,
     feasibility: number,
+    num: number,
 }

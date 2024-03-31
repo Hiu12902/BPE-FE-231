@@ -72,12 +72,15 @@ export const useActivateVersionMutation = ({ onSuccess, onSettled }: UseMutation
     return useMutation({
         mutationFn: ({
             workspaceId,
+            processId,
             processVersionVersion
         }: {
             workspaceId: number,
+            processId: number,
             processVersionVersion: string,
         }) => processportfolioApi.activateVersion({
             workspaceId,
+            processId,
             processVersionVersion,
         }),
         onSuccess: (data: PortfolioProcess) => onSuccess?.(data),

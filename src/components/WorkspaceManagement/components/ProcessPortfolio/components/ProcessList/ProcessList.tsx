@@ -1,3 +1,4 @@
+import { EmptyRender } from "@/components/EmptyRender";
 import { usePortfolioProcessQuery } from "@/hooks/index";
 import { PortfolioProcess } from "@/interfaces/index";
 import { Accordion, Skeleton } from "@mantine/core";
@@ -48,9 +49,17 @@ const ProcessList = (props: ProcessListProps) => {
             setProcessId(Number(value));
           }}
         >
-          {processes.map((item: PortfolioProcess) => {
-            return <ProcessItem data={item} processId={Number(processId)} />;
-          })}
+          {processes.length > 0 ? (
+            processes.map((item: PortfolioProcess) => {
+              return <ProcessItem data={item} processId={Number(processId)} />;
+            })
+          ) : (
+            <Accordion.Item value="0">
+              <Accordion.Control>
+                <EmptyRender text="There is no process in this project. Please create new process!" />
+              </Accordion.Control>
+            </Accordion.Item>
+          )}
         </Accordion>
       )}
     </Accordion.Panel>

@@ -3,22 +3,35 @@ import { usePortfolioProjectQuery, useQueryParams } from "@/hooks/index";
 import { IPagination } from "@/interfaces/index";
 import {
   Accordion,
+  ActionIcon,
+  Button,
   Container,
   Flex,
   LoadingOverlay,
   Pagination,
   Skeleton,
   Title,
+  Tooltip,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useProcessPortfolioStyle } from "./ProcessPortfolio.style";
 import ProjectList from "./components/ProjectList";
 
+import { ReactComponent as IconInfo } from "@tabler/icons/icons/info-circle-filled.svg";
+import { ConfigModal, GenerateModal } from "./components/Modal";
+
 const ProcessPortfolio = () => {
   const { queryParams, setQueryParams } = useQueryParams();
   const { classes } = useProcessPortfolioStyle();
   const { workspaceId } = useParams();
+  const [openConfigModal, setOpenConfigModal] = useState<boolean>(false);
+  const [openGenerateModal, setOpenGenerateModal] = useState<boolean>(false);
+  const [pagination, setPagination] = useState<IPagination>({
+    page: 1,
+    total: 0,
+    limit: 0,
+  });
 
   const {
     data: projects,
@@ -27,12 +40,6 @@ const ProcessPortfolio = () => {
   } = usePortfolioProjectQuery({
     workspaceId: workspaceId,
     ...queryParams,
-  });
-
-  const [pagination, setPagination] = useState<IPagination>({
-    page: 1,
-    total: 0,
-    limit: 0,
   });
 
   const handlePageChange = (page: number) => {
@@ -55,13 +62,85 @@ const ProcessPortfolio = () => {
     }
   }, [projectsFetchStatus]);
 
+  useEffect(() => {
+    if (queryParams) {
+      setPagination({
+        ...pagination,
+        page: queryParams.page || pagination.page,
+      });
+    }
+  }, [queryParams]);
+
   return !projects ? (
     <Flex>
       <LoadingOverlay visible />
     </Flex>
   ) : (
     <Container size="xl">
-      <Title order={1}>Process portfolio</Title>
+      <ConfigModal
+        onClose={() => setOpenConfigModal(false)}
+        opened={openConfigModal}
+        onSave={() => {
+          setOpenConfigModal(false);
+        }}
+      />
+      {openGenerateModal && (
+        <GenerateModal
+          opened={openGenerateModal}
+          onClose={() => setOpenGenerateModal(false)}
+          onGenerate={() => {
+            setOpenGenerateModal(false);
+          }}
+        />
+      )}
+      <Flex justify="space-between" align="center">
+        {/* Title */}
+        <Flex align="center" gap={6}>
+          <Title order={1}>Process portfolio</Title>
+          <ActionIcon
+            variant="subtle"
+            radius="xl"
+            color="blue"
+            children={
+              <IconInfo
+                style={{
+                  width: "20px",
+                  height: "20px",
+                }}
+              />
+            }
+          />
+        </Flex>
+        {/* Button group */}
+        <Flex className={classes.buttonGroup}>
+          <Tooltip
+            label="Generate process portfolio"
+            width={130}
+            multiline
+            children={
+              <Button
+                variant="light"
+                onClick={() => {
+                  setOpenGenerateModal(true);
+                }}
+                children="Generate"
+              />
+            }
+          />
+          <Tooltip
+            label="Change configuration for performance level"
+            width={180}
+            multiline
+            children={
+              <Button
+                variant="light"
+                children="Config performance level"
+                onClick={() => setOpenConfigModal(true)}
+              />
+            }
+          />
+        </Flex>
+      </Flex>
       <Accordion
         variant="contained"
         chevron

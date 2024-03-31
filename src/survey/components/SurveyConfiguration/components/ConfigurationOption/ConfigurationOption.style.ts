@@ -9,7 +9,8 @@ export const useConfigurationOptionStyle = createStyles(() => ({
 
         display: 'flex',
         flexDirection: 'column',
-        gap: '10px'
+        gap: '10px',
+        borderRight: "1px solid #ccc",
     },
     sectionWrapper: {
         width: '100%',
