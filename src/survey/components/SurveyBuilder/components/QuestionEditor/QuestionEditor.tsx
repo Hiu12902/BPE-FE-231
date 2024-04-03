@@ -167,6 +167,7 @@ const QuestionEditor = (props: QuestionEditorProps) => {
           variant="light"
           color="blue"
           children="Publish"
+          disabled={data?.survey.isPublished === "published"}
           onClick={() => {
             setOpenPublishModal(true);
           }}

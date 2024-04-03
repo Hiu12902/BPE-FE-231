@@ -82,13 +82,19 @@ const VersionItem = (props: VersionItemProps) => {
 
   return (
     <Accordion.Item value={version}>
-      <EditModal
-        opened={openEditModal}
-        onClose={() => {
-          setOpenEditModal(false);
-        }}
-        onSave={() => {}}
-      />
+      {openEditModal && (
+        <EditModal
+          processVersion={version}
+          opened={openEditModal}
+          onClose={() => {
+            setOpenEditModal(false);
+          }}
+          onSave={() => {
+            setOpenEditModal(false);
+            refetch?.();
+          }}
+        />
+      )}
       <Accordion.Control>
         <Grid align="center" justify="center">
           {/* Project name */}
@@ -117,7 +123,7 @@ const VersionItem = (props: VersionItemProps) => {
             <Flex align="center" justify="center" gap={5}>
               <Title order={6}>Heatlh:</Title>
               <Text color="dimmed" size="sm">
-                {health !== null ? health : "N/A"}
+                {health !== null ? health.toFixed(2) : "N/A"}
               </Text>
             </Flex>
           </Grid.Col>
@@ -126,7 +132,7 @@ const VersionItem = (props: VersionItemProps) => {
             <Flex align="center" justify="center" gap={5}>
               <Title order={6}>Feasibility:</Title>
               <Text color="dimmed" size="sm">
-                {feasibility !== null ? feasibility : "N/A"}
+                {feasibility !== null ? feasibility.toFixed(2) : "N/A"}
               </Text>
             </Flex>
           </Grid.Col>
@@ -135,7 +141,9 @@ const VersionItem = (props: VersionItemProps) => {
             <Flex align="center" justify="center" gap={5}>
               <Title order={6}>Strategic importance:</Title>
               <Text color="dimmed" size="sm">
-                {strategicImportance !== null ? strategicImportance : "N/A"}
+                {strategicImportance !== null
+                  ? strategicImportance.toFixed(2)
+                  : "N/A"}
               </Text>
             </Flex>
           </Grid.Col>

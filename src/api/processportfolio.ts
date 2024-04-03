@@ -1,6 +1,5 @@
 import Client from '@/api/client';
-import { PortfolioProcess, PortfolioProject, PortfolioVersion } from '@/interfaces/processportfolio';
-import { IQueryParams, ResponseObject } from '../interfaces';
+import { HealthPerformanceLevel, IQueryParams, NAVersion, PerformanceLevelUpdateBody, PortfolioProcess, PortfolioProject, PortfolioVersion, ResponseObject, VersionMeasurements, VersionMeasurementsUpdateBody } from '../interfaces';
 
 class ProcessPortfolioApi {
     public static classInstance: ProcessPortfolioApi;
@@ -71,6 +70,64 @@ class ProcessPortfolioApi {
                 workspaceId: workspaceId,
                 processId: processId,
                 processVersionVersion: processVersionVersion,
+            }
+        )
+    }
+
+    public getPerformanceLevel({
+        workspaceId,
+    }: {
+        workspaceId: number,
+    }): Promise<HealthPerformanceLevel> {
+        return Client.get(
+            `/workspace/measurements`,
+            {
+                params: {
+                    workspaceId: workspaceId,
+                }
+            }
+        )
+    }
+
+    public updatePerformanceLevel(data: PerformanceLevelUpdateBody): Promise<HealthPerformanceLevel> {
+        return Client.put(
+            `/workspace/measurements`,
+            data
+        )
+    }
+
+    public getVersionMeasurements({
+        workspaceId,
+        processVersionVersion
+    }: {
+        workspaceId: number,
+        processVersionVersion: string,
+    }): Promise<VersionMeasurements> {
+        return Client.get(
+            `/workspace/portfolio/processversion/measurements`,
+            {
+                params: {
+                    workspaceId: workspaceId,
+                    processVersionVersion: processVersionVersion,
+                }
+            }
+        )
+    }
+
+    public updateVersionMeasurements(data: VersionMeasurementsUpdateBody): Promise<VersionMeasurements> {
+        return Client.post(
+            `/workspace/portfolio/processversion/measurements`,
+            data
+        )
+    }
+
+    public getNotAvailableVersionMeasurements(params: IQueryParams): Promise<ResponseObject<NAVersion>> {
+        return Client.get(
+            `/workspace/portfolio/processversion/notavailable`,
+            {
+                params: {
+                    ...params,
+                }
             }
         )
     }

@@ -4,12 +4,15 @@ import { IPagination } from "@/interfaces/index";
 import {
   Accordion,
   ActionIcon,
+  Alert,
   Button,
   Container,
   Flex,
+  Grid,
   LoadingOverlay,
   Pagination,
   Skeleton,
+  Text,
   Title,
   Tooltip,
 } from "@mantine/core";
@@ -18,7 +21,9 @@ import { useParams } from "react-router-dom";
 import { useProcessPortfolioStyle } from "./ProcessPortfolio.style";
 import ProjectList from "./components/ProjectList";
 
+import { ReactComponent as IconPerformanceLevel } from "@tabler/icons/icons/adjustments-horizontal.svg";
 import { ReactComponent as IconInfo } from "@tabler/icons/icons/info-circle-filled.svg";
+import { ReactComponent as IconProcessPortfolio } from "@tabler/icons/icons/chart-grid-dots.svg";
 import { ConfigModal, GenerateModal } from "./components/Modal";
 
 const ProcessPortfolio = () => {
@@ -71,6 +76,10 @@ const ProcessPortfolio = () => {
     }
   }, [queryParams]);
 
+  const [NAPerformanceLevel, setNAPerformanceLevel] = useState<
+    boolean | undefined
+  >();
+
   return !projects ? (
     <Flex>
       <LoadingOverlay visible />
@@ -83,7 +92,11 @@ const ProcessPortfolio = () => {
         onSave={() => {
           setOpenConfigModal(false);
         }}
+        setIsNAPerformanceLevel={(value: boolean) =>
+          setNAPerformanceLevel(value)
+        }
       />
+
       {openGenerateModal && (
         <GenerateModal
           opened={openGenerateModal}
@@ -93,6 +106,7 @@ const ProcessPortfolio = () => {
           }}
         />
       )}
+
       <Flex justify="space-between" align="center">
         {/* Title */}
         <Flex align="center" gap={6}>
@@ -115,7 +129,9 @@ const ProcessPortfolio = () => {
         <Flex className={classes.buttonGroup}>
           <Tooltip
             label="Generate process portfolio"
-            width={130}
+            style={{
+              maxWidth: "200px",
+            }}
             multiline
             children={
               <Button
@@ -123,30 +139,102 @@ const ProcessPortfolio = () => {
                 onClick={() => {
                   setOpenGenerateModal(true);
                 }}
-                children="Generate"
+                children="Process portfolio"
+                leftIcon={
+                  <IconProcessPortfolio
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                    }}
+                  />
+                }
               />
             }
           />
           <Tooltip
-            label="Change configuration for performance level"
-            width={180}
+            label={"Change performance level"}
+            style={{
+              maxWidth: "200px",
+            }}
             multiline
             children={
-              <Button
-                variant="light"
-                children="Config performance level"
-                onClick={() => setOpenConfigModal(true)}
-              />
+              NAPerformanceLevel ? (
+                <Button
+                  variant="outline"
+                  color="red"
+                  children="Performance level"
+                  onClick={() => setOpenConfigModal(true)}
+                  leftIcon={
+                    <IconPerformanceLevel
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                      }}
+                    />
+                  }
+                />
+              ) : (
+                <Button
+                  variant="light"
+                  children="Performance level"
+                  onClick={() => setOpenConfigModal(true)}
+                  leftIcon={
+                    <IconPerformanceLevel
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                      }}
+                    />
+                  }
+                />
+              )
             }
           />
         </Flex>
       </Flex>
+      {NAPerformanceLevel && (
+        <Alert
+          variant="light"
+          color="yellow"
+          style={{
+            borderLeft: "5px solid orange",
+            marginTop: "10px",
+          }}
+        >
+          <Text size="sm">
+            <strong>Warning:</strong> You have not configured the performance
+            level for this workspace. Please configure it to help us calculate
+            the Health of your process version. Otherwise, the Health of version
+            will be set to N/A.
+          </Text>
+        </Alert>
+      )}
       <Accordion
         variant="contained"
         chevron
         className={classes.accordion}
         transitionDuration={0}
       >
+        <Accordion.Item value="heading">
+          <Accordion.Control>
+            <Grid align="center" justify="center">
+              {/* Project name */}
+              <Grid.Col span={9}>
+                <Flex justify="flex-start" align="center">
+                  <Text size="md">Project Name</Text>
+                </Flex>
+              </Grid.Col>
+
+              {/* Owner */}
+              <Grid.Col span={3}>
+                <Flex justify="center" align="center">
+                  <Text size="md">Project Owner</Text>
+                </Flex>
+              </Grid.Col>
+            </Grid>
+          </Accordion.Control>
+        </Accordion.Item>
+
         <ProjectList data={projects.data} />
         {projectsLoading ? (
           <Skeleton height={50} mt={10} />

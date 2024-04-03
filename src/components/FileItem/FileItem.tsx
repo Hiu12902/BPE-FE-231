@@ -328,7 +328,7 @@ const FileItem = (props: IFile) => {
       <Box
         component={Stack}
         className={classes.container}
-        // mt={isDocument ? 15 : 0}
+        mt={isDocument ? 15 : 0}
         p="sm"
         onDoubleClick={
           isVersion
@@ -379,7 +379,8 @@ const FileItem = (props: IFile) => {
             <Flex align="center" justify="center" h="100%">
               <Text color="dimmed" size="sm">
                 {result && "Evaluated At: "}
-                {new Date(lastSaved || createAt || "")?.toLocaleString()}
+                {isVersion &&
+                  new Date(lastSaved || createAt || "")?.toLocaleString()}
               </Text>
             </Flex>
           </Grid.Col>

@@ -1,20 +1,25 @@
-import { usePortfolioProjectQuery } from "@/hooks/index";
+import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
+import { useNAVersionMeasurementsQuery } from "@/hooks/index";
+import { IPagination, IQueryParams, NAVersion } from "@/interfaces/index";
 import {
-    Accordion,
-    ActionIcon,
-    Badge,
-    Button,
-    Divider,
-    Flex,
-    LoadingOverlay,
-    Modal,
-    ModalProps,
-    Stepper
+  Accordion,
+  ActionIcon,
+  Alert,
+  Badge,
+  Button,
+  Divider,
+  Flex,
+  LoadingOverlay,
+  Modal,
+  ModalProps,
+  Pagination,
+  Skeleton,
+  Text,
 } from "@mantine/core";
 import { ReactComponent as IconInfo } from "@tabler/icons/icons/info-circle-filled.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import ProjectList from "../../ProjectList";
+import { NAVersionItem } from "./components";
 
 interface GenerateModalProps extends ModalProps {
   onGenerate: () => void;
@@ -23,11 +28,20 @@ interface GenerateModalProps extends ModalProps {
 const GenerateModal = (props: GenerateModalProps) => {
   const { opened, onClose, onGenerate } = props;
   const { workspaceId } = useParams();
-  const [activeStep, setActiveStep] = useState(0);
-  const nextStep = () =>
-    setActiveStep((current) => (current < 2 ? current + 1 : current));
-  const prevStep = () =>
-    setActiveStep((current) => (current > 0 ? current - 1 : current));
+  const [queryParams, setQueryParams] = useState<IQueryParams>();
+  const [pagination, setPagination] = useState<IPagination>({
+    page: 1,
+    total: 0,
+    limit: 0,
+  });
+
+  const handlePageChange = (page: number) => {
+    setQueryParams({
+      ...queryParams,
+      page: page,
+    });
+    setPagination({ ...pagination, page: page });
+  };
 
   const handleClose = () => {
     onClose();
@@ -37,107 +51,142 @@ const GenerateModal = (props: GenerateModalProps) => {
     onGenerate?.();
   };
 
-  const { data: projects } = usePortfolioProjectQuery({
-    workspaceId: workspaceId,
+  const {
+    data: NAVersions,
+    isLoading: NALoading,
+    fetchStatus: NAFetchStatus,
+    refetch: NAVersionsRefetch,
+    isFetching: NAIsFetching,
+  } = useNAVersionMeasurementsQuery({
+    workspaceId: Number(workspaceId),
+    ...queryParams,
   });
 
-  return (
-    <Modal
-      centered
-      overlayProps={{
-        blur: 3,
-        opacity: 0.65,
-      }}
-      onClose={handleClose}
-      opened={opened}
-      title={
-        <Flex align="center" gap={6}>
-          <Badge
-            fz={15}
-            variant="light"
-            children={"Configure process version"}
-          />
-          <ActionIcon
-            variant="subtle"
-            radius="xl"
-            color="blue"
-            children={
-              <IconInfo
-                style={{
-                  width: "15px",
-                  height: "15px",
-                }}
-              />
-            }
-          />
-        </Flex>
-      }
-      size="90%"
-    >
-      <Stepper
-        active={activeStep}
-        onStepClick={setActiveStep}
-        breakpoint="sm"
-        allowNextStepsSelect={false}
-        size="sm"
-      >
-        <Stepper.Step label="Select models" description="Select 2 exact models">
-          {/* <Alert style={{ borderLeft: `5px solid ${PRIMARY_COLOR[0]}` }}>
-            Hint: only models opened in editor are shown here
-          </Alert> */}
-          <Divider my="sm" />
-          {projects ? (
-            <Accordion
-              variant="contained"
-              chevron
-              //   className={classes.accordion}
-              transitionDuration={0}
-            >
-              <ProjectList data={projects.data} />
-            </Accordion>
-          ) : (
-            <Flex>
-              <LoadingOverlay visible />
-            </Flex>
-          )}
-        </Stepper.Step>
-        <Stepper.Step
-          label="Input performance level"
-          description="Input your desired values"
-        >
-          <Flex></Flex>
-        </Stepper.Step>
-      </Stepper>
+  useEffect(() => {
+    if (NAFetchStatus === "idle" && NAVersions) {
+      // đã fetch xong API, khi đó mới có total & limit để phân trang
+      setPagination({
+        ...pagination,
+        page: pagination.page,
+        total: NAVersions?.total,
+        limit: NAVersions?.limit,
+      });
+    }
+  }, [NAFetchStatus]);
 
-      <Flex justify="flex-end" mt="xl">
-        <Flex w="50%" justify="flex-end" gap={20}>
-          <Button
-            variant="light"
-            color="blue"
-            onClick={prevStep}
-            disabled={activeStep === 0}
+  return (
+    <>
+      {!NALoading ? (
+        <Modal
+          centered
+          overlayProps={{
+            blur: 3,
+            opacity: 0.65,
+          }}
+          onClose={handleClose}
+          opened={opened}
+          title={
+            <Flex align="center" gap={6}>
+              <Badge fz={15} variant="light" children="Process portfolio" />
+              <ActionIcon
+                variant="subtle"
+                radius="xl"
+                color="blue"
+                children={
+                  <IconInfo
+                    style={{
+                      width: "15px",
+                      height: "15px",
+                    }}
+                  />
+                }
+              />
+            </Flex>
+          }
+          size="90%"
+          // styles={{
+          //   content: {
+          //     height: "90vh",
+          //   },
+          // }}
+        >
+          {NAVersions && NAVersions?.data.length > 0 && (
+            <>
+              <Divider />
+              <Alert
+                style={{
+                  borderLeft: `5px solid ${PRIMARY_COLOR[0]}`,
+                  margin: "10px 0px",
+                }}
+              >
+                <Text fz={14} style={{ textAlign: "justify" }}>
+                  These versions are lack of necessary informations for
+                  calculating. Please configure the following process versions
+                  before generating the process portfolio.
+                </Text>
+              </Alert>
+            </>
+          )}
+          <Accordion
+            variant="contained"
+            chevron
+            transitionDuration={0}
+            styles={{
+              chevron: {
+                display: "none",
+              },
+            }}
           >
-            Back
-          </Button>
-          <Button
-            variant="light"
-            color="blue"
-            onClick={nextStep}
-            disabled={activeStep === 1}
-          >
-            Next
-          </Button>
+            {!NAVersions || NAIsFetching ? (
+              <Skeleton height={50} />
+            ) : NAVersions.data.length === 0 ? (
+              <>Process portfolio here!</>
+            ) : (
+              <>
+                {NAVersions?.data.map((version: NAVersion) => {
+                  return (
+                    <Accordion.Item
+                      key={version.processVersionVersion}
+                      value={version.processVersionVersion}
+                      children={
+                        <NAVersionItem
+                          data={version}
+                          refetch={NAVersionsRefetch}
+                        />
+                      }
+                    />
+                  );
+                })}
+              </>
+            )}
+            <Accordion.Item value="pagination">
+              <Accordion.Control
+                children={
+                  <Pagination
+                    value={pagination.page}
+                    total={Math.ceil(pagination.total / pagination.limit)}
+                    onChange={handlePageChange}
+                  />
+                }
+              />
+            </Accordion.Item>
+          </Accordion>
+
+          <Flex justify="flex-end" gap={20} mt={20}>
+            <Button variant="light" onClick={handleClose}>
+              Cancel
+            </Button>
+            {/* <Button variant="light" onClick={handleGenerate}>
+          Re-generate
+        </Button> */}
+          </Flex>
+        </Modal>
+      ) : (
+        <Flex justify="center" align="center">
+          <LoadingOverlay visible />
         </Flex>
-        <Flex w="45%" justify="flex-end" gap={20}>
-          <Button variant="light" onClick={handleGenerate}>
-            Generate
-          </Button>
-          <Button variant="light" onClick={handleClose}>
-            Cancel
-          </Button>
-        </Flex>
-      </Flex>
-    </Modal>
+      )}
+    </>
   );
 };
 

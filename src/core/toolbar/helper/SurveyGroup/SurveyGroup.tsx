@@ -21,6 +21,7 @@ const SurveyGroup = () => {
         });
         return;
       }
+      console.log("currentModeler? ", currentModeler);
       if (currentModeler?.role !== 0) {
         notify({
           type: "error",

@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Alert,
   Badge,
   Button,
   Flex,
@@ -14,37 +15,50 @@ import {
 } from "@mantine/core";
 import { ReactComponent as IconInfo } from "@tabler/icons/icons/info-circle-filled.svg";
 
+import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
+import useDetachModel from "@/core/hooks/useDetachModel";
 import {
   useVersionMeasurementsMutation,
   useVersionMeasurementsQuery,
 } from "@/hooks/index";
 import useNotification from "@/hooks/useNotification";
-import { VersionMeasurementsUpdateBody } from "@/interfaces/index";
+import { NAVersion, VersionMeasurementsUpdateBody } from "@/interfaces/index";
+import { getActiveTab } from "@/redux/selectors";
+import { modelActions, tabsSliceActions } from "@/redux/slices";
+import { useAppDispatch } from "@/redux/store";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { batch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 
-interface EditModalProps extends ModalProps {
+interface EditNAModalProps extends ModalProps {
   onSave: () => void;
-  processVersion: string;
+  data: NAVersion;
 }
 
-const EditModal = (props: EditModalProps) => {
-  const { opened, onClose, onSave, processVersion } = props;
+const EditNAModal = (props: EditNAModalProps) => {
+  const { opened, onClose, onSave, data } = props;
+  const {
+    processVersionVersion: version,
+    projectId,
+    num,
+    processName,
+    processId,
+  } = data;
   const { workspaceId } = useParams();
   const [versionChange, setVersionChange] =
     useState<VersionMeasurementsUpdateBody>(
       {} as VersionMeasurementsUpdateBody
     );
   const notify = useNotification();
-
-  const {
-    data: versionMeasurements,
-    isLoading: versionLoading,
-    isFetching: versionFetching,
-  } = useVersionMeasurementsQuery({
-    workspaceId: Number(workspaceId),
-    processVersionVersion: processVersion,
-  });
+  const dispatch = useAppDispatch();
+  const detach = useDetachModel();
+  const activeTab = useSelector(getActiveTab);
+  const navigate = useNavigate();
+  const { data: versionMeasurements, isFetching: versionFetching } =
+    useVersionMeasurementsQuery({
+      workspaceId: Number(workspaceId),
+      processVersionVersion: version,
+    });
 
   const updateVersionMeasurements = useVersionMeasurementsMutation({
     onSuccess: () => {
@@ -54,6 +68,7 @@ const EditModal = (props: EditModalProps) => {
         message: "Process version measurements updated successfully",
         type: "success",
       });
+      onSave?.();
     },
   });
 
@@ -66,9 +81,31 @@ const EditModal = (props: EditModalProps) => {
     updateVersionMeasurements.mutate({
       ...versionChange,
       workspaceId: Number(workspaceId),
-      processVersionVersion: processVersion,
+      processVersionVersion: version,
     });
-    onSave?.();
+  };
+
+  const onOpenBpmnFile = () => {
+    if (version) {
+      batch(() => {
+        dispatch(
+          modelActions.setModelers({
+            modeler: undefined,
+            id: version,
+            projectId: projectId,
+            name: `${processName}_ver_${num}_test`,
+            processId: processId,
+            role: 0,
+          })
+        );
+        detach();
+        dispatch(modelActions.setCurrentModeler(version));
+        if (activeTab?.id !== version) {
+          dispatch(tabsSliceActions.setActiveTab(version));
+        }
+      });
+      navigate("/editor");
+    }
   };
 
   useEffect(() => {
@@ -138,19 +175,37 @@ const EditModal = (props: EditModalProps) => {
       }
       size="lg"
     >
-      <LoadingOverlay
-        visible={!versionMeasurements || (!versionLoading && versionFetching)}
-      />
+      <LoadingOverlay visible={!versionMeasurements || versionFetching} />
       <Stack>
         {/* Health */}
         <Flex direction="column" gap={10}>
           <Title order={4}>Health</Title>
+          <Alert
+            style={{
+              borderLeft: `5px solid ${PRIMARY_COLOR[0]}`,
+            }}
+          >
+            This process version is lack of evaluated result.{" "}
+            <span
+              style={{ textDecoration: "underline", cursor: "pointer" }}
+              onClick={() => {
+                onOpenBpmnFile();
+              }}
+            >
+              Click here
+            </span>{" "}
+            to generate the evaluation result.
+          </Alert>
           {/* Cycle Time */}
           <Flex w="100%" gap={20} justify="space-between">
             <TextInput
               w="50%"
               disabled
               label="Evaluated Cycle Time"
+              error={
+                versionMeasurements?.evaluationResult === null ||
+                versionMeasurements?.evaluationResult.totalCycleTime === null
+              }
               defaultValue={
                 versionMeasurements?.evaluationResult === null ||
                 versionMeasurements?.evaluationResult.totalCycleTime === null
@@ -163,6 +218,10 @@ const EditModal = (props: EditModalProps) => {
               min={0}
               step={1}
               label="Current Cycle Time"
+              error={
+                versionMeasurements?.health === null ||
+                versionMeasurements?.health.currentCycleTime === null
+              }
               defaultValue={
                 versionMeasurements?.health === null ||
                 versionMeasurements?.health.currentCycleTime === null
@@ -185,6 +244,10 @@ const EditModal = (props: EditModalProps) => {
               w="50%"
               disabled
               label="Evaluated Cost"
+              error={
+                versionMeasurements?.evaluationResult === null ||
+                versionMeasurements?.evaluationResult.totalCost === null
+              }
               defaultValue={
                 versionMeasurements?.evaluationResult === null ||
                 versionMeasurements?.evaluationResult.totalCost === null
@@ -197,6 +260,10 @@ const EditModal = (props: EditModalProps) => {
               min={0}
               step={1}
               label="Current Cost"
+              error={
+                versionMeasurements?.health === null ||
+                versionMeasurements?.health.currentCost === null
+              }
               defaultValue={
                 versionMeasurements?.health === null ||
                 versionMeasurements?.health.currentCost === null
@@ -220,6 +287,10 @@ const EditModal = (props: EditModalProps) => {
               disabled
               label="Evaluated Quality"
               description="From 0 to 1"
+              error={
+                versionMeasurements?.evaluationResult === null ||
+                versionMeasurements?.evaluationResult.totalQuality === null
+              }
               defaultValue={
                 versionMeasurements?.evaluationResult === null ||
                 versionMeasurements?.evaluationResult.totalQuality === null
@@ -237,6 +308,10 @@ const EditModal = (props: EditModalProps) => {
               precision={2}
               label="Current Quality"
               description="From 0 to 1"
+              error={
+                versionMeasurements?.health === null ||
+                versionMeasurements?.health.currentQuality === null
+              }
               defaultValue={
                 versionMeasurements?.health === null ||
                 versionMeasurements?.health.currentQuality === null
@@ -260,13 +335,15 @@ const EditModal = (props: EditModalProps) => {
               disabled
               label="Evaluated Flexibility"
               description="From 0 to 1"
+              error={
+                versionMeasurements?.evaluationResult === null ||
+                versionMeasurements?.evaluationResult.totalFlexibility === null
+              }
               defaultValue={
                 versionMeasurements?.evaluationResult === null ||
                 versionMeasurements?.evaluationResult.totalFlexibility === null
                   ? "N/A"
-                  : versionMeasurements?.evaluationResult.totalFlexibility.toFixed(
-                      2
-                    )
+                  : versionMeasurements?.evaluationResult.totalFlexibility
               }
             />
             <NumberInput
@@ -277,6 +354,10 @@ const EditModal = (props: EditModalProps) => {
               precision={2}
               label="Current Flexibility"
               description="From 0 to 1"
+              error={
+                versionMeasurements?.health === null ||
+                versionMeasurements?.health.currentFlexibility === null
+              }
               defaultValue={
                 versionMeasurements?.health === null ||
                 versionMeasurements?.health.currentFlexibility === null
@@ -305,6 +386,7 @@ const EditModal = (props: EditModalProps) => {
               precision={2}
               label="Expected value"
               description="From 0 to 1"
+              error={versionMeasurements?.feasibility === null}
               defaultValue={
                 versionMeasurements?.feasibility === null
                   ? 0
@@ -329,6 +411,7 @@ const EditModal = (props: EditModalProps) => {
               precision={2}
               label="Expected value"
               description="From 0 to 1"
+              error={versionMeasurements?.strategicImportance === null}
               defaultValue={
                 versionMeasurements?.strategicImportance === null
                   ? 0
@@ -358,4 +441,4 @@ const EditModal = (props: EditModalProps) => {
   );
 };
 
-export default EditModal;
+export default EditNAModal;

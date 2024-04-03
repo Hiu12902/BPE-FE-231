@@ -15,8 +15,9 @@ const VersionList = (props: VersionListProps) => {
 
   const {
     data: versions,
-    isLoading,
+    isLoading: versionsLoading,
     refetch: versionsRefetch,
+    isFetching: versionsFetching,
   } = usePortfolioVersionQuery({
     workspaceId: Number(workspaceId),
     processId: Number(processId),
@@ -24,7 +25,7 @@ const VersionList = (props: VersionListProps) => {
 
   return (
     <Accordion.Panel>
-      {isLoading || !versions ? (
+      {versionsLoading || !versions || versionsFetching ? (
         <Accordion>
           <Skeleton height={50} mt={0} radius={0} />
         </Accordion>

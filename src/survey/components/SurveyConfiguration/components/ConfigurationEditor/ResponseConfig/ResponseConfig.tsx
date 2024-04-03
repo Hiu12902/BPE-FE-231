@@ -14,7 +14,7 @@ import {
   Loader,
   Switch,
   Text,
-  Title
+  Title,
 } from "@mantine/core";
 import { DateTimePicker, DatesProvider } from "@mantine/dates";
 import { useEffect, useState } from "react";
@@ -280,6 +280,7 @@ const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
                 <DateTimePicker
                   // clearable
                   w="100%"
+                  disabled={responseConfig?.isPublished === "published"}
                   label="Start date"
                   value={startValue !== null ? new Date(startValue) : null}
                   placeholder="Choose start date"

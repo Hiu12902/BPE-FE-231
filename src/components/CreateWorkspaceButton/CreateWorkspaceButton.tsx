@@ -33,6 +33,14 @@ const CreateWorkspaceButton = ({
 
   const onCreateNewWorkspace = async () => {
     try {
+      if (workspaceName?.includes("/") || workspaceName?.includes("?")) {
+        notify({
+          title: "Error!",
+          message: "Special characters are not allowed in workspace's name!",
+          type: "error",
+        });
+        return;
+      }
       if (!workspaceName || !workspaceDescription) {
         notify({
           title: "Error!",
@@ -84,6 +92,13 @@ const CreateWorkspaceButton = ({
               placeholder="Name"
               value={workspaceName}
               onChange={(e) => setWorkspaceName(e.target.value)}
+              error={
+                workspaceName?.includes("/")
+                  ? "Special characters are not allowed in workspace's name!"
+                  : workspaceName?.includes("?")
+                  ? "Special characters are not allowed in workspace's name!"
+                  : ""
+              }
             />
           </Input.Wrapper>
           <Input.Wrapper label="Description" className={classes.input}>

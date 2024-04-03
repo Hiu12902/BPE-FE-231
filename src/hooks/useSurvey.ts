@@ -196,7 +196,7 @@ export const useSurveyPublishMutation = ({ onSuccess, onSettled }: UseMutation) 
     return useMutation({
         mutationFn: (params: SurveyPublishBody) => surveyApi.publishSurvey(params),
         onSuccess: (data: SurveyPublishResponse) => onSuccess?.(data),
-        onError: (err: any) => {
+        onError: (err) => {
             const notify = useNotification();
             notify({
                 title: 'Error',
