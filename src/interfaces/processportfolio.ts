@@ -23,10 +23,10 @@ export interface PortfolioVersion {
 
 export interface HealthPerformanceLevel {
     targetedCycleTime: number,
-    worstCycleTime: number,
+    worstCycleTime: number | null,
 
     targetedCost: number,
-    worstCost: number,
+    worstCost: number | null,
 
     targetedQuality: number,
     worstQuality: number,

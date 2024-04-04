@@ -89,16 +89,14 @@ const PublishModal = (props: PublishModalProps) => {
     onConfirm?.({
       email: email,
       startDate:
-        startDate !== null
-          ? toLocaleISOString(new Date(startDate))
-          : toLocaleISOString(new Date()),
+        startDate !== null ? toLocaleISOString(new Date(startDate)) : null,
       endDate: endDate !== null ? toLocaleISOString(new Date(endDate)) : null,
       surveyUrl: surveyUrl,
       processVersionVersion: "",
       projectId: 0,
     });
 
-    refetchPublishInfo();
+    // refetchPublishInfo();
     handleClose();
   };
 

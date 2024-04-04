@@ -54,6 +54,7 @@ const ConfigModal = (props: ConfigModalProps) => {
 
   const handleSave = () => {
     if (
+      performanceChange.worstCycleTime !== null &&
       performanceChange.targetedCycleTime > performanceChange.worstCycleTime
     ) {
       notify({
@@ -63,7 +64,10 @@ const ConfigModal = (props: ConfigModalProps) => {
       });
       return;
     }
-    if (performanceChange.targetedCost > performanceChange.worstCost) {
+    if (
+      performanceChange.worstCost !== null &&
+      performanceChange.targetedCost > performanceChange.worstCost
+    ) {
       notify({
         title: "Error",
         message: "Targeted cost must be less than worst cost",
@@ -103,16 +107,11 @@ const ConfigModal = (props: ConfigModalProps) => {
         performanceLevel.worstCost === null
       ) {
         setIsNAPerformanceLevel?.(true);
+      } else {
+        setIsNAPerformanceLevel?.(false);
       }
-      setIsNAPerformanceLevel?.(false);
       setPerformanceChange({
         ...performanceLevel,
-        worstCycleTime:
-          performanceLevel.worstCycleTime === null
-            ? 0
-            : performanceLevel.worstCycleTime,
-        worstCost:
-          performanceLevel.worstCost === null ? 0 : performanceLevel.worstCost,
       });
     }
   }, [performanceLevel]);
@@ -174,12 +173,17 @@ const ConfigModal = (props: ConfigModalProps) => {
               min={0}
               step={1}
               label="Worst Cycle Time"
+              error={performanceLevel?.worstCycleTime === null}
               defaultValue={
                 performanceLevel?.worstCycleTime === null
                   ? undefined
                   : performanceLevel?.worstCycleTime
               }
-              value={performanceChange?.worstCycleTime}
+              value={
+                performanceLevel?.worstCycleTime === null
+                  ? undefined
+                  : performanceLevel?.worstCycleTime
+              }
               onChange={(value: number) => {
                 setPerformanceChange({
                   ...performanceChange,
@@ -209,12 +213,17 @@ const ConfigModal = (props: ConfigModalProps) => {
               min={0}
               step={1}
               label="Worst Cost"
+              error={performanceLevel?.worstCost === null}
               defaultValue={
                 performanceLevel?.worstCost === null
                   ? undefined
                   : performanceLevel?.worstCost
               }
-              value={performanceChange?.worstCost}
+              value={
+                performanceLevel?.worstCost === null
+                  ? undefined
+                  : performanceLevel?.worstCost
+              }
               onChange={(value: number) => {
                 setPerformanceChange({
                   ...performanceChange,

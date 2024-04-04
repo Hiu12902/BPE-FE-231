@@ -160,7 +160,7 @@ const ProcessPortfolio = () => {
             children={
               NAPerformanceLevel ? (
                 <Button
-                  variant="outline"
+                  variant="light"
                   color="red"
                   children="Performance level"
                   onClick={() => setOpenConfigModal(true)}
@@ -195,9 +195,9 @@ const ProcessPortfolio = () => {
       {NAPerformanceLevel && (
         <Alert
           variant="light"
-          color="yellow"
+          color="red"
           style={{
-            borderLeft: "5px solid orange",
+            borderLeft: "5px solid red",
             marginTop: "10px",
           }}
         >
