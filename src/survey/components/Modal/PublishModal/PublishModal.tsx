@@ -95,9 +95,7 @@ const PublishModal = (props: PublishModalProps) => {
       processVersionVersion: "",
       projectId: 0,
     });
-
-    // refetchPublishInfo();
-    handleClose();
+    handleClose?.();
   };
 
   const handleAddEmail = () => {
@@ -124,10 +122,6 @@ const PublishModal = (props: PublishModalProps) => {
       });
     }
   }, [publishInfo]);
-
-  useEffect(() => {
-    console.log(publishInfoChange);
-  }, [publishInfoChange]);
 
   return !publishInfo ? (
     <Flex>

@@ -91,8 +91,8 @@ const VersionItem = (props: VersionItemProps) => {
           }}
           onSave={() => {
             setOpenEditModal(false);
-            refetch?.();
           }}
+          refetch={refetch}
         />
       )}
       <Accordion.Control>

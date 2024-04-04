@@ -32,10 +32,13 @@ const ConfigModal = (props: ConfigModalProps) => {
     useState<HealthPerformanceLevel>({} as HealthPerformanceLevel);
   const notify = useNotification();
 
-  const { data: performanceLevel, isFetching: performanceLevelFetching } =
-    usePerformanceLevelQuery({
-      workspaceId: Number(workspaceId),
-    });
+  const {
+    data: performanceLevel,
+    isFetching: performanceLevelFetching,
+    refetch: performanceLevelRefetch,
+  } = usePerformanceLevelQuery({
+    workspaceId: Number(workspaceId),
+  });
 
   const updatePerformanceLevel = usePerformanceLevelMutation({
     onSuccess: () => {
@@ -45,6 +48,7 @@ const ConfigModal = (props: ConfigModalProps) => {
         message: "Performance level updated successfully",
         type: "success",
       });
+      performanceLevelRefetch();
     },
   });
 

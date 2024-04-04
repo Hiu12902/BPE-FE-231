@@ -118,7 +118,6 @@ const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
 
   useEffect(() => {
     if (responseConfig) {
-      console.log("responseConfig fetch: ", responseConfig);
       const { startDate, endDate } = responseConfig;
       if (startDate !== null && startDate) {
         setStartValue(new Date(startDate));
@@ -280,7 +279,7 @@ const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
                 <DateTimePicker
                   // clearable
                   w="100%"
-                  disabled={responseConfig?.isPublished === "published"}
+                  disabled={responseConfig?.isPublished !== "pending"}
                   label="Start date"
                   value={startValue !== null ? new Date(startValue) : null}
                   placeholder="Choose start date"
@@ -292,6 +291,7 @@ const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
                 <DateTimePicker
                   // clearable
                   w="100%"
+                  disabled={responseConfig?.isPublished === "closed"}
                   label="End date"
                   placeholder="Choose end date"
                   value={endValue !== null ? new Date(endValue) : null}

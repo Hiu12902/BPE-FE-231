@@ -19,7 +19,8 @@ export const useConfigurationOptionStyle = createStyles(() => ({
         ':hover': {
             border: '1px solid #1976d2',
             borderRadius: '10px',
-        }
+        },
+        cursor: 'pointer',
     },
     activeSection: {
         width: '100%',
@@ -27,5 +28,6 @@ export const useConfigurationOptionStyle = createStyles(() => ({
         borderRadius: '10px',
         border: '1px solid #fff',
         backgroundColor: '#e7f5ff',
+        cursor: 'pointer',
     }
 }))

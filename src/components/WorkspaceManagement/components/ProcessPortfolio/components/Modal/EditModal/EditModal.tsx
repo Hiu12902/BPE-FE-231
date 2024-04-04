@@ -26,10 +26,11 @@ import { useParams } from "react-router-dom";
 interface EditModalProps extends ModalProps {
   onSave: () => void;
   processVersion: string;
+  refetch?: () => void;
 }
 
 const EditModal = (props: EditModalProps) => {
-  const { opened, onClose, onSave, processVersion } = props;
+  const { opened, onClose, onSave, processVersion, refetch } = props;
   const { workspaceId } = useParams();
   const [versionChange, setVersionChange] =
     useState<VersionMeasurementsUpdateBody>(
@@ -54,6 +55,7 @@ const EditModal = (props: EditModalProps) => {
         message: "Process version measurements updated successfully",
         type: "success",
       });
+      refetch?.();
     },
   });
 

@@ -14,10 +14,11 @@ import {
   Button,
   Flex,
   Group,
+  LoadingOverlay,
   Modal,
   ScrollArea,
   Text,
-  Title,
+  Title
 } from "@mantine/core";
 import { useContext, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -37,7 +38,7 @@ const QuestionEditor = (props: QuestionEditorProps) => {
   const { projectId, processVersion } = useParams();
   const [openPreviewModal, setPreviewModal] = useState<boolean>(false);
   const [openPublishModal, setOpenPublishModal] = useState<boolean>(false);
-  const { refetch } = useContext(
+  const { refetch, isFetching } = useContext(
     IsChangedQuestionContext
   ) as IsChangedQuestionContextProps;
 
@@ -117,13 +118,27 @@ const QuestionEditor = (props: QuestionEditorProps) => {
         className={classes.infoGroup}
       >
         <Group>
-          <Badge>Draft</Badge>
-          <Text c="dimmed">Last saved: Feb 3, 2024 at 2:15 AM.</Text>
+          <Title order={5}>Survey status:</Title>
+          {data?.survey.isPublished === "closed" ? (
+            <Badge color="red">Closed</Badge>
+          ) : data?.survey.isPublished === "published" ? (
+            <Badge color="green">Published</Badge>
+          ) : data?.survey.isPublished === "pending" ? (
+            <Badge color="blue">Pending</Badge>
+          ) : (
+            <></>
+          )}
         </Group>
       </Flex>
 
       <ScrollArea className={classes.editArea}>
-        {data?.survey.isPublished !== "closed" ? (
+        {publishSurveyMutation.isPending ||
+        !data?.survey.isPublished ||
+        isFetching ? (
+          <Flex>
+            <LoadingOverlay visible />
+          </Flex>
+        ) : data?.survey.isPublished !== "closed" ? (
           <Flex
             w="100%"
             h="50vh"
@@ -131,10 +146,27 @@ const QuestionEditor = (props: QuestionEditorProps) => {
             align="center"
             direction="column"
           >
-            <Text
-              children="This survey is currently published, 
-            please close it before editing."
-            />
+            {data?.survey.isPublished === "published" ? (
+              <Text
+                children={
+                  <p>
+                    This survey is <strong>published</strong>. You can preview
+                    the survey by clicking the button below.
+                  </p>
+                }
+              />
+            ) : data?.survey.isPublished === "pending" ? (
+              <Text
+                children={
+                  <p>
+                    This survey is <strong>pending</strong>. You can preview the
+                    survey by clicking the button below.
+                  </p>
+                }
+              />
+            ) : (
+              <></>
+            )}
             <Text
               mt={10}
               italic
