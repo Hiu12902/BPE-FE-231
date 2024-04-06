@@ -1,5 +1,5 @@
 import Client from '@/api/client';
-import { HealthPerformanceLevel, IQueryParams, NAVersion, PerformanceLevelUpdateBody, PortfolioProcess, PortfolioProject, PortfolioVersion, ResponseObject, VersionMeasurements, VersionMeasurementsUpdateBody } from '../interfaces';
+import { HealthPerformanceLevel, IQueryParams, NAVersion, PerformanceLevelUpdateBody, PortfolioProcess, PortfolioProject, PortfolioVersion, ProcessPortfolioPoint, ResponseObject, VersionMeasurements, VersionMeasurementsUpdateBody } from '../interfaces';
 
 class ProcessPortfolioApi {
     public static classInstance: ProcessPortfolioApi;
@@ -127,6 +127,19 @@ class ProcessPortfolioApi {
             {
                 params: {
                     ...params,
+                }
+            }
+        )
+    }
+
+    public getProcessPortfolio(workspaceId: number): Promise<{
+        processPortfolio: ProcessPortfolioPoint[]
+    }> {
+        return Client.get(
+            `/workspace/portfolio`,
+            {
+                params: {
+                    workspaceId: workspaceId,
                 }
             }
         )

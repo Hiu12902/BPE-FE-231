@@ -9,6 +9,7 @@ import {
   Button,
   Divider,
   Flex,
+  Loader,
   LoadingOverlay,
   Modal,
   ModalProps,
@@ -19,7 +20,7 @@ import {
 import { ReactComponent as IconInfo } from "@tabler/icons/icons/info-circle-filled.svg";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { NAVersionItem } from "./components";
+import { NAVersionItem, ScatterPlot } from "./components";
 
 interface GenerateModalProps extends ModalProps {
   onGenerate: () => void;
@@ -76,7 +77,7 @@ const GenerateModal = (props: GenerateModalProps) => {
 
   return (
     <>
-      {!NALoading ? (
+      {!NALoading && NAVersions ? (
         <Modal
           centered
           overlayProps={{
@@ -104,19 +105,15 @@ const GenerateModal = (props: GenerateModalProps) => {
             </Flex>
           }
           size="90%"
-          // styles={{
-          //   content: {
-          //     height: "90vh",
-          //   },
-          // }}
         >
-          {NAVersions && NAVersions?.data.length > 0 && (
+          {NAVersions?.data.length > 0 && (
             <>
               <Divider />
               <Alert
                 style={{
-                  borderLeft: `5px solid ${PRIMARY_COLOR[0]}`,
+                  borderLeft: `5px solid red`,
                   margin: "10px 0px",
+                  backgroundColor: "#fee7eb",
                 }}
               >
                 <Text fz={14} style={{ textAlign: "justify" }}>
@@ -137,48 +134,55 @@ const GenerateModal = (props: GenerateModalProps) => {
               },
             }}
           >
-            {!NAVersions || NAIsFetching ? (
-              <Skeleton height={50} />
-            ) : NAVersions.data.length === 0 ? (
-              <>Process portfolio here!</>
-            ) : (
+            {NAVersions.data.length > 0 ? (
               <>
-                {NAVersions?.data.map((version: NAVersion) => {
-                  return (
-                    <Accordion.Item
-                      key={version.processVersionVersion}
-                      value={version.processVersionVersion}
-                      children={
-                        <NAVersionItem
-                          data={version}
-                          refetch={NAVersionsRefetch}
-                        />
-                      }
-                    />
-                  );
-                })}
-              </>
-            )}
-            <Accordion.Item value="pagination">
-              <Accordion.Control
-                children={
-                  <Pagination
-                    value={pagination.page}
-                    total={Math.ceil(pagination.total / pagination.limit)}
-                    onChange={handlePageChange}
+                {NAIsFetching ? (
+                  <Skeleton height={50} />
+                ) : (
+                  NAVersions?.data.map((version: NAVersion) => {
+                    return (
+                      <Accordion.Item
+                        key={version.processVersionVersion}
+                        value={version.processVersionVersion}
+                        children={
+                          <NAVersionItem
+                            data={version}
+                            refetch={NAVersionsRefetch}
+                          />
+                        }
+                      />
+                    );
+                  })
+                )}
+                <Accordion.Item value="pagination">
+                  <Accordion.Control
+                    children={
+                      <Pagination
+                        value={pagination.page}
+                        total={Math.ceil(pagination.total / pagination.limit)}
+                        onChange={handlePageChange}
+                      />
+                    }
                   />
-                }
-              />
-            </Accordion.Item>
+                </Accordion.Item>
+              </>
+            ) : (
+              <Flex
+                style={{
+                  width: "100%",
+                  margin: "20px 0px",
+                }}
+                justify="center"
+              >
+                <ScatterPlot />
+              </Flex>
+            )}
           </Accordion>
 
           <Flex justify="flex-end" gap={20} mt={20}>
             <Button variant="light" onClick={handleClose}>
               Cancel
             </Button>
-            {/* <Button variant="light" onClick={handleGenerate}>
-          Re-generate
-        </Button> */}
           </Flex>
         </Modal>
       ) : (

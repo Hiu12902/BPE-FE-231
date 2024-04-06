@@ -82,7 +82,7 @@ const NAVersionItem = (props: NAVersionItemProps) => {
             <Flex align="center" justify="center" gap={5}>
               <Title order={6}>Heatlh:</Title>
               <Text color={health === null ? "coral" : "dimmed"} size="sm">
-                {health !== null ? health : "N/A"}
+                {health !== null ? health.toFixed(2) : "N/A"}
               </Text>
             </Flex>
           </Grid.Col>
@@ -91,7 +91,7 @@ const NAVersionItem = (props: NAVersionItemProps) => {
             <Flex align="center" justify="center" gap={5}>
               <Title order={6}>Feasibility:</Title>
               <Text color={feasibility === null ? "coral" : "dimmed"} size="sm">
-                {feasibility !== null ? feasibility : "N/A"}
+                {feasibility !== null ? feasibility.toFixed(2) : "N/A"}
               </Text>
             </Flex>
           </Grid.Col>
@@ -103,7 +103,9 @@ const NAVersionItem = (props: NAVersionItemProps) => {
                 color={strategicImportance === null ? "coral" : "dimmed"}
                 size="sm"
               >
-                {strategicImportance !== null ? strategicImportance : "N/A"}
+                {strategicImportance !== null
+                  ? strategicImportance.toFixed(2)
+                  : "N/A"}
               </Text>
             </Flex>
           </Grid.Col>

@@ -180,22 +180,29 @@ const EditNAModal = (props: EditNAModalProps) => {
         {/* Health */}
         <Flex direction="column" gap={10}>
           <Title order={4}>Health</Title>
-          <Alert
-            style={{
-              borderLeft: `5px solid ${PRIMARY_COLOR[0]}`,
-            }}
-          >
-            This process version is lack of evaluated result.{" "}
-            <span
-              style={{ textDecoration: "underline", cursor: "pointer" }}
-              onClick={() => {
-                onOpenBpmnFile();
+
+          {versionMeasurements?.evaluationResult.totalQuality === null && (
+            <Alert
+              style={{
+                borderLeft: `5px solid red`,
+                backgroundColor: "#fee7eb",
               }}
             >
-              Click here
-            </span>{" "}
-            to generate the evaluation result.
-          </Alert>
+              This process version is lack of evaluated result or survey result.{" "}
+              <span
+                style={{ textDecoration: "underline", cursor: "pointer" }}
+                onClick={() => {
+                  onOpenBpmnFile();
+                }}
+              >
+                Click here
+              </span>{" "}
+              to <strong>generate the evaluation result</strong> or{" "}
+              <strong>launch the survey</strong> before generating process
+              portfolio.
+            </Alert>
+          )}
+
           {/* Cycle Time */}
           <Flex w="100%" gap={20} justify="space-between">
             <TextInput

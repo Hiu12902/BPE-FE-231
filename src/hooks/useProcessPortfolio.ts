@@ -183,3 +183,14 @@ export const useNAVersionMeasurementsQuery = (params: IQueryParams) => {
         retry: 3,
     })
 }
+
+export const useProcessPortfolioQuery = (workspaceId: number) => {
+    const queryKey = ['process_portfolio', workspaceId];
+
+    return useQuery({
+        queryKey: queryKey,
+        queryFn: () => processportfolioApi.getProcessPortfolio(workspaceId),
+        enabled: !!workspaceId,
+        retry: 3,
+    })
+}

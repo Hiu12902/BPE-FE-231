@@ -80,3 +80,14 @@ export interface NAVersion {
     strategicImportance: number,
     health: number,
 }
+
+export interface ProcessPortfolioPoint {
+    processName: string,
+    projectName: string,
+    processVersionVersion: string,
+    num: number,
+
+    feasibility: number,
+    strategicImportance: number,
+    health: number,
+}
