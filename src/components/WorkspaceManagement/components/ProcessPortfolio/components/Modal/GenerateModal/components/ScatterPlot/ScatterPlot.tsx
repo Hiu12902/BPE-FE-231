@@ -1,7 +1,7 @@
 import { SCATTER_PLOT_POINT } from "@/constants/theme/themeConstants";
 import { useProcessPortfolioQuery } from "@/hooks/useProcessPortfolio";
 import { ProcessPortfolioPoint } from "@/interfaces/processportfolio";
-import { Flex } from "@mantine/core";
+import { Flex, LoadingOverlay } from "@mantine/core";
 import {
   Chart,
   ChartOptions,
@@ -54,6 +54,9 @@ export const options: ChartOptions<"scatter"> = {
   },
   plugins: {
     tooltip: {
+      backgroundColor: "#228ce7",
+      titleColor: "#fff",
+      bodyColor: "#fff",
       displayColors: false,
       titleFont: {
         family: "Trebuchet MS,sans-serif",
@@ -97,7 +100,7 @@ export const options: ChartOptions<"scatter"> = {
       position: "right",
       labels: {
         font: {
-          family: "Trebuchet MS,sans-serif",
+          family: "Trebuchet~ MS,sans-serif",
           size: 15,
         },
       },
@@ -134,8 +137,8 @@ export const options: ChartOptions<"scatter"> = {
   },
   scales: {
     x: {
-      // min: -100,
-      // max: 100,
+      min: -100,
+      max: 100,
       beginAtZero: true,
       title: {
         display: true,
@@ -164,7 +167,9 @@ export const options: ChartOptions<"scatter"> = {
 
 const ScatterPlot = () => {
   const { workspaceId } = useParams();
-  const { data: rawData } = useProcessPortfolioQuery(Number(workspaceId));
+  const { data: rawData, isLoading: rawDataLoading } = useProcessPortfolioQuery(
+    Number(workspaceId)
+  );
   const tranformData = (data?: ProcessPortfolioPoint[]) => {
     return data?.map((dataPoint) => ({
       x: Number((dataPoint.health * 100).toFixed(2)),
@@ -222,6 +227,7 @@ const ScatterPlot = () => {
       }}
       justify="center"
     >
+      <LoadingOverlay visible={rawDataLoading} />
       <Scatter
         options={options}
         data={data}
