@@ -181,7 +181,7 @@ const EditNAModal = (props: EditNAModalProps) => {
         <Flex direction="column" gap={10}>
           <Title order={4}>Health</Title>
 
-          {versionMeasurements?.evaluationResult.totalQuality === null && (
+          {versionMeasurements?.evaluationResult === null && (
             <Alert
               style={{
                 borderLeft: `5px solid red`,
