@@ -276,8 +276,20 @@ const DiagramGroup = () => {
   const getJsonFromModel = (modeler: any) => {
     const elementRegistry = modeler.get("elementRegistry");
     const jsonObj = getElementForGraph(elementRegistry);
-    clipboard.copy(JSON.stringify(jsonObj));
-    return jsonObj;
+    clipboard.copy(
+      JSON.stringify({
+        model: {
+          ...jsonObj,
+        },
+        processVersionVersion: currentModeler?.id,
+      })
+    );
+    return {
+      model: {
+        ...jsonObj,
+      },
+      processVersionVersion: currentModeler?.id,
+    };
   };
 
   const lint = async () => {
