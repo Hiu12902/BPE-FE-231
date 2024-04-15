@@ -69,7 +69,7 @@ const QuestionSection = (props: QuestionSectionProps) => {
   }, [data]);
 
   return (
-    <Flex className={classes.wrapper}>
+    <Flex className={classes.wrapper} id="tour_section">
       <TitleInformation
         ml={10}
         mb={5}

@@ -129,7 +129,6 @@ const QuestionItem = (props: QuestionItemProps) => {
   };
 
   const handleCreateQuestion = (data: Question) => {
-    console.log("Create question with data: ", data);
     createQuestionMutation.mutate({
       sectionId: sectionId,
       projectId: Number(projectId),
@@ -173,6 +172,7 @@ const QuestionItem = (props: QuestionItemProps) => {
               color="blue"
               variant="filled"
               children={questionType && QuestionNameConversion[questionType]}
+              id="tour_question_badge"
             />
             <ActionIcon
               variant="outline"
@@ -183,6 +183,7 @@ const QuestionItem = (props: QuestionItemProps) => {
                 e.stopPropagation();
                 setOpenDeleteModal(true);
               }}
+              id="tour_question_delete"
             />
           </Flex>
         </Flex>
@@ -208,7 +209,7 @@ const QuestionItem = (props: QuestionItemProps) => {
   };
 
   return (
-    <Flex className={classes.wrapper}>
+    <Flex className={classes.wrapper} id="tour_question">
       <ConfirmModal
         opened={openConfirmModal}
         title="Do you want to discard changes"

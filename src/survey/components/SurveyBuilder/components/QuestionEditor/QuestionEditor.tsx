@@ -18,7 +18,7 @@ import {
   Modal,
   ScrollArea,
   Text,
-  Title
+  Title,
 } from "@mantine/core";
 import { useContext, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -84,6 +84,7 @@ const QuestionEditor = (props: QuestionEditorProps) => {
       direction="column"
       justify="center"
       align="center"
+      id="tour_editor"
     >
       <Modal
         opened={openPreviewModal}
@@ -117,7 +118,7 @@ const QuestionEditor = (props: QuestionEditorProps) => {
         align="center"
         className={classes.infoGroup}
       >
-        <Group>
+        <Group id="tour_survey_status">
           <Title order={5}>Survey status:</Title>
           {data?.survey.isPublished === "closed" ? (
             <Badge color="red">Closed</Badge>
@@ -194,6 +195,7 @@ const QuestionEditor = (props: QuestionEditorProps) => {
           color="green"
           children="Preview"
           onClick={handlePreview}
+          id="tour_preview"
         />
         <Button
           variant="light"
@@ -203,6 +205,7 @@ const QuestionEditor = (props: QuestionEditorProps) => {
           onClick={() => {
             setOpenPublishModal(true);
           }}
+          id="tour_publish"
         />
       </Flex>
     </Flex>

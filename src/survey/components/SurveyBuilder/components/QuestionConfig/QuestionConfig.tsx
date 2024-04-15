@@ -142,7 +142,7 @@ const QuestionConfig = (props: QuestionConfigProps) => {
   };
 
   return (
-    <Flex className={classes.mainWrapper}>
+    <Flex className={classes.mainWrapper} id="tour_question_config">
       {/* Survey title */}
       <Flex className={classes.surveyTitle}>
         <Tooltip

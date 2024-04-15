@@ -28,7 +28,7 @@ export const useQuestionItemStyle = createStyles(() => ({
         backgroundColor: "#f3faff",
     },
     addButton: {
-        float: "left"
+        float: "left",
     },
     content: {
         width: "100%",

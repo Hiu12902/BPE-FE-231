@@ -1,12 +1,11 @@
-import { Accordion, AccordionProps, Box, Group, Text } from "@mantine/core";
-import { ReactComponent as IconRequest } from "@tabler/icons/icons/git-pull-request.svg";
-import { ReactComponent as IconCustomization } from "@tabler/icons/icons/triangle-square-circle.svg";
+import BackButton from "@/components/BackButton";
+import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
+import { Accordion, AccordionProps, Box, Group } from "@mantine/core";
 import { ReactComponent as IconProcessPortfolio } from "@tabler/icons/icons/chart-bubble.svg";
+import { ReactComponent as IconRequest } from "@tabler/icons/icons/git-pull-request.svg";
 import { ReactComponent as IconMember } from "@tabler/icons/icons/user-circle.svg";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useWorkspaceNavbarStyle } from "./WorkspaceNavbar.style";
-import BackButton from "@/components/BackButton";
-import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
 
 interface IProps extends Partial<AccordionProps> {}
 
@@ -55,7 +54,7 @@ const WorkspaceNavbar = (props: IProps) => {
     // },
     {
       title: "Process Portfolio",
-      description: "Customize your workspace appearance",
+      description: "Process portfolio",
       bullet: <IconProcessPortfolio width={20} height={20} />,
       action: () =>
         navigate(

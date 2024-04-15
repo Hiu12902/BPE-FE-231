@@ -1,11 +1,19 @@
 import BackButton from "@/components/BackButton";
 import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
-import { Accordion, AccordionProps, Box, Group } from "@mantine/core";
+import {
+  Accordion,
+  AccordionProps,
+  ActionIcon,
+  Box,
+  Group,
+} from "@mantine/core";
 import { ReactComponent as IconBuilder } from "@tabler/icons/icons/edit-circle.svg";
 import { ReactComponent as IconResult } from "@tabler/icons/icons/file-analytics.svg";
 import { ReactComponent as IconConfig } from "@tabler/icons/icons/settings.svg";
+import { ReactComponent as IconQuestion } from "@tabler/icons/icons/question-circle.svg";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSurveyNavbarStyle } from "./SurveyNavbar.style";
+import { SurveyDriver } from "@/utils/driver";
 
 interface IProps extends Partial<AccordionProps> {}
 
@@ -86,6 +94,23 @@ const SurveyNavbar = (props: IProps) => {
           );
         })}
       </Accordion>
+      {location === "builder" && (
+        <ActionIcon
+          variant="light"
+          style={{
+            border: "none",
+            backgroundColor: "transparent",
+            width: 45,
+            height: 45,
+            position: "fixed",
+            bottom: 10,
+          }}
+          children={<IconQuestion width={50} height={50} color="white" />}
+          onClick={() => {
+            SurveyDriver.drive();
+          }}
+        />
+      )}
     </Box>
   );
 };
