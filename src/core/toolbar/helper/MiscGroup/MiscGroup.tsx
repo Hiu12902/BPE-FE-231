@@ -52,7 +52,7 @@ const MiscGroup = () => {
       }
     } catch (err) {
       console.error(err);
-      //@ts-ignore
+      // @ts-ignore
       if (err.data === "current number of versions is equal to 5") {
         notify({
           title: "Opps!",
@@ -70,7 +70,7 @@ const MiscGroup = () => {
         opened={openModels}
         onClose={() => setOpenModels(false)}
         title={<Badge size="lg">Open models from your workspace</Badge>}
-        size="xl"
+        size="90%"
       >
         {/* <Workspace name="Personal" isOpenFromEditor /> */}
         <Workspace />

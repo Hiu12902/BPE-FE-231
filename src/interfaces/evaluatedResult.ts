@@ -9,28 +9,39 @@ export interface EvaluatedResultStep {
   rework?: number;
 }
 export interface EvaluatedResultRecord {
-  totalCycleTime?: number;
-  exceptionHandling?: number;
-  flexibility?: number;
-  numberOfHandledExceptions?: number;
-  numberOfOptionalTasks?: number;
-  numberOfUnhandledExceptions?: number;
   name?: string;
-  totalCycleTimeAllLoops?: number;
   handledTasks?: number;
-  totalLoop?: number;
-  totalLoopProbability?: number;
-  totalNumberExplicitTasks?: number;
-  totalTasks?: number;
   unHandledTasks?: number;
-  totalCost?: number;
+  // 1. exception handling
+  exceptionHandling?: number;
+  numberOfHandledExceptions?: number;
+  numberOfUnhandledExceptions?: number;
+  // 2. flexibility
+  totalTasks?: number;
+  flexibility?: number;
+  numberOfOptionalTasks?: number;
+  // 3. quality
   quality?: number;
+  totalLoop?: number;
+  totalQuality?: number;
+  externalQuality?: number;
+  totalLoopProbability?: number;
+  // 4. Cost
+  totalCost?: number;
+  totalCycleTimeAllLoops?: number;
+  // 5. Cycle time
+  totalCycleTime?: number;
+  // 6. Transperancy
+  totalNumberExplicitTasks?: number;
 }
 export interface EvaluationResult extends EvaluatedResultRecord {
   logsCycleTime?: any[];
   logsFlexibility?: any[];
   logsQuality?: any[];
   transparency?: any;
-  unitCost?: any[];
+  unitCost?: {
+    lane: string,
+    cost: number,
+  }[];
   steps?: EvaluatedResultStep[];
 }
