@@ -27,7 +27,7 @@ const ProcessItem = (props: ProcessItemProps) => {
   };
 
   return (
-    <Accordion.Item value={id?.toString()}>
+    <Accordion.Item value={id?.toString()} id="tour_process_item">
       <Accordion.Control
         styles={{
           padding: 0,
@@ -67,6 +67,7 @@ const ProcessItem = (props: ProcessItemProps) => {
           </Grid.Col>
         </Grid>
       </Accordion.Control>
+      
       <VersionList processId={Number(props.processId)} processName={name} />
     </Accordion.Item>
   );

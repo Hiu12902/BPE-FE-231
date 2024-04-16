@@ -81,7 +81,7 @@ const VersionItem = (props: VersionItemProps) => {
   ];
 
   return (
-    <Accordion.Item value={version}>
+    <Accordion.Item value={version} id="tour_version_item">
       {openEditModal && (
         <EditModal
           processVersion={version}
@@ -149,7 +149,7 @@ const VersionItem = (props: VersionItemProps) => {
           </Grid.Col>
 
           {/* Dropdown menu */}
-          <Grid.Col span={2}>
+          <Grid.Col span={2} id="tour_version_menu">
             <Flex justify="space-around" align="center">
               {isActive ? (
                 <Badge variant="filled" color="teal">

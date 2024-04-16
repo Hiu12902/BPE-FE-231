@@ -30,7 +30,7 @@ const VersionList = (props: VersionListProps) => {
           <Skeleton height={50} mt={0} radius={0} />
         </Accordion>
       ) : (
-        <Accordion variant="contained">
+        <Accordion variant="contained" defaultValue={versions[0].version}>
           {versions
             .sort((a, b) => {
               return a.num - b.num;

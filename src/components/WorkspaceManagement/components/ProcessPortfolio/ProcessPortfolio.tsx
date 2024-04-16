@@ -16,15 +16,83 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
+import { ReactComponent as IconQuestion } from "@tabler/icons/icons/question-circle.svg";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useProcessPortfolioStyle } from "./ProcessPortfolio.style";
 import ProjectList from "./components/ProjectList";
 
+import { PRIMARY_COLOR } from "@/constants/theme/themeConstants";
 import { ReactComponent as IconPerformanceLevel } from "@tabler/icons/icons/adjustments-horizontal.svg";
-import { ReactComponent as IconInfo } from "@tabler/icons/icons/info-circle-filled.svg";
 import { ReactComponent as IconProcessPortfolio } from "@tabler/icons/icons/chart-grid-dots.svg";
+import { ReactComponent as IconInfo } from "@tabler/icons/icons/info-circle-filled.svg";
 import { ConfigModal, GenerateModal } from "./components/Modal";
+
+import driverInstance from "@/utils/driver/driver";
+import { DriveStep } from "driver.js";
+
+const ProcessPortfolioSteps: DriveStep[] = [
+  {
+    element: "#tour_performance_level",
+    popover: {
+      title: "Performance level",
+      description:
+        "This is where you can configure workspace's performance level. Performance level is used to calculate the Health of each process versions in workspace.",
+      side: "left",
+      align: "start",
+    },
+  },
+  {
+    element: "#tour_version_item",
+    popover: {
+      title: "Process version",
+      description:
+        "This is a process version, a process can have more than one process version. But only one version is active at a time.",
+      side: "top",
+      align: "center",
+    },
+  },
+  {
+    element: "#tour_version_menu",
+    popover: {
+      title: "Process version status",
+      description:
+        "This badge show the status of process versions: Active or Inactive.",
+      side: "left",
+      align: "center",
+    },
+  },
+  {
+    element: "#tour_version_menu button",
+    popover: {
+      title: "Edit version measurements",
+      description:
+        "Moreover, you can open dropdown menu to view more actions: Activate version or Edit version measurements.",
+      side: "left",
+      align: "center",
+    },
+  },
+  {
+    element: "#tour_version_menu button",
+    popover: {
+      title: "Edit version measurements",
+      description:
+        "Remember: You need to update measurements of the active process version before generating the process portfolio.",
+      side: "left",
+      align: "center",
+    },
+  },
+  {
+    element: "#tour_generate_portfolio",
+    popover: {
+      title: "Generate process portfolio",
+      description:
+        "After configuring all necessary informations, you can generate the process portfolio. Click here to generate the process portfolio.",
+      side: "top",
+      align: "start",
+    },
+  },
+];
 
 const ProcessPortfolio = () => {
   const { queryParams, setQueryParams } = useQueryParams();
@@ -135,6 +203,7 @@ const ProcessPortfolio = () => {
             multiline
             children={
               <Button
+                id="tour_generate_portfolio"
                 variant="light"
                 onClick={() => {
                   setOpenGenerateModal(true);
@@ -164,6 +233,7 @@ const ProcessPortfolio = () => {
                   color="red"
                   children="Performance level"
                   onClick={() => setOpenConfigModal(true)}
+                  id="tour_performance_level"
                   leftIcon={
                     <IconPerformanceLevel
                       style={{
@@ -178,6 +248,7 @@ const ProcessPortfolio = () => {
                   variant="light"
                   children="Performance level"
                   onClick={() => setOpenConfigModal(true)}
+                  id="tour_performance_level"
                   leftIcon={
                     <IconPerformanceLevel
                       style={{
@@ -214,6 +285,7 @@ const ProcessPortfolio = () => {
         chevron
         className={classes.accordion}
         transitionDuration={0}
+        defaultValue={projects.data[0].id.toString()}
       >
         <Accordion.Item value="heading">
           <Accordion.Control>
@@ -256,6 +328,27 @@ const ProcessPortfolio = () => {
           </Accordion.Item>
         )}
       </Accordion>
+      {projects.data.length > 0 && (
+        <ActionIcon
+          variant="light"
+          style={{
+            border: "none",
+            backgroundColor: "transparent",
+            width: 45,
+            height: 45,
+            position: "fixed",
+            bottom: 10,
+            right: 10,
+          }}
+          children={
+            <IconQuestion width={50} height={50} color={PRIMARY_COLOR[0]} />
+          }
+          onClick={() => {
+            driverInstance.setSteps(ProcessPortfolioSteps);
+            driverInstance.drive();
+          }}
+        />
+      )}
     </Container>
   );
 };

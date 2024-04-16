@@ -9,11 +9,85 @@ import {
 } from "@mantine/core";
 import { ReactComponent as IconBuilder } from "@tabler/icons/icons/edit-circle.svg";
 import { ReactComponent as IconResult } from "@tabler/icons/icons/file-analytics.svg";
-import { ReactComponent as IconConfig } from "@tabler/icons/icons/settings.svg";
 import { ReactComponent as IconQuestion } from "@tabler/icons/icons/question-circle.svg";
+import { ReactComponent as IconConfig } from "@tabler/icons/icons/settings.svg";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSurveyNavbarStyle } from "./SurveyNavbar.style";
-import { SurveyDriver } from "@/utils/driver";
+
+import driverInstance from "@/utils/driver/driver";
+import { DriveStep } from "driver.js";
+
+const SurveySteps: DriveStep[] = [
+  {
+    element: "#tour_editor",
+    popover: {
+      title: "Question editor",
+      description:
+        "This is where you can create and edit your survey questions.",
+      side: "top",
+      align: "center",
+    },
+  },
+  {
+    element: "#tour_question:nth-child(1)",
+    popover: {
+      title: "Question",
+      description:
+        "This is a question, you can choose to edit related attributes of it.",
+      side: "left",
+      align: "center",
+    },
+  },
+  {
+    element: "#tour_question_config",
+    popover: {
+      title: "Question configuration",
+      description:
+        "After choosing a question, you can edit Content, Question Type,... or create new options for Multiple choices question.",
+      side: "top",
+      align: "center",
+    },
+  },
+  {
+    element: "#tour_question_badge",
+    popover: {
+      title: "Question Type",
+      description:
+        "This badge shows the type of question. In our survey, we have several question types: CSAT, CES, NPS,... Let's find more!",
+      side: "left",
+      align: "start",
+    },
+  },
+  {
+    element: "#tour_survey_status",
+    popover: {
+      title: "Survey status",
+      description:
+        "This badge shows the status of the survey. You can see if the survey is Pending - waiting for being published, Published - already published or Closed.",
+      side: "bottom",
+      align: "center",
+    },
+  },
+  {
+    element: "#tour_preview",
+    popover: {
+      title: "Preview modal",
+      description: "You can preview your survey by clicking on this button.",
+      side: "top",
+      align: "center",
+    },
+  },
+  {
+    element: "#tour_publish",
+    popover: {
+      title: "Publish modal",
+      description:
+        "You can publish your survey by clicking on this button. Once published, you can't edit the survey anymore.",
+      side: "left",
+      align: "start",
+    },
+  },
+];
 
 interface IProps extends Partial<AccordionProps> {}
 
@@ -107,7 +181,8 @@ const SurveyNavbar = (props: IProps) => {
           }}
           children={<IconQuestion width={50} height={50} color="white" />}
           onClick={() => {
-            SurveyDriver.drive();
+            driverInstance.setSteps(SurveySteps);
+            driverInstance.drive();
           }}
         />
       )}

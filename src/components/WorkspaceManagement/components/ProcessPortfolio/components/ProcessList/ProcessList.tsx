@@ -21,10 +21,10 @@ const ProcessList = (props: ProcessListProps) => {
   });
 
   useEffect(() => {
-    if (projectId !== null) {
-      setProcessId(null);
+    if (processes) {
+      setProcessId(processes[0].id);
     }
-  }, [projectId]);
+  }, [processes]);
 
   return (
     <Accordion.Panel>
@@ -48,24 +48,8 @@ const ProcessList = (props: ProcessListProps) => {
           onChange={(value) => {
             setProcessId(Number(value));
           }}
+          defaultValue={processes[0].id.toString()}
         >
-          {/* <Accordion.Item value="heading">
-            <Accordion.Control>
-              <Grid align="center" justify="center">
-                <Grid.Col span={9}>
-                  <Flex justify="flex-start" align="center">
-                    <Text size="md">Process Name</Text>
-                  </Flex>
-                </Grid.Col>
-                <Grid.Col span={3}>
-                  <Flex align="center" justify="center" h="100%">
-                    <Text size="md">Last modified</Text>
-                  </Flex>
-                </Grid.Col>
-              </Grid>
-            </Accordion.Control>
-          </Accordion.Item> */}
-
           {processes.length > 0 ? (
             processes.map((item: PortfolioProcess) => {
               return <ProcessItem data={item} processId={Number(processId)} />;
