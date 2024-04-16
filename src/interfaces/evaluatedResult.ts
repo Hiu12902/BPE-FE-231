@@ -39,9 +39,6 @@ export interface EvaluationResult extends EvaluatedResultRecord {
   logsFlexibility?: any[];
   logsQuality?: any[];
   transparency?: any;
-  unitCost?: {
-    lane: string,
-    cost: number,
-  }[];
+  unitCost?: any[];
   steps?: EvaluatedResultStep[];
 }

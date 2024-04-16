@@ -16,13 +16,15 @@ export const ResultTableTitleMap: Record<keyof EvaluationResult, string> = {
   unHandledTasks: 'Unhandled Tasks',
   handledTasks: 'Handled Tasks',
   totalCost: 'Total Cost',
-  quality: 'Quality',
+  quality: 'Internal Quality',
   transparency: 'Transparency',
   logsCycleTime: 'Log Cycle Time',
   logsFlexibility: 'Log Flexibility',
   logsQuality: 'Log Quality',
   unitCost: 'Unit Cost',
   steps: 'Steps',
+  totalQuality: 'Total Quality',
+  externalQuality: 'External Quality',
 };
 
 export const EXCLUDED_FIELDS = [

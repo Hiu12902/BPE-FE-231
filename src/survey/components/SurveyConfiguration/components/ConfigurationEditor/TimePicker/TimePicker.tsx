@@ -10,8 +10,8 @@ interface TimePickerProps {
 
 const TimePicker = (props: TimePickerProps) => {
   const { startDate, endDate } = props.surveyConfig;
-  const [start, setStart] = useState<Date | string | null>(startDate);
-  const [end, setEnd] = useState<Date | string | null>(endDate);
+  const [start, setStart] = useState<Date | string | null>(startDate as Date);
+  const [end, setEnd] = useState<Date | string | null>(endDate as Date);
   const handleChangeStartDate = (value: Date) => {
     setStart(value);
     props.setSurveyConfig({
