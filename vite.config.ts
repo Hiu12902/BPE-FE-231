@@ -52,6 +52,12 @@ export default defineConfig({
         nodeResolve(),
         commonjs(),
       ],
+      onwarn(warning, warn) {
+        if (warning.code === "MODULE_LEVEL_DIRECTIVE") {
+          return;
+        }
+        warn(warning);
+      },
     },
     minify: false,
     sourcemap: true,
