@@ -64,7 +64,20 @@ const EditModal = (props: EditModalProps) => {
   };
 
   const handleSave = () => {
-    console.log(versionChange);
+    const validateDataType = Object.keys(versionChange).map((input) => {
+      return (
+        typeof versionChange[input as keyof VersionMeasurementsUpdateBody] !==
+        "number"
+      );
+    });
+    if (validateDataType.includes(true)) {
+      notify({
+        title: "Warning",
+        message: "Data type is not supported!",
+        type: "warning",
+      });
+      return;
+    }
     updateVersionMeasurements.mutate({
       ...versionChange,
       workspaceId: Number(workspaceId),
@@ -161,6 +174,7 @@ const EditModal = (props: EditModalProps) => {
               }
             />
             <NumberInput
+              error={typeof versionChange.currentCycleTime !== "number"}
               w="50%"
               min={0}
               step={1}
@@ -195,6 +209,7 @@ const EditModal = (props: EditModalProps) => {
               }
             />
             <NumberInput
+              error={typeof versionChange.currentCost !== "number"}
               w="50%"
               min={0}
               step={1}
@@ -232,6 +247,7 @@ const EditModal = (props: EditModalProps) => {
               }
             />
             <NumberInput
+              error={typeof versionChange.currentQuality !== "number"}
               w="50%"
               min={0}
               max={1}
@@ -272,6 +288,7 @@ const EditModal = (props: EditModalProps) => {
               }
             />
             <NumberInput
+              error={typeof versionChange.currentFlexibility !== "number"}
               w="50%"
               min={0}
               max={1}
@@ -301,6 +318,7 @@ const EditModal = (props: EditModalProps) => {
           <Flex direction="column" w="50%">
             <Title order={4}>Feasibility</Title>
             <NumberInput
+              error={typeof versionChange.feasibility !== "number"}
               min={0}
               max={1}
               step={0.01}
@@ -325,6 +343,7 @@ const EditModal = (props: EditModalProps) => {
           <Flex direction="column" w="50%">
             <Title order={4}>Strategic Importance</Title>
             <NumberInput
+              error={typeof versionChange.strategicImportance !== "number"}
               min={0}
               max={1}
               step={0.01}

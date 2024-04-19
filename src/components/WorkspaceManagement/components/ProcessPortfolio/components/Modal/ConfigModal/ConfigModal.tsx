@@ -57,6 +57,20 @@ const ConfigModal = (props: ConfigModalProps) => {
   };
 
   const handleSave = () => {
+    const validateDataType = Object.keys(performanceChange).map((input) => {
+      return (
+        typeof performanceChange[input as keyof HealthPerformanceLevel] !==
+        "number"
+      );
+    });
+    if (validateDataType.includes(true)) {
+      notify({
+        title: "Warning",
+        message: "Data type is not supported!",
+        type: "warning",
+      });
+      return;
+    }
     if (
       performanceChange.worstCycleTime !== null &&
       performanceChange.targetedCycleTime > performanceChange.worstCycleTime
@@ -159,6 +173,7 @@ const ConfigModal = (props: ConfigModalProps) => {
           {/* Cycle Time */}
           <Flex w="100%" gap={20} justify="space-between">
             <NumberInput
+              error={typeof performanceChange?.targetedCycleTime !== "number"}
               w="50%"
               min={0}
               step={1}
@@ -177,7 +192,10 @@ const ConfigModal = (props: ConfigModalProps) => {
               min={0}
               step={1}
               label="Worst Cycle Time"
-              error={performanceLevel?.worstCycleTime === null}
+              error={
+                performanceLevel?.worstCycleTime === null ||
+                typeof performanceChange?.worstCycleTime !== "number"
+              }
               defaultValue={
                 performanceLevel?.worstCycleTime === null
                   ? undefined
@@ -199,6 +217,7 @@ const ConfigModal = (props: ConfigModalProps) => {
           {/* Cost */}
           <Flex w="100%" gap={20} justify="space-between">
             <NumberInput
+              error={typeof performanceChange?.targetedCost !== "number"}
               w="50%"
               min={0}
               step={1}
@@ -217,7 +236,10 @@ const ConfigModal = (props: ConfigModalProps) => {
               min={0}
               step={1}
               label="Worst Cost"
-              error={performanceLevel?.worstCost === null}
+              error={
+                performanceLevel?.worstCost === null ||
+                typeof performanceChange?.worstCost !== "number"
+              }
               defaultValue={
                 performanceLevel?.worstCost === null
                   ? undefined
@@ -239,6 +261,7 @@ const ConfigModal = (props: ConfigModalProps) => {
           {/* Quality */}
           <Flex w="100%" gap={20} justify="space-between">
             <NumberInput
+              error={typeof performanceChange?.targetedQuality !== "number"}
               w="50%"
               min={0}
               max={1}
@@ -255,6 +278,7 @@ const ConfigModal = (props: ConfigModalProps) => {
               }}
             />
             <NumberInput
+              error={typeof performanceChange?.worstQuality !== "number"}
               w="50%"
               min={0}
               max={1}
@@ -274,6 +298,7 @@ const ConfigModal = (props: ConfigModalProps) => {
           {/* Flexibility */}
           <Flex w="100%" gap={20} justify="space-between">
             <NumberInput
+              error={typeof performanceChange?.targetedFlexibility !== "number"}
               w="50%"
               min={0}
               max={1}
@@ -290,6 +315,7 @@ const ConfigModal = (props: ConfigModalProps) => {
               }}
             />
             <NumberInput
+              error={typeof performanceChange?.worstFlexibility !== "number"}
               w="50%"
               min={0}
               max={1}
