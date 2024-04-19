@@ -32,7 +32,7 @@ const Header = ({
         <Flex justify="center" children={"Owner"} />
       </Grid.Col>
       <Grid.Col span={3}>
-        <Flex justify="center" children={"Last modified"} />
+        <Flex justify="center" children={"Last opened"} />
       </Grid.Col>
       <Grid.Col span={3}>
         <Flex justify="flex-end">
