@@ -47,7 +47,7 @@ const ProcessPortfolioSteps: DriveStep[] = [
     popover: {
       title: "Process version",
       description:
-        "This is a process version, a process can have more than one process version. But only one version is active at a time.",
+        "A process can have more than one process version. But only one version is active at a time.",
       side: "top",
       align: "center",
     },
@@ -57,7 +57,7 @@ const ProcessPortfolioSteps: DriveStep[] = [
     popover: {
       title: "Process version status",
       description:
-        "This badge show the status of process versions: Active or Inactive.",
+        "Process version's badge show the status of process versions: Active or Inactive.",
       side: "left",
       align: "center",
     },
@@ -67,17 +67,7 @@ const ProcessPortfolioSteps: DriveStep[] = [
     popover: {
       title: "Edit version measurements",
       description:
-        "Moreover, you can open dropdown menu to view more actions: Activate version or Edit version measurements.",
-      side: "left",
-      align: "center",
-    },
-  },
-  {
-    element: "#tour_version_menu button",
-    popover: {
-      title: "Edit version measurements",
-      description:
-        "Remember: You need to update measurements of the active process version before generating the process portfolio.",
+        "You can activate another version in process or edit version measurements. Version measurements is important for generating process portfolio.",
       side: "left",
       align: "center",
     },
@@ -87,7 +77,7 @@ const ProcessPortfolioSteps: DriveStep[] = [
     popover: {
       title: "Generate process portfolio",
       description:
-        "After configuring all necessary informations, you can generate the process portfolio. Click here to generate the process portfolio.",
+        "After configuring all necessary informations, you can generate process portfolio. Click here to generate the process portfolio.",
       side: "top",
       align: "start",
     },

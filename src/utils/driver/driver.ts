@@ -6,9 +6,11 @@ const driverInstance = driver({
     showProgress: true,
     popoverClass: "driverjs-theme",
     steps: [],
-    nextBtnText: "Next",
-    prevBtnText: "Back",
+    nextBtnText: "NEXT STEP",
+    prevBtnText: "BACK",
+    doneBtnText: "GOT IT!",
     showButtons: ["next", "previous"],
+    progressText: 'Step {{current}} of {{total}}',
     onCloseClick: () => {
         driverInstance.destroy();
     },

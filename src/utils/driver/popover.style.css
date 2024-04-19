@@ -1,6 +1,6 @@
 .driver-popover.driverjs-theme {
-  background-color: #e7f5ff;
-  max-width: 350px;
+  /* background-color: #e7f5ff; */
+  max-width: 450px;
 }
 
 .driver-popover.driverjs-theme .driver-popover-title {
@@ -8,40 +8,45 @@
 }
 
 .driver-popover.driverjs-theme .driver-popover-title {
-  text-align: center;
+  font-family: "Merriweather", "Georgia", "Cambria", "Times New Roman", "Times",
+    serif;
+  text-align: left;
   color: #2976b8;
+  font-weight: bold;
 }
 
 .driver-popover.driverjs-theme .driver-popover-description,
 .driver-popover.driverjs-theme .driver-popover-progress-text {
-  text-align: justify;
+  font-family: "Merriweather", "Georgia", "Cambria", "Times New Roman", "Times",
+    sans-serif;
+  text-align: left;
   color: #2976b8;
 }
 
 .driver-popover.driverjs-theme button {
-  flex: 1;
   text-align: center;
-  background-color: #e7f5ff;
+  /* background-color: #e7f5ff; */
+  background-color: #fff;
   color: #228be6;
-  border: 1px solid #228be6;
+  /* border: 1px solid #228be6; */
+  border: none;
   text-shadow: none;
   font-size: 14px;
-  padding: 8px 5px;
+  padding: 8px 15px;
   border-radius: 6px;
 }
 
 .driver-popover.driverjs-theme button:hover {
-  background-color: #d5e9fa;
+  /* background-color: #d5e9fa; */
+  color: #1a66a8;
 }
 
 .driver-popover.driverjs-theme .driver-popover-navigation-btns {
-  justify-content: space-between;
-  width: 100%;
-  gap: 20%;
 }
 
 .driver-popover.driverjs-theme .driver-popover-footer {
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
   width: 100%;
 }
 
