@@ -50,5 +50,12 @@ export const useQuestionItemStyle = createStyles(() => ({
     },
     badge: {
         marginLeft: "-25px",
+    },
+    deleteButton: {
+        color: "#f44336",
+        ":hover": {
+            backgroundColor: "#f44336",
+            color: "#fff",
+        },
     }
 }))

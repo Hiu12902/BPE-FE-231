@@ -109,8 +109,8 @@ const QuestionTypePicker = (props: QuestionTypePickerProps) => {
       label="Choose question type"
       itemComponent={SelectItem}
       data={QuestionTypeMenu}
-      searchable
-      maxDropdownHeight={200}
+      disabled={defaultValue === "branching"}
+      maxDropdownHeight={500}
       nothingFound="No items found"
       filter={(value, item) =>
         item.label?.toLowerCase().includes(value.toLowerCase().trim()) ||

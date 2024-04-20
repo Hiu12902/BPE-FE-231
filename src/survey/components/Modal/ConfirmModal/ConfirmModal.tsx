@@ -35,7 +35,7 @@ const ConfirmModal = (props: ConfirmModalProps) => {
       opened={opened}
       onClose={handleCancel}
       title={
-        <Badge size="lg" mb={5} color="blue">
+        <Badge size="lg" mb={2} color="blue">
           {title}
         </Badge>
       }

@@ -175,8 +175,8 @@ const QuestionItem = (props: QuestionItemProps) => {
               id="tour_question_badge"
             />
             <ActionIcon
-              variant="outline"
-              color="red"
+              variant="light"
+              className={classes.deleteButton}
               size="sm"
               children={<IconDelete />}
               onClick={(e) => {
@@ -212,7 +212,8 @@ const QuestionItem = (props: QuestionItemProps) => {
     <Flex className={classes.wrapper} id="tour_question">
       <ConfirmModal
         opened={openConfirmModal}
-        title="Do you want to discard changes"
+        title="Discard changes?"
+        message="You have unsaved changes, do you want to discard them?"
         onClose={() => setOpenConfirmModal(false)}
         onConfirm={() => {
           setOpenConfirmModal(false);
