@@ -137,7 +137,7 @@ const QuestionEditor = (props: QuestionEditorProps) => {
         !data?.survey.isPublished ||
         isFetching ? (
           <Flex>
-            <LoadingOverlay visible />
+            <LoadingOverlay visible zIndex={10}/>
           </Flex>
         ) : data?.survey.isPublished !== "closed" ? (
           <Flex
