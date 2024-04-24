@@ -1,10 +1,11 @@
-import { Button, Flex, Title, Text, Input, TextInput } from "@mantine/core";
-import { useState } from "react";
+import { Button, Flex, Text, TextInput, Title } from "@mantine/core";
 import { ReactComponent as IconSuccess } from "@tabler/icons/icons/circle-check.svg";
+import { useState } from "react";
 
 interface LauncherConclusionProps {
   preview?: boolean;
   onSubmit: (email: string, name: string) => void;
+  allowDuplicates?: boolean;
 }
 
 const LauncherConclusion = (props: LauncherConclusionProps) => {
@@ -48,6 +49,14 @@ const LauncherConclusion = (props: LauncherConclusionProps) => {
               Survey result will be sent to you via your provided email after
               this survey closed.
             </Text>
+            {props.allowDuplicates && (
+              <Button
+                children="Submit new survey"
+                onClick={() => {
+                  window.location.reload();
+                }}
+              />
+            )}
           </Flex>
         </>
       ) : (

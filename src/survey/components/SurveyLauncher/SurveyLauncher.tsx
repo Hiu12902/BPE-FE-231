@@ -258,6 +258,7 @@ const SurveyLauncher = ({ preview }: { preview?: boolean }) => {
             onSubmit={(email: string, name: string) => {
               handleSubmit(email, name);
             }}
+            allowDuplicates={survey.allowDuplicateRespondent}
           />
         ) : (
           <></>
@@ -265,7 +266,11 @@ const SurveyLauncher = ({ preview }: { preview?: boolean }) => {
       </Flex>
 
       <Group position="center" mt="xl">
-        <Button variant="default" onClick={prevStep} disabled={step === 0}>
+        <Button
+          variant="default"
+          onClick={prevStep}
+          disabled={step === 0 || step === 4}
+        >
           Back
         </Button>
         <Button onClick={nextStep} disabled={step === 4}>
