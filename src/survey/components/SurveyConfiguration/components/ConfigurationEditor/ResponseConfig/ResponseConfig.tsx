@@ -87,11 +87,20 @@ const ResponseConfig = ({ surveyId }: { surveyId: number }) => {
 
   const handleSaveSurveyChanges = () => {
     if (surveyId && projectId) {
-      responseConfigMutation.mutate({
-        surveyId: surveyId,
-        projectId: Number(projectId),
-        ...configChange,
-      });
+      if (responseConfig?.isPublished === "published") {
+        const { startDate, ...rest } = configChange;
+        responseConfigMutation.mutate({
+          surveyId: surveyId,
+          projectId: Number(projectId),
+          ...rest,
+        });
+      } else {
+        responseConfigMutation.mutate({
+          surveyId: surveyId,
+          projectId: Number(projectId),
+          ...configChange,
+        });
+      }
     }
   };
 

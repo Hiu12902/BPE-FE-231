@@ -114,9 +114,7 @@ const PublishModal = (props: PublishModalProps) => {
       setPublishInfoChange({
         ...publishInfoChange,
         email: email,
-        surveyUrl: surveyUrl
-          ? surveyUrl
-          : `http://localhost:5173/${processVersion}/survey/launch`,
+        surveyUrl: `https://bpsky232.vercel.app/${processVersion}/survey/launch`,
         startDate: startDate,
         endDate: endDate,
       });
@@ -127,6 +125,78 @@ const PublishModal = (props: PublishModalProps) => {
     <Flex>
       <LoadingOverlay visible={true} />
     </Flex>
+  ) : publishInfo.isPublished === "published" ? (
+    <Modal
+      size="xl"
+      centered
+      overlayProps={{
+        blur: 3,
+        opacity: 0.55,
+      }}
+      opened={opened}
+      onClose={handleClose}
+      title={
+        <Badge size="lg" color="blue">
+          {title}
+        </Badge>
+      }
+      styles={{
+        close: {
+          display: " none",
+        },
+      }}
+    >
+      <LoadingOverlay visible={publishInfoFetching} />
+      <Title order={5}>
+        Survey is already published. You can visit it using this link:
+      </Title>
+
+      <Flex my={15} direction="column">
+        <Tooltip label="Click to copy survey's URL">
+          <Flex
+            w="100%"
+            onClick={() => {
+              if (!publishInfoChange?.surveyUrl) return;
+              navigator.clipboard.writeText(publishInfoChange?.surveyUrl);
+              notify({
+                title: "Link copied",
+                message: "Link has been copied to clipboard",
+                type: "success",
+              });
+            }}
+            styles={{
+              cursor: "pointer",
+            }}
+          >
+            <Input
+              w="100%"
+              value={publishInfoChange?.surveyUrl}
+              disabled
+              onClick={() => {
+                if (!publishInfoChange?.surveyUrl) return;
+                navigator.clipboard.writeText(publishInfoChange?.surveyUrl);
+                notify({
+                  title: "Link copied",
+                  message: "Link has been copied to clipboard",
+                  type: "success",
+                });
+              }}
+              styles={{
+                wrapper: {
+                  cursor: "pointer",
+                },
+              }}
+              className={classes.link}
+            />
+          </Flex>
+        </Tooltip>
+      </Flex>
+
+      <Divider my="md" />
+      <Group position="right">
+        <Button variant="outline" onClick={handleClose} children="Cancel" />
+      </Group>
+    </Modal>
   ) : (
     <Modal
       size="xl"
