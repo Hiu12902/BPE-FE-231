@@ -53,7 +53,7 @@ class SurveyApi {
 
     public deleteSurvey(params: IQueryParams): Promise<any> {
         return Client.delete(`/survey`, {
-            params: {
+            data: {
                 surveyId: params.surveyId,
                 projectId: params.projectId
             }
