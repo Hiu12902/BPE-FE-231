@@ -1,26 +1,15 @@
 import { ResponseSubmission } from "./response";
 import { Section } from "./section";
 
-export interface SurveyInfo {
-    id: number;
-    name: string;
-    description: string;
-    createdAt: Date | string;
-    isDeleted: boolean;
-    startDate?: Date | string | null;
-    endDate?: Date | string | null;
-    isPublished: string;
+export interface SurveyPushBody {
+    processVersionVersion: string;
+    projectId: number;
 }
 
 export interface Survey {
     message?: string;
     survey: SurveyInfo;
     questions: Section[];
-}
-
-export interface SurveyPushBody {
-    processVersionVersion: string;
-    projectId: number;
 }
 
 export interface SurveyUpdateBody {
@@ -38,6 +27,8 @@ export interface SurveyUpdateBody {
     sendResultToRespondent?: boolean;
 }
 
+// SURVEY SUBMISSION INTERFACE
+
 export interface SurveySubmissionBody {
     processVersionVersion: string;
     email: string;
@@ -53,25 +44,18 @@ export interface SurveySubmissionResponse {
     sendResultToRespondent?: boolean;
 }
 
-export interface ISurveyResult {
-    numberOfResponses: number;
-    ces: {
-        score: number;
-        weight: number;
-        numOfPositiveAnswers: number;
-    }
-    nps: {
-        score: number;
-        weight: number;
-        numOfPromoters: number;
-        numOfDetractors: number;
-    }
-    csat: {
-        score: number;
-        weight: number;
-        numOfPositiveAnswers: number;
-    }
-    totalScore: number;
+// SURVEY INFO INTERFACE
+
+export interface SurveyInfo {
+    id: number;
+    name: string;
+    description: string;
+    createdAt: Date | string;
+    isDeleted: boolean;
+    startDate?: Date | string | null;
+    endDate?: Date | string | null;
+    isPublished: string;
+    allowDuplicateRespondent?: boolean;
 }
 
 export interface SurveyGeneralConfiguration extends SurveyInfo {
@@ -86,15 +70,7 @@ export interface SurveyResponseConfiguration extends SurveyInfo {
     sendResultToRespondent?: boolean;
 }
 
-export interface SurveyPublishBody {
-    projectId: number;
-    processVersionVersion: string;
-
-    email: string[];
-    surveyUrl: string;
-    startDate: Date | string | null;
-    endDate: Date | string | null;
-}
+// SURVEY PUBLISH INTERFACE
 
 export interface SurveyPublishInfo {
     id: number;
@@ -103,6 +79,16 @@ export interface SurveyPublishInfo {
     startDate: Date | string | null;
     endDate: Date | string | null;
     isPublished: string;
+}
+
+export interface SurveyPublishBody {
+    projectId: number;
+    processVersionVersion: string;
+
+    email: string[];
+    surveyUrl: string;
+    startDate: Date | string | null;
+    endDate: Date | string | null;
 }
 
 export interface SurveyPublishResponse {

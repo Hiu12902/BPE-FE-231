@@ -41,3 +41,29 @@ export const SCATTER_PLOT_POINT = {
     3: "#3bceb1"
   }
 }
+
+// export const PIE_PLOT_COLOR = {
+//   1: "#F79489",
+//   2: "#F89E91",
+//   3: "#F9A79A",
+//   4: "#FAB3A4",
+//   5: "#FABFAE",
+//   6: "#FACBB8",
+//   7: "#FAD7C2",
+//   8: "#FBE3CC",
+//   9: "#FBEFDB",
+//   10: "#FADCD9"
+// };
+
+export const PIE_PLOT_COLOR = {
+  0: "#1976d2",
+  1: "#3084d7",
+  2: "#4791db",
+  3: "#5e9fe0",
+  4: "#75ade4",
+  5: "#8cbbe9",
+  6: "#a3c8ed",
+  7: "#bad6f2",
+  8: "#d1e4f6",
+  9: "#e8f1fb"
+};

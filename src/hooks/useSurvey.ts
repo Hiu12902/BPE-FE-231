@@ -185,10 +185,11 @@ export const useSurveyResultQuery = ({
 }) => {
     return useQuery({
         queryKey: ['survey_result', processVersion],
-        queryFn: () => surveyApi.getSurveyResult({
+        queryFn: () => surveyApi.getSurveyDetailResult({
             processVersion,
         }),
         enabled: !!processVersion,
+        retry: 3,
     })
 }
 

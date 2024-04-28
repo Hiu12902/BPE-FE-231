@@ -1,5 +1,5 @@
 import Client from '@/api/client';
-import { IQueryParams, ISurveyResult, Section, SectionInfo, Survey, SurveyGeneralConfiguration, SurveyInfo, SurveyPublishBody, SurveyPublishInfo, SurveyPublishResponse, SurveyPushBody, SurveyResponseConfiguration, SurveySubmissionBody, SurveySubmissionResponse, SurveyUpdateBody } from '../interfaces';
+import { IQueryParams, Section, SectionInfo, Survey, SurveyGeneralConfiguration, SurveyInfo, SurveyPublishBody, SurveyPublishInfo, SurveyPublishResponse, SurveyPushBody, SurveyResponseConfiguration, SurveyResultInfo, SurveySubmissionBody, SurveySubmissionResponse, SurveyTotalResult, SurveyUpdateBody } from '../interfaces';
 
 class SurveyApi {
     public static classInstance: SurveyApi;
@@ -134,12 +134,24 @@ class SurveyApi {
         })
     }
 
-    public getSurveyResult({
+    public getSurveyTotalResult({
         processVersion
     }: {
         processVersion: string;
-    }): Promise<ISurveyResult> {
+    }): Promise<SurveyTotalResult> {
         return Client.get(`/survey/result`, {
+            params: {
+                processVersionVersion: processVersion,
+            }
+        })
+    }
+
+    public getSurveyDetailResult({
+        processVersion
+    }: {
+        processVersion: string;
+    }): Promise<SurveyResultInfo> {
+        return Client.get(`/survey/answer`, {
             params: {
                 processVersionVersion: processVersion,
             }

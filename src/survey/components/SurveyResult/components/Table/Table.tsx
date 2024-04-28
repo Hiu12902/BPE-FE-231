@@ -1,7 +1,7 @@
-import { ISurveyResult } from "@/interfaces/survey";
+import { SurveyTotalResult } from "@/interfaces/index";
 import { Table } from "@mantine/core";
 interface CustomTableProps {
-  result: ISurveyResult;
+  result: SurveyTotalResult;
 }
 
 const CustomTable = (props: CustomTableProps) => {

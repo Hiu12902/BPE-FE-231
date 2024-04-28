@@ -1,10 +1,10 @@
-import { ISurveyResult } from "@/interfaces/survey";
+import { SurveyTotalResult } from "@/interfaces/index";
 import { Badge, Flex, Progress, Title } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { useState } from "react";
 
 interface ProgressBarProps {
-  result: ISurveyResult;
+  result: SurveyTotalResult;
 }
 
 const ProgressBar = (props: ProgressBarProps) => {

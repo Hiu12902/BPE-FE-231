@@ -1,2 +1,6 @@
 export { default as Table } from './Table'
 export { default as ProgressBar } from './ProgressBar'
+export { default as BarChart } from './BarChart'
+export { default as TotalResult } from './TotalResult'
+export { default as DoughnutChart } from './DoughnutChart'
+export { default as QuestionResponse } from './QuestionDetailResponse'
