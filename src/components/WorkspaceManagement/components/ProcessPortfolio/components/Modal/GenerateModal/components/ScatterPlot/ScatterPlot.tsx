@@ -53,6 +53,9 @@ export const options: ChartOptions<"scatter"> = {
     },
   },
   plugins: {
+    datalabels: {
+      display: false,
+    },
     tooltip: {
       backgroundColor: "#228ce7",
       titleColor: "#fff",
