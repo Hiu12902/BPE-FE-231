@@ -275,7 +275,7 @@ const ProcessPortfolio = () => {
         chevron
         className={classes.accordion}
         transitionDuration={0}
-        defaultValue={projects.data[0].id.toString()}
+        defaultValue={projects?.data[0]?.id?.toString()}
       >
         <Accordion.Item value="heading">
           <Accordion.Control>

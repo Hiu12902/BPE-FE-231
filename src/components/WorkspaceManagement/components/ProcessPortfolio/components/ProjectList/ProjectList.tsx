@@ -11,14 +11,14 @@ interface ProjectListProps {
 
 const ProjectList = (props: ProjectListProps) => {
   const { data } = props;
-  const [projectId, setProjectId] = useState<number>(data[0].id);
+  const [projectId, setProjectId] = useState<number>(data[0]?.id);
 
   return (
     <>
       {data.map((item: PortfolioProject) => {
         const { id, name, ownerName } = item;
         return (
-          <Accordion.Item value={id.toString()} id="tour_project_item">
+          <Accordion.Item value={id?.toString()} id="tour_project_item">
             <Accordion.Control
               onClick={() => {
                 setProjectId(id);
