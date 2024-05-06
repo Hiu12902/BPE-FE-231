@@ -23,6 +23,7 @@ interface BarChartProps {
 
 const BarChart = (props: BarChartProps) => {
   const { answers, totalResponses, questionType } = props;
+  const maxNumResponses = Math.max(...answers.map(answer => answer.numberOfAnswers));
 
   const options: ChartOptions<"bar"> = {
     indexAxis: "y",
@@ -69,7 +70,7 @@ const BarChart = (props: BarChartProps) => {
     },
     scales: {
       x: {
-        max: totalResponses,
+        max: maxNumResponses + 1,
         ticks: {
           color: "#1976d2",
           callback(tickValue) {
