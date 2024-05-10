@@ -415,7 +415,7 @@ const WorkspaceItem = (props: IWorkspace) => {
 
   return (
     <Accordion.Item value={id.toString()}>
-      <Accordion.Control onDoubleClick={onOpenWorkspace}>
+      <Accordion.Control onClick={onOpenWorkspace}>
         <Grid align="center" justify="center">
           {permission && (
             <>

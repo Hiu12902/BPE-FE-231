@@ -57,7 +57,7 @@ const ResultFilesModal = (props: ModalProps) => {
       {...props}
       centered
       title={<Text size="lg">Evaluated Results of project1.bpmn</Text>}
-      size="lg"
+      size="50%"
     >
       <Stack spacing={0}>
         {files.length > 0

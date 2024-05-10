@@ -341,10 +341,10 @@ const FileItem = (props: IFile) => {
         }
         onClick={isProcess ? getProcessVersions : undefined}
       >
-        <Grid justify="flex-start" align="center">
+        <Grid justify="space-between" align="center">
           {/* File name */}
           {/* <Grid.Col span={activeTab ? 3 : 5}> */}
-          <Grid.Col span={3}>
+          <Grid.Col span={6}>
             <Group spacing={10}>
               <IconFile
                 height={30}
@@ -371,16 +371,13 @@ const FileItem = (props: IFile) => {
             </Group>
           </Grid.Col>
 
-          <Grid.Col span={3} />
-
           {/* Last modified */}
           {/* <Grid.Col span={result ? 7 : activeTab ? 6 : 3}> */}
-          <Grid.Col span={3}>
+          <Grid.Col span={result ? 5 : 3}>
             <Flex align="center" justify="center" h="100%">
               <Text color="dimmed" size="sm">
                 {result && "Evaluated At: "}
-                {isVersion &&
-                  new Date(lastSaved || createAt || "")?.toLocaleString()}
+                {new Date(lastSaved || createAt || "")?.toLocaleString()}
               </Text>
             </Flex>
           </Grid.Col>

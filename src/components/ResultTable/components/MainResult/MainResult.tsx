@@ -123,7 +123,7 @@ const MainResult = ({ rows }: ITableProps) => {
                 whiteSpace: "nowrap",
               }}
             >
-              {record.flexibility}
+              {record.flexibility?.toFixed(2)}
             </Text>
           </Flex>
         );
@@ -163,7 +163,7 @@ const MainResult = ({ rows }: ITableProps) => {
                 whiteSpace: "nowrap",
               }}
             >
-              {record.exceptionHandling}
+              {record.exceptionHandling?.toFixed(2)}
             </Text>
           </Flex>
         );
