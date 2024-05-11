@@ -62,7 +62,7 @@ const MainResult = ({ rows }: ITableProps) => {
                 whiteSpace: "nowrap",
               }}
             >
-              {record.totalCycleTime}
+              {record.totalCycleTime?.toFixed(2)}
             </Text>
           </Flex>
         );
@@ -102,7 +102,7 @@ const MainResult = ({ rows }: ITableProps) => {
                 whiteSpace: "nowrap",
               }}
             >
-              {record.totalCost}
+              {record.totalCost?.toFixed(2)}
             </Text>
           </Flex>
         );
