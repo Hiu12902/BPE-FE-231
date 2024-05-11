@@ -18,11 +18,11 @@ const ExtendedTransparency = ({ rows, onClose }: TableProps) => {
     {
       accessor: "view",
       title: "From Lane",
-      textAlignment: "left",
+      textAlignment: "center",
       width: 170,
       render: (record: Transparency) => {
         return (
-          <Flex>
+          <Flex justify="center">
             <Text
               style={{
                 overflow: "hidden",
