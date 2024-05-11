@@ -330,8 +330,19 @@ const FileItem = (props: IFile) => {
         className={classes.container}
         mt={isDocument ? 15 : 0}
         p="sm"
-        onDoubleClick={
-          isVersion
+        // onDoubleClick={
+        //   isVersion
+        //     ? onOpenBpmnFile
+        //     : result
+        //     ? onOpenResultFile
+        //     : isDocument
+        //     ? onOpenDocument
+        //     : undefined
+        // }
+        onClick={
+          isProcess
+            ? getProcessVersions
+            : isVersion
             ? onOpenBpmnFile
             : result
             ? onOpenResultFile
@@ -339,7 +350,6 @@ const FileItem = (props: IFile) => {
             ? onOpenDocument
             : undefined
         }
-        onClick={isProcess ? getProcessVersions : undefined}
       >
         <Grid justify="space-between" align="center">
           {/* File name */}
