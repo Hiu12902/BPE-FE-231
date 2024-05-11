@@ -70,12 +70,12 @@ const QuestionSection = (props: QuestionSectionProps) => {
 
   return (
     <Flex className={classes.wrapper} id="tour_section">
-      <TitleInformation
+      {/* <TitleInformation
         ml={10}
         mb={5}
         content={sectionName as string}
         order={4}
-      />
+      /> */}
       <Flex className={classes.body}>
         <DragDropContext
           onDragEnd={({ destination, source }) => {
