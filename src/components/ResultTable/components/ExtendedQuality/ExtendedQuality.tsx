@@ -81,7 +81,7 @@ const ExtendedQuality = ({ rows, onClose }: TableProps) => {
         <ActionIcon
           onClick={onClose}
           size={20}
-          color="red"
+          color="blue"
           variant="filled"
           radius={100}
           children={<IconClose />}
