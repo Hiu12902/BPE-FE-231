@@ -358,6 +358,8 @@ const PublishModal = (props: PublishModalProps) => {
                   }
                   placeholder="Choose start date"
                   onChange={handleChangeStartDate}
+                  onPointerEnterCapture={() => {}}
+                  onPointerLeaveCapture={() => {}}
                 />
               </Flex>
               <Divider orientation="vertical" />
@@ -375,6 +377,8 @@ const PublishModal = (props: PublishModalProps) => {
                       : null
                   }
                   onChange={handleChangeEndDate}
+                  onPointerEnterCapture={() => {}}
+                  onPointerLeaveCapture={() => {}}
                 />
               </Flex>
             </Flex>
