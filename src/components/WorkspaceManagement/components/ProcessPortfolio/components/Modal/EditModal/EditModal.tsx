@@ -170,7 +170,9 @@ const EditModal = (props: EditModalProps) => {
                 versionMeasurements?.evaluationResult === null ||
                 versionMeasurements?.evaluationResult.totalCycleTime === null
                   ? "N/A"
-                  : versionMeasurements?.evaluationResult.totalCycleTime
+                  : versionMeasurements?.evaluationResult.totalCycleTime.toFixed(
+                      2
+                    )
               }
             />
             <NumberInput
@@ -205,7 +207,7 @@ const EditModal = (props: EditModalProps) => {
                 versionMeasurements?.evaluationResult === null ||
                 versionMeasurements?.evaluationResult.totalCost === null
                   ? "N/A"
-                  : versionMeasurements?.evaluationResult.totalCost
+                  : versionMeasurements?.evaluationResult.totalCost.toFixed(2)
               }
             />
             <NumberInput
