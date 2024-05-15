@@ -77,7 +77,7 @@ const EditNAModal = (props: EditNAModalProps) => {
   };
 
   const handleSave = () => {
-    console.log(versionChange);
+    // console.log(versionChange);
     updateVersionMeasurements.mutate({
       ...versionChange,
       workspaceId: Number(workspaceId),
@@ -217,7 +217,9 @@ const EditNAModal = (props: EditNAModalProps) => {
                 versionMeasurements?.evaluationResult === null ||
                 versionMeasurements?.evaluationResult.totalCycleTime === null
                   ? "N/A"
-                  : versionMeasurements?.evaluationResult.totalCycleTime
+                  : versionMeasurements?.evaluationResult.totalCycleTime.toFixed(
+                      2
+                    )
               }
             />
             <NumberInput
@@ -259,7 +261,7 @@ const EditNAModal = (props: EditNAModalProps) => {
                 versionMeasurements?.evaluationResult === null ||
                 versionMeasurements?.evaluationResult.totalCost === null
                   ? "N/A"
-                  : versionMeasurements?.evaluationResult.totalCost
+                  : versionMeasurements?.evaluationResult.totalCost.toFixed(2)
               }
             />
             <NumberInput
@@ -350,7 +352,9 @@ const EditNAModal = (props: EditNAModalProps) => {
                 versionMeasurements?.evaluationResult === null ||
                 versionMeasurements?.evaluationResult.totalFlexibility === null
                   ? "N/A"
-                  : versionMeasurements?.evaluationResult.totalFlexibility
+                  : versionMeasurements?.evaluationResult.totalFlexibility.toFixed(
+                      2
+                    )
               }
             />
             <NumberInput
