@@ -525,7 +525,10 @@ const WorkspaceItem = (props: IWorkspace) => {
           <Grid.Col span={1}>
             <Flex justify="flex-end" gap={10}>
               <ActionIcon
-                onClick={onPinWorkspace}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPinWorkspace();
+                }}
                 variant="subtle"
                 color="blue"
               >
