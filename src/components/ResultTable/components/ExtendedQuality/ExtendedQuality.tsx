@@ -25,7 +25,7 @@ const ExtendedQuality = ({ rows, onClose }: TableProps) => {
                 whiteSpace: "nowrap",
               }}
             >
-              {record.totalQuality}
+              {record.totalQuality?.toFixed(2)}
             </Text>
           </Flex>
         );
@@ -46,7 +46,7 @@ const ExtendedQuality = ({ rows, onClose }: TableProps) => {
                 whiteSpace: "nowrap",
               }}
             >
-              {record.quality}
+              {record.quality?.toFixed(2)}
             </Text>
           </Flex>
         );
@@ -67,7 +67,7 @@ const ExtendedQuality = ({ rows, onClose }: TableProps) => {
                 whiteSpace: "nowrap",
               }}
             >
-              {record.externalQuality}
+              {record.externalQuality?.toFixed(2)}
             </Text>
           </Flex>
         );
