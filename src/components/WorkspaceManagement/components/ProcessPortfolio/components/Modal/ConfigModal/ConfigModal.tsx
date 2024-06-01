@@ -202,9 +202,9 @@ const ConfigModal = (props: ConfigModalProps) => {
                   : performanceLevel?.worstCycleTime
               }
               value={
-                performanceLevel?.worstCycleTime === null
+                performanceChange?.worstCycleTime === null
                   ? undefined
-                  : performanceLevel?.worstCycleTime
+                  : performanceChange?.worstCycleTime
               }
               onChange={(value: number) => {
                 setPerformanceChange({
@@ -246,9 +246,9 @@ const ConfigModal = (props: ConfigModalProps) => {
                   : performanceLevel?.worstCost
               }
               value={
-                performanceLevel?.worstCost === null
+                performanceChange?.worstCost === null
                   ? undefined
-                  : performanceLevel?.worstCost
+                  : performanceChange?.worstCost
               }
               onChange={(value: number) => {
                 setPerformanceChange({
