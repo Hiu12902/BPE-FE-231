@@ -66,7 +66,7 @@ class SurveyApi {
             projectId: data.projectId,
             name: data.name,
             description: data.description,
-            npsWarnings: data.npsWeight,
+            npsWeight: data.npsWeight,
             cesWeight: data.cesWeight,
             csatWeight: data.csatWeight,
         })
