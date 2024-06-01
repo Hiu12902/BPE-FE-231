@@ -233,9 +233,7 @@ const ProjectItem = (props: IProject) => {
       icon: <IconFilePlus className={classes.dropdownMenuIcon} />,
       children: "New Process",
       onClick: onOpenCreateModal,
-      disabled: !["Owner", "Can Edit"].includes(
-        UserRoleText[role]
-      ),
+      disabled: !["Owner", "Can Edit"].includes(UserRoleText[role]),
     },
     {
       icon: <IconTrash className={classes.dropdownMenuIcon} />,

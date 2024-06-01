@@ -97,6 +97,21 @@ const FileItem = (props: IFile) => {
   const detach = useDetachModel();
   const notify = useNotification();
 
+  const formatTimestamp = (date: Date | string) => {
+    function convertUTCDateToLocalDate(date: Date) {
+      var newDate = new Date(
+        date.getTime() - date.getTimezoneOffset() * 60 * 1000
+      );
+      var offset = date.getTimezoneOffset() / 60;
+      var hours = date.getHours();
+
+      newDate.setHours(hours - offset);
+
+      return newDate;
+    }
+    return convertUTCDateToLocalDate(new Date(date)).toLocaleString();
+  };
+
   const getProcessVersions = async () => {
     try {
       if (versions.length > 0) {
@@ -387,7 +402,9 @@ const FileItem = (props: IFile) => {
             <Flex align="center" justify="center" h="100%">
               <Text color="dimmed" size="sm">
                 {result && "Evaluated At: "}
-                {new Date(lastSaved || createAt || "")?.toLocaleString()}
+                {!isVersion
+                  ? formatTimestamp(lastSaved || createAt || "")
+                  : new Date(lastSaved || createAt || "")?.toLocaleString()}
               </Text>
             </Flex>
           </Grid.Col>

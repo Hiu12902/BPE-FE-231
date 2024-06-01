@@ -90,6 +90,21 @@ const Workspace = () => {
   const searchValue = form.values.searchValue;
   const permission = currentUser.permission || "";
 
+  const formatTimestamp = (date: Date) => {
+    function convertUTCDateToLocalDate(date: Date) {
+      var newDate = new Date(
+        date.getTime() - date.getTimezoneOffset() * 60 * 1000
+      );
+      var offset = date.getTimezoneOffset() / 60;
+      var hours = date.getHours();
+
+      newDate.setHours(hours + offset);
+
+      return newDate;
+    }
+    return convertUTCDateToLocalDate(new Date(date)).toISOString();
+  };
+
   const onCancelSearchProjects = () => {
     form.reset();
     setIsSearching(false);
@@ -108,7 +123,7 @@ const Workspace = () => {
       projectActions.setProject({
         ...project,
         offset: -1,
-        createAt: new Date(),
+        createAt: formatTimestamp(new Date()),
         role: 0,
       })
     );
