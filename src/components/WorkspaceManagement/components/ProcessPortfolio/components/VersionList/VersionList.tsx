@@ -3,6 +3,7 @@ import { PortfolioVersion } from "@/interfaces/index";
 import { Accordion, Skeleton } from "@mantine/core";
 import { useParams } from "react-router-dom";
 import VersionItem from "../VersionItem";
+import { EmptyRender } from "@/components/EmptyRender";
 
 interface VersionListProps {
   processId: number | null;
@@ -30,20 +31,24 @@ const VersionList = (props: VersionListProps) => {
           <Skeleton height={50} mt={0} radius={0} />
         </Accordion>
       ) : (
-        <Accordion variant="contained" defaultValue={versions[0].version}>
-          {versions
-            .sort((a, b) => {
-              return a.num - b.num;
-            })
-            .map((item: PortfolioVersion) => {
-              return (
-                <VersionItem
-                  data={item}
-                  refetch={versionsRefetch}
-                  processName={processName}
-                />
-              );
-            })}
+        <Accordion variant="contained" defaultValue={versions[0]?.version}>
+          {!versions.length
+            ? EmptyRender({
+                text: "Empty process",
+              })
+            : versions
+                .sort((a, b) => {
+                  return a.num - b.num;
+                })
+                .map((item: PortfolioVersion) => {
+                  return (
+                    <VersionItem
+                      data={item}
+                      refetch={versionsRefetch}
+                      processName={processName}
+                    />
+                  );
+                })}
         </Accordion>
       )}
     </Accordion.Panel>
